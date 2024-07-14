@@ -1,0 +1,77 @@
+services:
+
+  front-end:
+    depends_on:
+      - back-end
+    container_name: front-end
+    build:
+      context: ./fitbit-front-end
+      dockerfile: Dockerfile
+    ports:
+      - 3001:3001
+    restart: always
+    networks:
+      - iot-network
+
+  back-end:
+    depends_on:
+      - influxdb
+    container_name: back-end
+    build:
+      context: ./fitbit-web
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    restart: always
+    networks:
+      - iot-network
+
+  influxdb:
+    container_name: influxdb
+    build:
+      context: ./influxdb
+      dockerfile: Dockerfile
+    ports:
+      - 8086:8086
+    volumes:
+      - influxdb-data:/var/lib/influxdb
+    environment:
+      - INFLUXDB_DB=fitnessdb
+      - INFLUXDB_ADMIN_USER=martin
+      - INFLUXDB_ADMIN_PASSWORD=martin1234
+      - INFLUXDB_API_TOKEN_FILE=/run/secrets/influxdb_api_token
+    secrets:
+      - influxdb_api_token
+    restart: always
+    networks:
+      - iot-network
+
+  mosquitto:
+    container_name: mqtt-broker
+    build:
+      context: ./mosquitto
+      dockerfile: Dockerfile
+    ports:
+      - 1883:1883
+      - 9001:9001
+    restart: always
+    volumes:
+      - ./mosquitto/config:/mosquitto/config
+      - ./mosquitto/data:/mosquitto/data
+      - ./mosquitto/log:/mosquitto/log
+    networks:
+      - iot-network
+
+secrets:
+  influxdb_api_token:
+    file: api_token.txt
+
+volumes:
+  influxdb-data:
+  config:
+  data:
+  log:
+
+networks:
+  iot-network:
+    driver: bridge
