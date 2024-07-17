@@ -15,3 +15,6 @@ front-end/src/components/charts/FAKE_DATA.js
 
 influxdb/.dockerignore
 influxdb/api_token.txt
+
+mosquitto/log/mosquitto.log
+mosquitto/data/mosquitto.db
