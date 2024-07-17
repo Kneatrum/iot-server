@@ -1,0 +1,7 @@
+{
+    "mqtt-broker": {
+        "localhost": "localhost",
+        "servicename": "mosquitto",
+        "port": "1883"
+    }
+}
