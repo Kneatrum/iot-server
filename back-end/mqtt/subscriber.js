@@ -1,5 +1,9 @@
 const mqtt = require('mqtt');
 require('dotenv').config();
+const CONFIG = require('./config.json');
+
+const brokerHost = CONFIG["mqtt-broker"].servicename;
+const brokerPort = CONFIG["mqtt-broker"].port;
 
 const {     
     ch_temperature,
@@ -15,7 +19,7 @@ const {
 
 // const { ch_microphone, ch_temperature, ch_action, ch_heart, ch_steps, ch_sleep } = require('./channels');
 
-const mqttUrl = "mqtt://localhost:1883";
+const mqttUrl = "mqtt://" + brokerHost + ":" + brokerPort;
 const client = mqtt.connect(mqttUrl);
 
 client.on('connect', () => {

@@ -2,6 +2,11 @@ import React, { createContext, useEffect, useState } from "react";
 import axios from 'axios';
 
 export const ApiContext = createContext();
+const CONFIG = require('../config.json');
+
+const backEndHost = CONFIG["back-end"].servicename;
+const backEndPort = CONFIG["back-end"].port;
+
 
 function populateChartLabelsAndValues(input_data){
     if(input_data.chartData === null) return;
@@ -162,13 +167,13 @@ export const ApiProvider = (props) => {
     
     useEffect(() => {
         const urls = [
-            "http://localhost:3000/sleep",
-            "http://localhost:3000/idling",
-            "http://localhost:3000/walking",
-            "http://localhost:3000/jogging",
-            "http://localhost:3000/steps",
-            "http://localhost:3000/biking",
-            "http://localhost:3000/heart"
+            "http://" + backEndHost + ":" + backEndPort + "/sleep",
+            "http://" + backEndHost + ":" + backEndPort + "/idling",
+            "http://" + backEndHost + ":" + backEndPort + "/walking",
+            "http://" + backEndHost + ":" + backEndPort + "/jogging",
+            "http://" + backEndHost + ":" + backEndPort + "/steps",
+            "http://" + backEndHost + ":" + backEndPort + "/biking",
+            "http://" + backEndHost + ":" + backEndPort + "/heart"
         ];
 
         const fetchData = async () => {

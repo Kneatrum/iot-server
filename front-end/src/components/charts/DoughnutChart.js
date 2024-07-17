@@ -2,7 +2,10 @@ import { Doughnut } from 'react-chartjs-2';
 import axios from 'axios';
 import { Chart as ChartJS, ArcElement, Legend, Tooltip, plugins } from "chart.js";
 import { useEffect, useState } from 'react';
+const CONFIG = require('./config.json');
 
+const backEndHost = CONFIG["back-end"].servicename;
+const backEndPort = CONFIG["back-end"].port;
 
 ChartJS.register(
   ArcElement, 
@@ -98,7 +101,7 @@ function DoughnutChart(){
 
     useEffect(() => {
       // const url = "http://localhost:3000/sleep";
-      const url = "http://localhost:3000/action"
+      const url = "http://" + backEndHost + ":" + backEndPort + "/action"
       axios.get(url)
       .then(response => {
         const processedData = getTimeTrackerResults(response.data.data);

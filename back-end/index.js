@@ -6,6 +6,10 @@ const bucket = "fitbit"
 const { getAllData, getTemperature } = require('./database/db_read');
 const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
 const mqttClient = require('./mqtt/subscriber');
+const CONFIG = require('./config.json');
+
+const frontEndHost = CONFIG["front-end"].servicename;
+const frontEndPort = CONFIG["front-end"].port;
 
 let previous_sleep_value = null;
 
@@ -39,7 +43,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3001' // Allow requests from this origin
+    origin: 'http://' + frontEndHost + ':' + frontEndPort // Allow requests from this origin
 }));
 
 mqttClient.on('message', (topic, message) => {
@@ -92,6 +96,6 @@ app.use("/", general_routes);
 
 const port = 3000;
 app.listen(port, () => {
-    console.log(`Web server listening at http://localhost:${port}`);
+    console.log(`Web server listening at http://${frontEndHost}:${port}`);
 });
 
