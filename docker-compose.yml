@@ -5,7 +5,7 @@ services:
       - back-end
     container_name: front-end
     build:
-      context: ./fitbit-front-end
+      context: ./front-end
       dockerfile: Dockerfile
     ports:
       - 3001:3001
@@ -18,7 +18,7 @@ services:
       - influxdb
     container_name: back-end
     build:
-      context: ./fitbit-web
+      context: ./back-end
       dockerfile: Dockerfile
     ports:
       - 3000:3000
@@ -27,6 +27,7 @@ services:
       - iot-network
 
   influxdb:
+    image: influxdb:2
     container_name: influxdb
     build:
       context: ./influxdb
@@ -34,15 +35,8 @@ services:
     ports:
       - 8086:8086
     volumes:
-      - influxdb-data:/var/lib/influxdb
-    environment:
-      - INFLUXDB_DB=fitnessdb
-      - INFLUXDB_ADMIN_USER=martin
-      - INFLUXDB_ADMIN_PASSWORD=martin1234
-      - INFLUXDB_API_TOKEN_FILE=/run/secrets/influxdb_api_token
-    secrets:
-      - influxdb_api_token
-    restart: always
+      - influxdb2-data:/var/lib/influxdb2
+      - influxdb2-config:/etc/influxdb2
     networks:
       - iot-network
 
@@ -66,12 +60,11 @@ secrets:
   influxdb_api_token:
     file: api_token.txt
 
-volumes:
-  influxdb-data:
-  config:
-  data:
-  log:
 
 networks:
   iot-network:
     driver: bridge
+
+volumes:
+  influxdb2-data:
+  influxdb2-config:
