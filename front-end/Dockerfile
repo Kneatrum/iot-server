@@ -1,6 +1,6 @@
 FROM node:20.13.0-alpine
 
-WORKDIR /fitbit-front-end
+WORKDIR /front-end
 
 COPY ./package.json ./package.json
 
@@ -8,6 +8,7 @@ RUN npm install
 
 COPY ./public ./public
 COPY ./src ./src
+COPY ./config.json ./config.json
 
 RUN npm run build
 
