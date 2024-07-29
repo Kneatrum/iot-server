@@ -69,7 +69,7 @@ export function AvgHeartRate({title}){
         <div class="card" style={{  borderRadius: '10px' }}>
             <p style={{paddingLeft: '20px'}}>{title}</p>
             <div class="card-body" style={{ textAlign: 'center' }}>
-                {data}
+                {data}{" bpm"}
             </div>
         </div>
     )
