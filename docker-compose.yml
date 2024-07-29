@@ -16,6 +16,7 @@ services:
   back-end:
     depends_on:
       - influxdb
+      - mosquitto
     container_name: back-end
     build:
       context: ./back-end
@@ -41,7 +42,7 @@ services:
       - iot-network
 
   mosquitto:
-    container_name: mqtt-broker
+    container_name: mosquitto
     build:
       context: ./mosquitto
       dockerfile: Dockerfile
