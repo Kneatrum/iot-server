@@ -32,9 +32,9 @@ let dashboard = {
         labels: [],
         datasets: [
             {
-                label: "",
+                label: "Time",
                 data: [],
-                borderColor: ""
+                borderColor: "orange"
             },
         ],
     },
