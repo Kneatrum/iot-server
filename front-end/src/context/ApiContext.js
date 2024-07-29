@@ -2,10 +2,11 @@ import React, { createContext, useEffect, useState } from "react";
 import axios from 'axios';
 
 export const ApiContext = createContext();
-const CONFIG = require('../config.json');
 
-const backEndHost = CONFIG["back-end"].servicename;
-const backEndPort = CONFIG["back-end"].port;
+const localhost = "localhost"
+// const servicename = "servicename"
+const backEndHost = localhost;
+const backEndPort = 3000;
 
 
 function populateChartLabelsAndValues(input_data){

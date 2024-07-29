@@ -6,7 +6,7 @@ const bucket = "fitbit"
 const { getAllData, getTemperature } = require('./database/db_read');
 const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
 const mqttClient = require('./mqtt/subscriber');
-const CONFIG = require('./config.json');
+const CONFIG = require('../config.json');
 
 const frontEndHost = CONFIG["front-end"].servicename;
 const frontEndPort = CONFIG["front-end"].port;

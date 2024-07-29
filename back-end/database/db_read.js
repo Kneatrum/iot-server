@@ -3,10 +3,10 @@ require('dotenv').config();
 
 const {InfluxDB} = require('@influxdata/influxdb-client')
 const { measurements, devices, tags, fields} = require('../constants');
-const CONFIG = require('./config.json');
+const CONFIG = require('../../config.json');
 
-const dbHost = CONFIG.database.servicename;
-const dbPort = CONFIG.database.port;
+const dbHost = CONFIG.influxdb.host;
+const dbPort = CONFIG.influxdb.port;
 
 
 const token = process.env.API_TOKEN
