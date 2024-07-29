@@ -1,7 +1,0 @@
-{
-    "database": {
-        "localhost": "localhost",
-        "servicename": "influxdb",
-        "port": "8086"
-    }
-}
