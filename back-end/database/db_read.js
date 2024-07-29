@@ -1,5 +1,5 @@
 
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 const {InfluxDB} = require('@influxdata/influxdb-client')
 const { measurements, devices, tags, fields} = require('../constants');

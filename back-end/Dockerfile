@@ -11,7 +11,7 @@ COPY ./mqtt ./mqtt
 COPY ./router ./router
 COPY ./constants.js ./constants.js
 COPY ./index.js ./index.js
-COPY ./config.json ./config.json
+COPY ./.env ./.env
 
 EXPOSE 3000
 
