@@ -8,7 +8,8 @@ const measurements = {
   jogging: "jogging",
   steps: "steps",
   biking: "biking",
-  idling: "idling"
+  idling: "idling",
+  oxygen: "oxygen"
 }
   
 const devices = {
@@ -25,7 +26,8 @@ const fields = {
   beats_per_inute: "beats_per_minute",
   sleep_stage: "sleep_stage",
   steps: "steps",
-  minutes: "minutes"
+  minutes: "minutes",
+  percentage: "percent"
 }
 
 module.exports = {

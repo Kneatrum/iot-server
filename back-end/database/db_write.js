@@ -179,6 +179,21 @@ const writeIdlingDuration = (duration) => {
   }, 5000)
 }
 
+// Write oxygen saturation data
+const writeOxygenSaturation = (percentage) => {
+  let point = new Point(measurements.oxygen)
+    .tag(tags.device, devices.device_1)
+    .intField(fields.percentage, percentage)
+
+  void setTimeout(() => {
+    writeClient.writePoint(point)
+  }, 1000) // separate points by 1 second
+
+  void setTimeout(() => {
+    writeClient.flush()
+  }, 5000)
+}
+
 
 module.exports = {
   writeTemperature, 
@@ -189,5 +204,6 @@ module.exports = {
   writeSteps,
   writeJoggingDuration,
   writeBikingData,
-  writeIdlingDuration
+  writeIdlingDuration,
+  writeOxygenSaturation
 };

@@ -491,6 +491,46 @@ const getIdlingData = () => {
     });
 }
 
+// Get heart beat rate
+const getOxygenSaturationData = () => {
+
+    return new Promise((resolve, reject) => {
+        let fluxQuery = `from(bucket: "${bucket}")
+        |> range(start: 0)
+        |> filter(fn: (r) => 
+            r._measurement == "${measurements.oxygen}" and
+            r.${tags.device} == "${devices.device_1}"
+        )`;
+
+        let results = {
+            labels: [],
+            datasets: [
+                {
+                    label: "Oxygen Saturation",
+                    data: [],
+                    borderColor: "rgb(75,192,192)"
+                },
+            ],
+        };
+
+        queryClient.queryRows(fluxQuery, {
+            next: (row, tableMeta) => {
+                const tableObject = tableMeta.toObject(row)
+                const { _time: time, _value: value } = tableObject;
+                results.labels.push(extractTimeHHMMSS(time));
+                results.datasets[0].data.push(value)
+            },
+            error: (error) => {
+                console.error('\nError', error);
+                reject(error);
+            },
+            complete: () => {
+                console.log('\nSuccess');
+                resolve(results);
+            },
+        });
+    });
+}
 
 
 module.exports = { 
@@ -504,5 +544,6 @@ module.exports = {
     getJoggingData,
     getSteps,
     getBikingData,
-    getIdlingData
+    getIdlingData,
+    getOxygenSaturationData
 };

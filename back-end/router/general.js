@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllData, getHeartBeatRate, getTemperature, getAction, getSound, getSleepData, getWalkingData, getJoggingData, getSteps, getBikingData, getIdlingData } = require('../database/db_read');
+const { getAllData, getHeartBeatRate, getTemperature, getAction, getSound, getSleepData, getWalkingData, getJoggingData, getSteps, getBikingData, getIdlingData, getOxygenSaturationData } = require('../database/db_read');
 const public_users = express.Router();
 const TIMEOUT = 5;
 
@@ -288,5 +288,28 @@ public_users.get('/idling',async function (req, res) {
     }
 });
 
+
+// Get idling data
+public_users.get('/oxygen',async function (req, res) {
+    try {
+        let myPromise = new Promise((resolve, reject) => {
+            setTimeout(() => {
+                let success = true;
+                if(success){
+                    resolve("Promise resolved");
+                } else {
+                    reject("Promise rejected");
+                }
+            }, TIMEOUT);
+        });
+
+        await myPromise;
+        const data = await getOxygenSaturationData();
+        res.send(data);
+    } catch (error){
+        console.error('Error: ', error);
+        res.status(500).send('An error occurred while fetching data')
+    }
+});
 
 module.exports.general = public_users;

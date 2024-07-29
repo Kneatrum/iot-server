@@ -9,6 +9,7 @@ const ch_jogging = 'measurement/jogging';
 const ch_steps = 'measurement/steps';
 const ch_biking = 'measurement/biking';
 const ch_idle = 'measurement/idling';
+const ch_oxygen_saturation = 'measurement/oxygen';
 
 module.exports = {
     ch_temperature,
@@ -19,5 +20,6 @@ module.exports = {
     ch_jogging,
     ch_steps,
     ch_biking,
-    ch_idle
+    ch_idle,
+    ch_oxygen_saturation
 };
