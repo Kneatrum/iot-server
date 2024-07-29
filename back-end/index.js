@@ -87,7 +87,8 @@ mqttClient.on('message', (topic, message) => {
     // deleteMeasurement(bucket, 'walking');
     // deleteMeasurement(bucket, 'jogging');
     // deleteMeasurement(bucket, 'biking');
-
+    // deleteMeasurement(bucket, 'heart');
+    // deleteMeasurement(bucket, 'steps');
     // deleteMeasurement(bucket, 'temperature');
 
 });
