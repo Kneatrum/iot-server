@@ -47,7 +47,7 @@ function SleepSummary(){
     }
 
     return(
-        <div class="card" style={{  borderRadius: '10px', height: '380px' }}>    
+        <div class="card" style={{  borderRadius: '10px', height: '390px' }}>    
             <div className="card-header">
             <h5>Sleep Details</h5>
             </div>    
