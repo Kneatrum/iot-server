@@ -10,7 +10,7 @@ const backEndPort = 3000;
 
 
 function populateChartLabelsAndValues(input_data){
-    if(input_data.chartData === null) return;
+    if(input_data === null) return;
 
     input_data.forEach(obj => {
         // Extract time in hh:mm:ss format
