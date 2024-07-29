@@ -29,11 +29,26 @@ export function NightSleepCard({title}){
 
     }, [dashboardData]);
 
+    const formatTime = (minutes) => {
+        if (minutes < 60) {
+            return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
+        } else {
+            const hours = Math.floor(minutes / 60);
+            const remainingMinutes = minutes % 60;
+            if (remainingMinutes === 0) {
+                return `${hours} hour${hours !== 1 ? 's' : ''}`;
+            } else {
+                return `${hours} hour${hours !== 1 ? 's' : ''} and ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
+            }
+        }
+    };
+    
+
     return(
         <div class="card" style={{  borderRadius: '10px' }}>
             <p style={{paddingLeft: '20px'}}>{title}</p>
             <div class="card-body" style={{ textAlign: 'center' }}>
-                {data}
+                {formatTime(data)}
             </div>
         </div>
     )
