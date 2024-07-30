@@ -22,7 +22,8 @@ const App = () => {
         flexDirection: 'column'
       }}>
             <div className='container' style={{paddingBottom: '20px'}}>
-            <FitHeader />
+                <FitHeader />
+            </div>
             <div className='container' style={{ paddingBottom: '20px' }}>
                 <div className='row'>
                     <div className='col-md-3'><NightSleepCard title="Night Sleep" /></div>

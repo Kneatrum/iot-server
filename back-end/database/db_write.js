@@ -61,7 +61,7 @@ const writeHeartRate = (bpm) => {
 
   void setTimeout(() => {
     writeClient.writePoint(point)
-  }, 1000) // separate points by 1 second
+  }, 1) // separate points by 1 second
 
   void setTimeout(() => {
     writeClient.flush()
@@ -187,7 +187,7 @@ const writeOxygenSaturation = (percentage) => {
 
   void setTimeout(() => {
     writeClient.writePoint(point)
-  }, 1000) // separate points by 1 second
+  }, 1) // separate points by 1 second
 
   void setTimeout(() => {
     writeClient.flush()

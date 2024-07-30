@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from "react"; 
 import axios from 'axios';
+import { elements } from "chart.js";
 
 export const ApiContext = createContext();
 
