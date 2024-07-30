@@ -11,7 +11,17 @@ const App = () => {
 
   return (
     <ApiProvider>
-        <div className="bg-dark text-light min-vh-100 d-flex flex-column">
+         <div style={{
+        backgroundImage: 'url("/background.jpg")', // Replace with your image name
+        backgroundSize: 'cover', // Ensures the image covers the entire background
+        backgroundRepeat: 'no-repeat', // Prevents the image from repeating
+        backgroundPosition: 'center', // Centers the image
+        color: 'black',
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column'
+      }}>
+            <div className='container' style={{paddingBottom: '20px'}}>
             <FitHeader />
             <div className='container' style={{ paddingBottom: '20px' }}>
                 <div className='row'>
