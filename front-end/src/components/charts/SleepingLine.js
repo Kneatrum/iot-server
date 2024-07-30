@@ -44,6 +44,7 @@ function SleepingLine(){
         responsive: true,
         plugins: {
             legend: {
+                display: false,
                 position: "bottom",
             }
         },
@@ -51,9 +52,9 @@ function SleepingLine(){
             x: {
                 // min: 0,
                 // max: 12,
-                display: false,
+                display: true,
                 title: {
-                    display: false,
+                    display: true,
                     text: "Time"
                 },
                 ticks: {
@@ -81,7 +82,7 @@ function SleepingLine(){
 
     
     return( 
-        <div className="card" style={{  borderRadius: '10px', height: '380px' }}>
+        <div className="card" style={{  borderRadius: '10px', height: '390px' }}>
             <div className="card-header">
                 <h5>Sleep data</h5>
             </div>
