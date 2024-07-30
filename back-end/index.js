@@ -22,7 +22,8 @@ const {
     writeJoggingDuration,
     writeSteps,
     writeBikingData,
-    writeIdlingDuration 
+    writeIdlingDuration,
+    writeOxygenSaturation
 } = require('./database/db_write');
 
 const {     
@@ -34,7 +35,8 @@ const {
     ch_jogging,
     ch_biking,
     ch_idle, 
-    ch_steps
+    ch_steps,
+    ch_oxygen_saturation
 } = require('./mqtt/channels');
 
 
@@ -80,6 +82,9 @@ mqttClient.on('message', (topic, message) => {
     } else if (topic === ch_idle){
         writeIdlingDuration(message);
         console.log(`Idling data: ${message}.`)
+    } else if( topic === ch_oxygen_saturation ){
+        writeOxygenSaturation(message);
+        console.log(`Oxygen saturation: ${message}`);
     }
 
     // deleteMeasurement(bucket, 'sleep');
@@ -90,6 +95,7 @@ mqttClient.on('message', (topic, message) => {
     // deleteMeasurement(bucket, 'heart');
     // deleteMeasurement(bucket, 'steps');
     // deleteMeasurement(bucket, 'temperature');
+    // deleteMeasurement(bucket, 'oxygen');
 
 });
 

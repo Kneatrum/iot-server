@@ -29,19 +29,46 @@ function HeartChart(){
     const [ chartData, setChartData ] = useState(null);
 
     useEffect(() => {
-        if(dashboardData.heartRateData){
-            setChartData(dashboardData.heartRateData);
+        if(dashboardData.heartOxygenData){
+            // console.log(dashboardData.heartOxygenData)
+            setChartData(dashboardData.heartOxygenData);
         }
-    }, [dashboardData.heartRateData]);
+    }, [dashboardData.heartOxygenData]);
 
     const options = {
-        
+        plugins: {
+            legend: {
+                display: true,
+                position: "top"
+            }
+        },
+        scales: {
+            y: {
+                display: true,
+                title: {
+                    display: true,
+                    text: "Beats per minute" // x-axis label
+                },
+                ticks: {
+                    stepSize: 5
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: "Time" // y-axis label
+                },
+                ticks: {
+                    stepSize: "00:00:20"
+                }
+            } 
+        }
     }
 
     return(
-        <div className="card" style={{  borderRadius: '10px', marginTop: '20px', height: '350px' }}>
+        <div className="card" style={{  borderRadius: '10px', marginTop: '20px', height: '390px' }}>
             <div className="card-header">
-                <h5>Heart data</h5>
+                <h5>Heart rate and blood oxygen saturation</h5>
             </div>
             <div className="card-body d-flex justify-content-center align-items-center">
                 {chartData ? (

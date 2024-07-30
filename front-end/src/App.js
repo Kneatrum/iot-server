@@ -4,7 +4,7 @@ import ActionChart from './components/charts/ActionChart';
 import FitHeader from './components/FitHeader';
 import SleepSummary from './components/charts/SleepSummary';
 import HeartChart from './components/charts/HeartChart';
-import {NightSleepCard, AvgHeartRate, AvgTemperature, Steps} from './components/Cards';
+import {NightSleepCard, AvgHeartRate, AvgOxygenSaturation, Steps} from './components/Cards';
 import { ApiProvider } from './context/ApiContext';
 
 const App = () => {
@@ -17,7 +17,7 @@ const App = () => {
                 <div className='row'>
                     <div className='col-md-3'><NightSleepCard title="Night Sleep" /></div>
                     <div className='col-md-3'><AvgHeartRate title="Avg Heart Rate" /></div>
-                    <div className='col-md-3'><AvgTemperature title="Avg Temp" /></div>
+                    <div className='col-md-3'><AvgOxygenSaturation title="Oxygen Saturation (Sp02)" /></div>
                     <div className='col-md-3'><Steps title="Steps" /></div>
                 </div>
             </div>
