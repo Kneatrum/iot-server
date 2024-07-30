@@ -140,13 +140,7 @@ const getHeartBeatRate = () => {
 
         let results = {
             labels: [],
-            datasets: [
-                {
-                    label: "Heart Rate",
-                    data: [],
-                    borderColor: "rgb(75,192,192)"
-                },
-            ],
+            data: []
         };
 
         queryClient.queryRows(fluxQuery, {
@@ -154,7 +148,7 @@ const getHeartBeatRate = () => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
                 results.labels.push(extractTimeHHMMSS(time));
-                results.datasets[0].data.push(value)
+                results.data.push(value)
             },
             error: (error) => {
                 console.error('\nError', error);
@@ -504,13 +498,7 @@ const getOxygenSaturationData = () => {
 
         let results = {
             labels: [],
-            datasets: [
-                {
-                    label: "Oxygen Saturation",
-                    data: [],
-                    borderColor: "rgb(75,192,192)"
-                },
-            ],
+            data: []
         };
 
         queryClient.queryRows(fluxQuery, {
@@ -518,7 +506,7 @@ const getOxygenSaturationData = () => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
                 results.labels.push(extractTimeHHMMSS(time));
-                results.datasets[0].data.push(value)
+                results.data.push(value)
             },
             error: (error) => {
                 console.error('\nError', error);
