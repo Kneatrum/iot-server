@@ -76,13 +76,13 @@ export function AvgHeartRate({title}){
 }
 
 
-export function AvgTemperature({title}){
+export function AvgOxygenSaturation({title}){
     const { dashboardData } = useContext(ApiContext);
     const [data, setData ] = useState(0);
 
     useEffect(() => {
         if(dashboardData){
-            setData(dashboardData.avgTemp)
+            setData(dashboardData.avgOxygenSaturation)
         }
 
     }, [dashboardData]);
