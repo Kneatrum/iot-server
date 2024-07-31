@@ -9,6 +9,16 @@ const localhost = "localhost"
 const backEndHost = localhost;
 const backEndPort = 3000;
 
+const heartRateColor = "rgb(141, 31, 143)";
+const oxygenSaturation = "rgb(25, 125, 145)";
+
+const stepsBarColor = "blue";
+
+const sleepColor = "orange";
+const idlingColor = "blue";
+const walkingColor = "green";
+const joggingColor = "red";
+const bikingColor =  "purple";
 
 function populateChartLabelsAndValues(input_data){
     if(input_data === null) return;
@@ -36,7 +46,7 @@ let dashboard = {
             {
                 label: "Time",
                 data: [],
-                borderColor: "orange"
+                borderColor: sleepColor
             },
         ],
     },
@@ -47,11 +57,11 @@ let dashboard = {
                 label: "",
                 data: [],
                 backgroundColor: [
-                    "orange",
-                    "blue",
-                    "green",
-                    "red",
-                    "purple"
+                    sleepColor,
+                    idlingColor,
+                    walkingColor,
+                    joggingColor,
+                    bikingColor
                 ],
                 hoverOffset: 5
             },
@@ -64,8 +74,8 @@ let dashboard = {
             {
                 label: "",
                 data: [],
-                backgroundColor: "blue",
-                borderColor: "blue",
+                backgroundColor: stepsBarColor,
+                borderColor: stepsBarColor,
                 borderWidth: 1,
                 maxBarThickness: 25
             }
@@ -77,12 +87,14 @@ let dashboard = {
             {
                 label: "Heart rate (bpm)",
                 data: [],
-                backgroundColor: "green"
+                backgroundColor: heartRateColor,
+                borderColor: heartRateColor
             },
             {
                 label: "Oxygen Saturation (%)",
                 data: [],
-                backgroundColor: "pink"
+                backgroundColor: oxygenSaturation,
+                borderColor: oxygenSaturation,
             }
         ]
     },
