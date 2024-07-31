@@ -380,15 +380,7 @@ const getSteps = () => {
 
         let results = {
             labels: [],
-            datasets: [
-                {
-                    label: "",
-                    data: [],
-                    backgroundColor: "blue",
-                    borderColor: "blue",
-                    borderWidth: 1,
-                },
-            ],
+            data: []
         };
 
         queryClient.queryRows(fluxQuery, {
