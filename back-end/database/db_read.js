@@ -396,7 +396,7 @@ const getSteps = () => {
                 console.log('Date:', formattedDate, 'Value:', value);
 
                 results.labels.push(formattedDate);
-                results.datasets[0].data.push(value);
+                results.data.push(value);
             },
             error: (error) => {
                 console.error('\nError', error)
