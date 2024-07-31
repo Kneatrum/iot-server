@@ -231,10 +231,45 @@ function getOrdinalSuffix(day) {
 
 function setStepsData(stepsData){
     if(stepsData){
-        dashboard.stepsData = stepsData;
-        if(dashboard.stepsData.datasets[0].data.length > 0){
-            dashboard.steps = dashboard.stepsData.datasets[0].data[dashboard.stepsData.datasets[0].data.length - 1]
+        const monthNames = [
+            "Jan", "Feb", "Mar", 
+            "Apr", "May", "Jun", 
+            "Jul", "Aug", "Sep", 
+            "Oct", "Nov", "Dec"
+        ];
+        const max_step_days = 5
+        let labels_length = stepsData.labels.length;
+        if( labels_length < max_step_days ){
+            let difference = max_step_days - labels_length;
+            let date = new Date(stepsData.labels[max_step_days - difference - 1]);
+            for(let count = 0; count < difference; count++){
+                let precedingDate = new Date(date);
+                precedingDate.setDate(precedingDate.getDate() - (difference - count) - 1);
+                // Formatting the date to YYYY-MM-DD
+                // let year = precedingDate.getFullYear().toString().slice(-2);
+                let month = (precedingDate.getMonth()).toString().padStart(2, '0');
+                let day = precedingDate.getDate().toString().padStart(2, '0');
+                let date_ = new Date(precedingDate).getDate();
+                let suffix = getOrdinalSuffix(date_);
+
+                month = parseInt(month, 10)
+                dashboard.stepsData.labels.push(`${day}${suffix} ${monthNames[month]}`);
+                dashboard.stepsData.datasets[0].data.push(0);
+            }
         }
+
+        stepsData.labels.forEach(date => {
+            let temp_date = new Date(date).getDate();
+            let temp_month = new Date(date).getMonth();
+            temp_month = parseInt(temp_month, 10);
+            let suffix = getOrdinalSuffix(temp_date);
+
+            dashboard.stepsData.labels.push(`${temp_date}${suffix} ${monthNames[temp_month]}`)
+        });
+        
+        stepsData.data.forEach(element => {
+            dashboard.stepsData.datasets[0].data.push(element)
+        })
     }
 }
 
