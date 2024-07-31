@@ -32,7 +32,38 @@ function BarChart(){
     }, [dashboardData]);
 
     const options = {
-        
+        maintainAspectRatio: false,
+        responsive: true,
+        plugins: {
+            legend: {
+                display: false,
+                position: "bottom"
+            }
+        },
+        scales: {
+            y: {
+                display: true,
+                title: {
+                    display: false,
+                    text: "Steps" // x-axis label
+                },
+                ticks: {
+                    stepSize: 1000
+                },
+                grid: {
+                    offset: false
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: "Days" // y-axis label
+                },
+                grid: {
+                    offset: true
+                }
+            } 
+        }
     };
 
     return( 
