@@ -63,12 +63,12 @@ let dashboard = {
         labels: [],
         datasets: [
             {
-                label: "Heart rate",
+                label: "Heart rate (bpm)",
                 data: [],
                 backgroundColor: "green"
             },
             {
-                label: "Oxygen Saturation",
+                label: "Oxygen Saturation (%)",
                 data: [],
                 backgroundColor: "pink"
             }
