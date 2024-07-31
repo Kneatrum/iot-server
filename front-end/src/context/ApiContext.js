@@ -72,12 +72,10 @@ let dashboard = {
         labels: [],
         datasets: [
             {
-                label: "",
+                label: "Steps",
                 data: [],
                 backgroundColor: stepsBarColor,
-                borderColor: stepsBarColor,
-                borderWidth: 1,
-                maxBarThickness: 25
+                borderColor: 'rgb(255, 99, 132, 0)', // This removes a top bar that appears on bars of the same height. Not sure why it appears
             }
         ]
     },
