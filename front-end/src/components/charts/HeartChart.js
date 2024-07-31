@@ -46,7 +46,7 @@ function HeartChart(){
             y: {
                 display: true,
                 title: {
-                    display: true,
+                    display: false,
                     text: "Beats per minute" // x-axis label
                 },
                 ticks: {
