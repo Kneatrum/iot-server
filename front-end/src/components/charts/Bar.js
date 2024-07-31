@@ -27,7 +27,7 @@ function BarChart(){
 
     useEffect(() => {
         if(dashboardData.stepsData){
-            setChartData(dashboardData.stepsData)
+            setChartData(dashboardData.stepsData);
         }
     }, [dashboardData]);
 
