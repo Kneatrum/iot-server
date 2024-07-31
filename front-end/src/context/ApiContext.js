@@ -58,7 +58,19 @@ let dashboard = {
         ],
     },
     heartRateData: null,
-    stepsData: null,
+    stepsData: {
+        labels: [],
+        datasets: [
+            {
+                label: "",
+                data: [],
+                backgroundColor: "blue",
+                borderColor: "blue",
+                borderWidth: 1,
+                maxBarThickness: 25
+            }
+        ]
+    },
     heartOxygenData: {
         labels: [],
         datasets: [
