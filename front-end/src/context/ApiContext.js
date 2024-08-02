@@ -241,12 +241,6 @@ function getOrdinalSuffix(day) {
 
 function setStepsData(stepsData){
     if(stepsData){
-        const monthNames = [
-            "Jan", "Feb", "Mar", 
-            "Apr", "May", "Jun", 
-            "Jul", "Aug", "Sep", 
-            "Oct", "Nov", "Dec"
-        ];
         const max_step_days = 5
         let labels_length = stepsData.labels.length;
         if( labels_length < max_step_days ){
