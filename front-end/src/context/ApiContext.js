@@ -24,8 +24,8 @@ function populateSleepChartLabelsAndValues(input_data){
     if(input_data === null) return;
 
     input_data.forEach(obj => {
-        // Extract time in hh:mm:ss format
-        const time = obj.time.slice(11, 19);
+        // Extract time
+        const time = obj.time;
         dashboard.sleepChartData.labels.push(time);
     
         // Extract value
