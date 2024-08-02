@@ -20,7 +20,7 @@ const walkingColor = "green";
 const joggingColor = "red";
 const bikingColor =  "purple";
 
-function populateChartLabelsAndValues(input_data){
+function populateSleepChartLabelsAndValues(input_data){
     if(input_data === null) return;
 
     input_data.forEach(obj => {
@@ -324,7 +324,7 @@ export const ApiProvider = (props) => {
     useEffect(() => {
         if (data) {
             if (data.sleep) {
-                populateChartLabelsAndValues(data.sleep.chartData);
+                populateSleepChartLabelsAndValues(data.sleep.chartData);
                 calculateAndFillSleepSummary(data.sleep);
             }
             calculateAndSetActivitySummary(data);
