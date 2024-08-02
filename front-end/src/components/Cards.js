@@ -34,11 +34,12 @@ export function NightSleepCard({title}){
             return `${minutes} minute${minutes !== 1 ? 's' : ''}`;
         } else {
             const hours = Math.floor(minutes / 60);
-            const remainingMinutes = minutes % 60;
+            let remainingMinutes = minutes % 60;
+            remainingMinutes = remainingMinutes.toFixed(0)
             if (remainingMinutes === 0) {
                 return `${hours} hour${hours !== 1 ? 's' : ''}`;
             } else {
-                return `${hours} hour${hours !== 1 ? 's' : ''} and ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
+                return `${hours} hour${hours !== 1 ? 's' : ''}  ${remainingMinutes} minute${remainingMinutes !== 1 ? 's' : ''}`;
             }
         }
     };
