@@ -243,6 +243,7 @@ function setStepsData(stepsData){
     if(stepsData){
         const max_step_days = 5
         let extracted_dates = [];
+        dashboard.steps = stepsData.data[stepsData.data.length - 1]
         
         stepsData.labels.forEach(date_time => {
             extracted_dates.push(date_time.split('T')[0])
