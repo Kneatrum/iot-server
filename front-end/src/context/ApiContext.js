@@ -242,38 +242,50 @@ function getOrdinalSuffix(day) {
 function setStepsData(stepsData){
     if(stepsData){
         const max_step_days = 5
-        let labels_length = stepsData.labels.length;
-        if( labels_length < max_step_days ){
-            let difference = max_step_days - labels_length;
-            let date = new Date(stepsData.labels[max_step_days - difference - 1]);
-            for(let count = 0; count < difference; count++){
-                let precedingDate = new Date(date);
-                precedingDate.setDate(precedingDate.getDate() - (difference - count) - 1);
-                // Formatting the date to YYYY-MM-DD
-                // let year = precedingDate.getFullYear().toString().slice(-2);
-                let month = (precedingDate.getMonth()).toString().padStart(2, '0');
-                let day = precedingDate.getDate().toString().padStart(2, '0');
-                let date_ = new Date(precedingDate).getDate();
-                let suffix = getOrdinalSuffix(date_);
+        let extracted_dates = [];
+        
+        stepsData.labels.forEach(date_time => {
+            extracted_dates.push(date_time.split('T')[0])
+        })
 
-                month = parseInt(month, 10)
-                dashboard.stepsData.labels.push(`${day}${suffix} ${monthNames[month]}`);
+
+        let length_of_extrated_dates = extracted_dates.length;
+        let difference = max_step_days - length_of_extrated_dates;
+        if(length_of_extrated_dates < max_step_days){
+            let first_extracted_date = extracted_dates[0];
+            let date_format = new Date(first_extracted_date);
+
+            for(let x = 0; x < difference; x++){
+                let year = date_format.getFullYear();
+                let month = (date_format.getMonth() + 1).toString().padStart(2, '0'); // 1 is added because the getMonth() function returns the month with a base of 0. That is 0 representing January
+                let day = (date_format.getDate() - (difference - x)).toString().padStart(2, '0');
+                const formattedDate = `${year}-${month}-${day}`;
+                
+                dashboard.stepsData.labels.push(formattedDate);
                 dashboard.stepsData.datasets[0].data.push(0);
             }
+
+            extracted_dates.forEach(date => {
+                dashboard.stepsData.labels.push(date)
+            })
+
+            stepsData.data.forEach(element => {
+                dashboard.stepsData.datasets[0].data.push(element)
+            })
+
+            console.log(dashboard.stepsData.labels)
+
+        } else {
+
+            stepsData.labels.forEach(date => {
+                dashboard.stepsData.labels.push(date.split('T')[0])
+            });
+
+            stepsData.data.forEach(element => {
+                dashboard.stepsData.datasets[0].data.push(element)
+            });
         }
-
-        stepsData.labels.forEach(date => {
-            let temp_date = new Date(date).getDate();
-            let temp_month = new Date(date).getMonth();
-            temp_month = parseInt(temp_month, 10);
-            let suffix = getOrdinalSuffix(temp_date);
-
-            dashboard.stepsData.labels.push(`${temp_date}${suffix} ${monthNames[temp_month]}`)
-        });
         
-        stepsData.data.forEach(element => {
-            dashboard.stepsData.datasets[0].data.push(element)
-        })
     }
 }
 
