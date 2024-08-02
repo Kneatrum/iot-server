@@ -149,7 +149,7 @@ const getHeartBeatRate = () => {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
-                results.labels.push(extractTimeHHMMSS(time));
+                results.labels.push(time);
                 results.data.push(value)
             },
             error: (error) => {
@@ -392,12 +392,7 @@ const getSteps = () => {
                 // Convert the time to a Date object
                 const date = new Date(time);
 
-                // Format the date (e.g., YYYY-MM-DD)
-                const formattedDate = date.toISOString().split('T')[0];
-
-                console.log('Date:', formattedDate, 'Value:', value);
-
-                results.labels.push(formattedDate);
+                results.labels.push(date);
                 results.data.push(value);
             },
             error: (error) => {
@@ -499,7 +494,7 @@ const getOxygenSaturationData = () => {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
-                results.labels.push(extractTimeHHMMSS(time));
+                results.labels.push(time);
                 results.data.push(value)
             },
             error: (error) => {
