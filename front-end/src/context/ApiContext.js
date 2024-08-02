@@ -9,8 +9,8 @@ const localhost = "localhost"
 const backEndHost = localhost;
 const backEndPort = 3000;
 
-const heartRateColor = "rgb(141, 31, 143)";
-const oxygenSaturation = "rgb(25, 125, 145)";
+const heartRateColor = "lightsalmon";
+const oxygenSaturation = "lightskyblue";
 
 const stepsBarColor = "blue";
 
