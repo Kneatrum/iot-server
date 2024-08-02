@@ -85,8 +85,10 @@ function getTimeSummary(input_data){
 
     sleepStates.forEach(state => {
         // Calculate the percentage and fill it out now that we have total time and time per sleep state.
-        time_breakdown.states[state].percentage = toFixedNumber(((time_breakdown.states[state].time / time_breakdown.totalTime) * 100), 1)
-        time_breakdown.states[state].time = toFixedNumber(time_breakdown.states[state].time, 1);
+        if( time_breakdown.states.hasOwnProperty(state) ){
+            time_breakdown.states[state].percentage = toFixedNumber(((time_breakdown.states[state].time / time_breakdown.totalTime) * 100), 1)
+            time_breakdown.states[state].time = toFixedNumber(time_breakdown.states[state].time, 1);
+        }
     });
         
     // Converting total time in minutes to string format hh:mm or mm if less than 60.
