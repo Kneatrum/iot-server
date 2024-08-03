@@ -385,6 +385,8 @@ const getSteps = () => {
             data: []
         };
 
+        let currentDate =  new Date()
+
         queryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
@@ -400,7 +402,10 @@ const getSteps = () => {
                 reject(error);
             },
             complete: () => {
-                console.log('\nSuccess')
+                if(!results.labels.includes(currentDate)){
+                    results.labels.push(currentDate)
+                    results.data.push(0)
+                }
                 resolve(results);
             },
         });
