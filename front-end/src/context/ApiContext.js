@@ -4,6 +4,8 @@ import axios from 'axios';
 
 export const ApiContext = createContext();
 
+const numOfstepsQueryDays = 5 // Getting the steps in the last 5 days
+
 const localhost = "localhost"
 // const servicename = "servicename"
 const backEndHost = localhost;
@@ -241,7 +243,7 @@ function getOrdinalSuffix(day) {
 
 function setStepsData(stepsData){
     if(stepsData){
-        const max_step_days = 5
+        const max_step_days = numOfstepsQueryDays;
         let extracted_dates = [];
         dashboard.steps = stepsData.data[stepsData.data.length - 1]
         
@@ -300,7 +302,7 @@ export const ApiProvider = (props) => {
             "http://" + backEndHost + ":" + backEndPort + "/idling",
             "http://" + backEndHost + ":" + backEndPort + "/walking",
             "http://" + backEndHost + ":" + backEndPort + "/jogging",
-            "http://" + backEndHost + ":" + backEndPort + "/steps",
+            "http://" + backEndHost + ":" + backEndPort + "/steps/" + numOfstepsQueryDays,
             "http://" + backEndHost + ":" + backEndPort + "/biking",
             "http://" + backEndHost + ":" + backEndPort + "/heart",
             "http://" + backEndHost + ":" + backEndPort + "/oxygen"

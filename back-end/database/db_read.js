@@ -369,11 +369,29 @@ const getJoggingData = () => {
 
 
 // Get steps.
-const getSteps = () => {
+const getSteps = (days) => {
 
+    let validParam = /\d/.test(days); // Checking if the days parameter is a digit
+
+    if (!validParam){
+        console.log("Please add a valid parameter\nUsing 0 as the default");
+        days = 0;
+    }
+
+    // Add a default negative sign if days is not '0'
+    const optionalNegSign = days === 0 ? '' : '-';
+    let param = null;
+
+    if(days === 0 || days === '0'){
+        param = `${optionalNegSign}${days}`
+    } else {
+        param = `${optionalNegSign}${days}d`
+    }
+    
+    
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: -5d)
+        |> range(start: ${param})
         |> filter(fn: (r) => r._measurement == "${measurements.steps}" and
             r.${tags.device} == "${devices.device_1}" and 
             r._field == "${fields.steps}")

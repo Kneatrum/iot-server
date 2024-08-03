@@ -218,8 +218,11 @@ public_users.get('/jogging',async function (req, res) {
 
 
 // Get steps
-public_users.get('/steps',async function (req, res) {
+public_users.get('/steps/:days?',async function (req, res) {
     try {
+        
+        let days = req.params.days || 0; // If no parameter is passed, use 0 as the default
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
