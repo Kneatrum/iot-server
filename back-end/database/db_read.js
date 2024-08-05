@@ -424,6 +424,7 @@ const getSteps = (days) => {
                     results.labels.push(currentDate)
                     results.data.push(0)
                 }
+                console.log(results)
                 resolve(results);
             },
         });

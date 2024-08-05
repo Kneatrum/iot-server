@@ -235,7 +235,7 @@ public_users.get('/steps/:days?',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getSteps();
+        const data = await getSteps(days);
         res.send(data);
     } catch (error){
         console.error('Error: ', error);
