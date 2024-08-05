@@ -17,6 +17,7 @@
     "express-session": "^1.17.3",
     "jsonwebtoken": "^8.5.1",
     "mqtt": "^5.7.0",
+    "node-cron": "^3.0.3",
     "nodemon": "^2.0.22"
   }
 }
