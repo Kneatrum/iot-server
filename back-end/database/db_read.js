@@ -369,11 +369,11 @@ const getJoggingData = () => {
 
 
 // Get steps.
-const getSteps = (days) => {
+const getSteps = (numDays) => {
 
-    let validParam = /\d/.test(days); // Checking if the days parameter is a digit
+    let days = +numDays; // Checking if the days parameter is a digit
 
-    if (!validParam){
+    if (isNaN(days)){
         console.log("Please add a valid parameter\nUsing 0 as the default");
         days = 0;
     }
@@ -382,13 +382,13 @@ const getSteps = (days) => {
     const optionalNegSign = days === 0 ? '' : '-';
     let param = null;
 
-    if(days === 0 || days === '0'){
+    if(days === 0 ){
         param = `${optionalNegSign}${days}`
     } else {
         param = `${optionalNegSign}${days}d`
     }
     
-    
+
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
         |> range(start: ${param})
@@ -403,7 +403,7 @@ const getSteps = (days) => {
             data: []
         };
 
-        let currentDate =  new Date()
+
 
         queryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
@@ -420,11 +420,6 @@ const getSteps = (days) => {
                 reject(error);
             },
             complete: () => {
-                if(!results.labels.includes(currentDate)){
-                    results.labels.push(currentDate)
-                    results.data.push(0)
-                }
-                console.log(results)
                 resolve(results);
             },
         });
