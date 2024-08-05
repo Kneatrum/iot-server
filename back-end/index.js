@@ -99,6 +99,24 @@ mqttClient.on('message', (topic, message) => {
 
 });
 
+async function stepsInitialisation(){
+    const data = await getSteps(0);
+    if(data.labels.length === 0){
+        writeSteps(0);
+    }
+}
+
+stepsInitialisation();
+
+// Schedule the cron job to run at midnight
+cron.schedule('0 0 * * *', async () => {
+    console.log('Resetting the number of steps at midnight');
+        const data = await getSteps(0);
+        if(data.labels.length === 0){
+            writeSteps(0);
+        }
+  });
+
 app.use("/", general_routes);
 
 const port = 3000;
