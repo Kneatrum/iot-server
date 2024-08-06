@@ -24,8 +24,8 @@ influx setup \
     --force
 
 
-influx write \
-    --bucket "$BUCKET" \
-    --org "$ORG" \
-    --precision s \
-    "temperature,device=device_1 value=25"
+# influx write \
+#     --bucket "$BUCKET" \
+#     --org "$ORG" \
+#     --precision s \
+#     "temperature,device=device_1 value=25"
