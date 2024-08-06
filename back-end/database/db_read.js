@@ -294,19 +294,28 @@ const getSound = (startDate) => {
 }
 
 // Get sleep data.
-const getSleepData = (startDate) => {
+const getSleepData = (numDays) => {
 
-    let now =  new Date().toISOString()
-    let query = null;
-    if(startDate === 0){
-        query =  `start: ${startDate}`
+    let days = +numDays; // Checking if the days parameter is a digit
+
+    if (isNaN(days)){
+        console.log("Please add a valid parameter\nUsing 0 as the default");
+        days = 0;
+    }
+
+    // Add a default negative sign if days is not '0'
+    const optionalNegSign = days === 0 ? '' : '-';
+    let param = null;
+
+    if(days === 0 ){
+        param = `${optionalNegSign}${days}`
     } else {
-        query =  `start: ${startDate}, stop: ${now}`
+        param = `${optionalNegSign}${days}d`
     }
 
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(${query})
+        |> range(start: ${param})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.sleep}" and
             r.${tags.device} == "${devices.device_1}"
