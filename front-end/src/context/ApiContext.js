@@ -222,6 +222,7 @@ function setHeartAndOxygenData(data){
 }
 
 function findAverage(strArray){
+    if(strArray.length === 0) return 0; // If we don't have any data, return 0. No need to proceed.
     const intArray = strArray.map(str => parseInt(str, 10));
     const sum = intArray.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
     const average = sum / intArray.length;
