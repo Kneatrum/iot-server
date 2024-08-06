@@ -130,11 +130,19 @@ const getAllData = () => {
 
 
 // Get heart beat rate
-const getHeartBeatRate = () => {
+const getHeartBeatRate = (startDate) => {
+
+    let now =  new Date().toISOString()
+    let query = null;
+    if(startDate === 0){
+        query =  `start: ${startDate}`
+    } else {
+        query =  `start: ${startDate}, stop: ${now}`
+    }
 
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.heart_rate}" and
             r.${tags.device} == "${devices.device_1}"
@@ -166,12 +174,20 @@ const getHeartBeatRate = () => {
 
 
 // Get temperature
-const getTemperature = () => {
+const getTemperature = (startDate) => {
+
+    let now =  new Date().toISOString()
+    let query = null;
+    if(startDate === 0){
+        query =  `start: ${startDate}`
+    } else {
+        query =  `start: ${startDate}, stop: ${now}`
+    }
 
     return new Promise((resolve, reject) => {
         console.log("Start")
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.temperature}" and
             r.${tags.device} == "${devices.device_1}"
@@ -199,10 +215,19 @@ const getTemperature = () => {
 
 
 // Get action
-const getAction = () => {
+const getAction = (startDate) => {
+
+    let now =  new Date().toISOString()
+    let query = null;
+    if(startDate === 0){
+        query =  `start: ${startDate}`
+    } else {
+        query =  `start: ${startDate}, stop: ${now}`
+    }
+
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "device" and
             r.${tags.device} == "imu"
@@ -230,11 +255,19 @@ const getAction = () => {
 
 
 // Get sound.
-const getSound = () => {
+const getSound = (startDate) => {
+
+    let now =  new Date().toISOString()
+    let query = null;
+    if(startDate === 0){
+        query =  `start: ${startDate}`
+    } else {
+        query =  `start: ${startDate}, stop: ${now}`
+    }
 
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.sound}" and
             r.${tags.device} == "${devices.device_1}"
@@ -261,11 +294,19 @@ const getSound = () => {
 }
 
 // Get sleep data.
-const getSleepData = () => {
+const getSleepData = (startDate) => {
+
+    let now =  new Date().toISOString()
+    let query = null;
+    if(startDate === 0){
+        query =  `start: ${startDate}`
+    } else {
+        query =  `start: ${startDate}, stop: ${now}`
+    }
 
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.sleep}" and
             r.${tags.device} == "${devices.device_1}"
@@ -303,11 +344,19 @@ const getSleepData = () => {
 
 
 // Get walking data.
-const getWalkingData = () => {
+const getWalkingData = (startDate) => {
+
+    let now =  new Date().toISOString()
+    let query = null;
+    if(startDate === 0){
+        query =  `start: ${startDate}`
+    } else {
+        query =  `start: ${startDate}, stop: ${now}`
+    }
 
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.walking}" and
             r.${tags.device} == "${devices.device_1}" and 
@@ -336,11 +385,19 @@ const getWalkingData = () => {
 }
 
 // Get jogging data.
-const getJoggingData = () => {
+const getJoggingData = (startDate) => {
+
+    let now =  new Date().toISOString()
+    let query = null;
+    if(startDate === 0){
+        query =  `start: ${startDate}`
+    } else {
+        query =  `start: ${startDate}, stop: ${now}`
+    }
 
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.jogging}" and
             r.${tags.device} == "${devices.device_1}" and 
@@ -428,11 +485,19 @@ const getSteps = (numDays) => {
 
 
 // Get biking data.
-const getBikingData = () => {
+const getBikingData = (startDate) => {
+
+    let now =  new Date().toISOString()
+    let query = null;
+    if(startDate === 0){
+        query =  `start: ${startDate}`
+    } else {
+        query =  `start: ${startDate}, stop: ${now}`
+    }
 
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.biking}" and
             r.${tags.device} == "${devices.device_1}" and 
@@ -461,11 +526,19 @@ const getBikingData = () => {
 
 
 // Get idling data.
-const getIdlingData = () => {
+const getIdlingData = (startDate) => {
+
+    let now =  new Date().toISOString()
+    let query = null;
+    if(startDate === 0){
+        query =  `start: ${startDate}`
+    } else {
+        query =  `start: ${startDate}, stop: ${now}`
+    }
 
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.idling}" and
             r.${tags.device} == "${devices.device_1}" and 
@@ -494,11 +567,16 @@ const getIdlingData = () => {
 }
 
 // Get heart beat rate
-const getOxygenSaturationData = () => {
+const getOxygenSaturationData = (startDate) => {
+    
+
+    let now = new Date()
+    now = now.toISOString()
+    let query =  `start: ${startDate}, stop: ${now}`
 
     return new Promise((resolve, reject) => {
         let fluxQuery = `from(bucket: "${bucket}")
-        |> range(start: 0)
+        |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.oxygen}" and
             r.${tags.device} == "${devices.device_1}"

@@ -50,8 +50,11 @@ public_users.get('/all',async function (req, res) {
 
 
 // Get heart beat rate
-public_users.get('/heart',async function (req, res) {
+public_users.get('/heart/:date?',async function (req, res) {
     try {
+
+        let date = req.params.date || 0;
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -64,7 +67,7 @@ public_users.get('/heart',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getHeartBeatRate();
+        const data = await getHeartBeatRate(date);
         res.send(data);
     } catch (error){
         console.error('Error: ', error);
@@ -74,8 +77,11 @@ public_users.get('/heart',async function (req, res) {
 
 
 // Get temperature
-public_users.get('/temperature',async function (req, res) {
+public_users.get('/temperature/:date?',async function (req, res) {
     try {
+
+        let date =  req.params.date || 0;
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -88,7 +94,7 @@ public_users.get('/temperature',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getTemperature();
+        const data = await getTemperature(date);
         res.send(JSON.stringify({data},null,4));
     } catch (error){
         console.error('Error: ', error);
@@ -98,8 +104,11 @@ public_users.get('/temperature',async function (req, res) {
 
 
 // Get action
-public_users.get('/action',async function (req, res) {
+public_users.get('/action/:date?',async function (req, res) {
     try {
+
+        let date =  req.params.date || 0;
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -112,7 +121,7 @@ public_users.get('/action',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getAction();
+        const data = await getAction(date);
         res.send(JSON.stringify({data},null,4));
     } catch (error){
         console.error('Error: ', error);
@@ -122,8 +131,11 @@ public_users.get('/action',async function (req, res) {
 
 
 // Get sound
-public_users.get('/sound',async function (req, res) {
+public_users.get('/sound/:date?',async function (req, res) {
     try {
+
+        let date =  req.params.date || 0;
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -136,7 +148,7 @@ public_users.get('/sound',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getSound();
+        const data = await getSound(date);
         res.send(JSON.stringify({data},null,4));
     } catch (error){
         console.error('Error: ', error);
@@ -146,8 +158,9 @@ public_users.get('/sound',async function (req, res) {
 
 
 // Get sleep data
-public_users.get('/sleep',async function (req, res) {
+public_users.get('/sleep/:date?',async function (req, res) {
     try {
+        let date =  req.params.date || 0;
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -160,7 +173,7 @@ public_users.get('/sleep',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getSleepData();
+        const data = await getSleepData(date);
         res.send(data);
     } catch (error){
         console.error('Error: ', error);
@@ -170,8 +183,11 @@ public_users.get('/sleep',async function (req, res) {
 
 
 // Get walking data
-public_users.get('/walking',async function (req, res) {
+public_users.get('/walking/:date?',async function (req, res) {
     try {
+
+        let date =  req.params.date || 0;
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -184,7 +200,7 @@ public_users.get('/walking',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getWalkingData();
+        const data = await getWalkingData(date);
         res.send(JSON.stringify({data},null,4));
     } catch (error){
         console.error('Error: ', error);
@@ -194,8 +210,11 @@ public_users.get('/walking',async function (req, res) {
 
 
 // Get jogging data
-public_users.get('/jogging',async function (req, res) {
+public_users.get('/jogging/:date?',async function (req, res) {
     try {
+
+        let date =  req.params.date || 0;
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -208,7 +227,7 @@ public_users.get('/jogging',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getJoggingData();
+        const data = await getJoggingData(date);
         res.send(JSON.stringify({data},null,4));
     } catch (error){
         console.error('Error: ', error);
@@ -245,8 +264,11 @@ public_users.get('/steps/:days?',async function (req, res) {
 
 
 // Get biking data
-public_users.get('/biking',async function (req, res) {
+public_users.get('/biking/:date?',async function (req, res) {
     try {
+
+        let date =  req.params.date || 0;
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -259,7 +281,7 @@ public_users.get('/biking',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getBikingData();
+        const data = await getBikingData(date);
         res.send(JSON.stringify({data}, null, 4));
     } catch (error){
         console.error('Error: ', error);
@@ -269,8 +291,11 @@ public_users.get('/biking',async function (req, res) {
 
 
 // Get idling data
-public_users.get('/idling',async function (req, res) {
+public_users.get('/idling/:date?',async function (req, res) {
     try {
+
+        let date =  req.params.date || 0;
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -283,7 +308,7 @@ public_users.get('/idling',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getIdlingData();
+        const data = await getIdlingData(date);
         res.send(JSON.stringify({data}, null, 4));
     } catch (error){
         console.error('Error: ', error);
@@ -293,8 +318,11 @@ public_users.get('/idling',async function (req, res) {
 
 
 // Get idling data
-public_users.get('/oxygen',async function (req, res) {
+public_users.get('/oxygen/:date',async function (req, res) {
     try {
+
+        let date = req.params.date; 
+
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
                 let success = true;
@@ -307,7 +335,7 @@ public_users.get('/oxygen',async function (req, res) {
         });
 
         await myPromise;
-        const data = await getOxygenSaturationData();
+        const data = await getOxygenSaturationData(date);
         res.send(data);
     } catch (error){
         console.error('Error: ', error);

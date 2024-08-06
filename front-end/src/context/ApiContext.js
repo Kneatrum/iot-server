@@ -5,6 +5,8 @@ import axios from 'axios';
 export const ApiContext = createContext();
 
 const numOfstepsQueryDays = 5 // Getting the steps in the last 5 days
+const today = new Date("2024-08-01")
+let startDate =  new Date(today.setHours(0, 0, 0, 0)).toISOString();
 
 const localhost = "localhost"
 // const servicename = "servicename"
@@ -298,14 +300,14 @@ export const ApiProvider = (props) => {
     
     useEffect(() => {
         const urls = [
-            "http://" + backEndHost + ":" + backEndPort + "/sleep",
-            "http://" + backEndHost + ":" + backEndPort + "/idling",
-            "http://" + backEndHost + ":" + backEndPort + "/walking",
-            "http://" + backEndHost + ":" + backEndPort + "/jogging",
+            "http://" + backEndHost + ":" + backEndPort + "/sleep/" + startDate, // This will need some adjustment because sleep time extends to the second day
+            "http://" + backEndHost + ":" + backEndPort + "/idling/" + startDate,
+            "http://" + backEndHost + ":" + backEndPort + "/walking/" + startDate,
+            "http://" + backEndHost + ":" + backEndPort + "/jogging/" + startDate,
             "http://" + backEndHost + ":" + backEndPort + "/steps/" + numOfstepsQueryDays,
-            "http://" + backEndHost + ":" + backEndPort + "/biking",
-            "http://" + backEndHost + ":" + backEndPort + "/heart",
-            "http://" + backEndHost + ":" + backEndPort + "/oxygen"
+            "http://" + backEndHost + ":" + backEndPort + "/biking/" + startDate,
+            "http://" + backEndHost + ":" + backEndPort + "/heart/" + startDate,
+            "http://" + backEndHost + ":" + backEndPort + "/oxygen/" + startDate
         ];
 
         const fetchData = async () => {
