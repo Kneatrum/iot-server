@@ -7,6 +7,7 @@ const { getAllData, getTemperature, getSteps } = require('./database/db_read');
 const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
 const mqttClient = require('./mqtt/subscriber');
 const CONFIG = require('../config.json');
+const cron = require('node-cron');
 
 const frontEndHost = CONFIG["front-end"].servicename;
 const frontEndPort = CONFIG["front-end"].port;
