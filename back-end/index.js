@@ -11,6 +11,8 @@ const cron = require('node-cron');
 
 const frontEndHost = CONFIG["front-end"].host;
 const frontEndPort = CONFIG["front-end"].port;
+const backEndHost = CONFIG['back-end'].host
+const backEndPort = CONFIG['back-end'].port
 
 let previous_sleep_value = null;
 
@@ -137,8 +139,7 @@ cron.schedule('0 0 * * *', async () => {
 
 app.use("/", general_routes);
 
-const port = 3000;
 app.listen(port, () => {
-    console.log(`Web server listening at http://${frontEndHost}:${port}`);
+    console.log(`Web server listening at http://${backEndHost}:${backEndPort}`);
 });
 
