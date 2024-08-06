@@ -9,7 +9,7 @@ const mqttClient = require('./mqtt/subscriber');
 const CONFIG = require('../config.json');
 const cron = require('node-cron');
 
-const frontEndHost = CONFIG["front-end"].servicename;
+const frontEndHost = CONFIG["front-end"].host;
 const frontEndPort = CONFIG["front-end"].port;
 
 let previous_sleep_value = null;
@@ -46,7 +46,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: 'http://' + frontEndHost + ':' + frontEndPort // Allow requests from this origin
+    origin: `http://${frontEndHost}:${frontEndPort}` // Allow requests from this origin
 }));
 
 mqttClient.on('message', (topic, message) => {
