@@ -301,7 +301,7 @@ export const ApiProvider = (props) => {
     
     useEffect(() => {
         const urls = [
-            "http://" + backEndHost + ":" + backEndPort + "/sleep/" + startDate, // This will need some adjustment because sleep time extends to the second day
+            "http://" + backEndHost + ":" + backEndPort + "/sleep/" + numOfSleepQueryDays,
             "http://" + backEndHost + ":" + backEndPort + "/idling/" + startDate,
             "http://" + backEndHost + ":" + backEndPort + "/walking/" + startDate,
             "http://" + backEndHost + ":" + backEndPort + "/jogging/" + startDate,
