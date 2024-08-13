@@ -5,9 +5,9 @@ import axios from 'axios';
 export const ApiContext = createContext();
 
 const numOfstepsQueryDays = 5; // Getting the steps in the last 5 days
-const today = new Date("2024-08-01");
+const today = new Date("2024-08-06");
 let startDate =  new Date(today.setHours(0, 0, 0, 0)).toISOString();
-let numOfSleepQueryDays = 6;
+let numOfSleepQueryDays = 1;
 
 const localhost = "localhost"
 // const servicename = "servicename"
