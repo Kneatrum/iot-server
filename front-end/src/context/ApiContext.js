@@ -9,9 +9,7 @@ const today = new Date("2024-08-01");
 let startDate =  new Date(today.setHours(0, 0, 0, 0)).toISOString();
 let numOfSleepQueryDays = 6;
 
-const localhost = "localhost"
-// const servicename = "servicename"
-const backEndHost = localhost;
+const backEndHost = 'back-end';
 const backEndPort = 3000;
 
 const heartRateColor = "lightsalmon";
