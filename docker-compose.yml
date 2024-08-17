@@ -63,7 +63,6 @@ secrets:
   influxdb_api_token:
     file: api_token.txt
 
-
 networks:
   iot-network:
     driver: bridge
