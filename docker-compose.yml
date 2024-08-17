@@ -26,6 +26,8 @@ services:
     restart: always
     networks:
       - iot-network
+    volumes:
+      - ./back-end/.env:/back-end/.env:rw  # Mount .env file
 
   influxdb:
     image: influxdb:2
