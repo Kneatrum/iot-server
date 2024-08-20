@@ -1,9 +1,7 @@
 const mqtt = require('mqtt');
-require('dotenv').config();
-const CONFIG = require('../../config.json');
 
-const brokerHost = CONFIG.mosquitto.host;
-const brokerPort = CONFIG.mosquitto.port;
+const brokerHost = 'mosquitto';
+const brokerPort = 1883;
 
 const {     
     ch_temperature,
