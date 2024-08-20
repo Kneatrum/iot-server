@@ -44,7 +44,6 @@ services:
       - ./back-end/.env:/back-end/.env:rw  # Mount .env file
 
   influxdb:
-    image: influxdb:2
     container_name: influxdb
     build:
       context: ./influxdb
