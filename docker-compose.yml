@@ -1,5 +1,19 @@
 services:
 
+  nginx:
+      image: nginx:latest
+      container_name: nginx
+      ports:
+        - 80:80
+      volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf  # Path to your Nginx config file
+      depends_on:
+        - front-end
+        - back-end
+        - mosquitto
+      networks:
+        - iot-network
+
   front-end:
     depends_on:
       - back-end
