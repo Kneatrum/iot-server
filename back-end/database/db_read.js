@@ -1,18 +1,16 @@
 
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: '../.env'});
 
 const {InfluxDB} = require('@influxdata/influxdb-client')
 const { measurements, devices, tags, fields} = require('../constants');
-const CONFIG = require('../../config.json');
 
-const dbHost = CONFIG.influxdb.host;
-const dbPort = CONFIG.influxdb.port;
+const dbHost = 'influxdb';
+const dbPort = 8086;
+const token = process.env.INFLUXDB_API_TOKEN;
 
-
-const token = process.env.API_TOKEN
 const url = "http://" + dbHost + ":" + dbPort;
-const org = "kneatrum"
-const bucket = "fitbit"
+const org = process.env.ORG_NAME
+const bucket = process.env.BUCKET_NAME
 
 const client = new InfluxDB({url, token})
 

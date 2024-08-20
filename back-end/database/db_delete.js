@@ -1,16 +1,16 @@
 require('dotenv').config({ path: '../.env'});
 
-const {InfluxDB} = require('@influxdata/influxdb-client')
+const {InfluxDB} = require('@influxdata/influxdb-client');
 const { DeleteAPI } = require('@influxdata/influxdb-client-apis');
-const CONFIG = require('../../config.json');
 
 
-const dbHost = CONFIG.influxdb.host;
-const dbPort = CONFIG.influxdb.port;
+const dbHost = 'influxdb';
+const dbPort = 8086;
 
-const token = process.env.API_TOKEN
+const token = process.env.INFLUXDB_API_TOKEN
+
 const url = "http://" + dbHost + ":" + dbPort;
-const org = "kneatrum"
+const org = process.env.ORG_NAME
 
 const client = new InfluxDB({url, token})
 const deleteAPI = new DeleteAPI(client)
