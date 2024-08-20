@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '../.env' });
+require('dotenv').config({ path: '../.env'});
 
 const {InfluxDB} = require('@influxdata/influxdb-client')
 const { DeleteAPI } = require('@influxdata/influxdb-client-apis');
