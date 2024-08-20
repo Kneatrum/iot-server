@@ -9,10 +9,28 @@ const mqttClient = require('./mqtt/subscriber');
 const CONFIG = require('../config.json');
 const cron = require('node-cron');
 
-const frontEndHost = CONFIG["front-end"].host;
-const frontEndPort = CONFIG["front-end"].port;
-const backEndHost = CONFIG['back-end'].host
-const backEndPort = CONFIG['back-end'].port
+const frontEndHost = 'front-end';
+const frontEndPort = 3001;
+
+
+const backEndHost = 'back-end';
+const backEndPort = 3000;
+
+
+// Check and Setup InfluxDB
+(async () => {
+    let result = process.env.INFLUXDB_API_TOKEN;
+
+    if (!result) {
+        try {
+            await setupInfluxDB(); // Ensure setupInfluxDB completes before proceeding
+        } catch (error) {
+            console.error("Error setting up InfluxDB:", error);
+        }
+    } else {
+        console.log("A user exists");
+    }
+})();
 
 let previous_sleep_value = null;
 
