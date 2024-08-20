@@ -102,23 +102,25 @@ mqttClient.on('message', (topic, message) => {
 
 });
 
-async function stepsInitialisation(){
-    const data = await getSteps(0);
-    if(data.labels.length === 0){
-        writeSteps(0);
-    } else {
-        let today = new Date().getDate();
-        let latestDataPoint = data.labels[data.labels.length - 1];
-        let latestDataPointDate = latestDataPoint.getDate();
-        let difference = today - latestDataPointDate;
-        if(difference > 0){
-            writeSteps(0);
-        }
-        
-    }
-}
 
-stepsInitialisation();
+
+// async function stepsInitialisation(){
+//     const data = await getSteps(0);
+//     if(data.labels.length === 0){
+//         writeSteps(0);
+//     } else {
+//         let today = new Date().getDate();
+//         let latestDataPoint = data.labels[data.labels.length - 1];
+//         let latestDataPointDate = latestDataPoint.getDate();
+//         let difference = today - latestDataPointDate;
+//         if(difference > 0){
+//             writeSteps(0);
+//         }
+        
+//     }
+// }
+
+// stepsInitialisation();
 
 // Schedule the cron job to run at midnight
 cron.schedule('0 0 * * *', async () => {
