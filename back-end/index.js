@@ -6,8 +6,8 @@ const bucket = "fitbit"
 const { getAllData, getTemperature, getSteps } = require('./database/db_read');
 const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
 const mqttClient = require('./mqtt/subscriber');
-const CONFIG = require('../config.json');
 const cron = require('node-cron');
+const { setupInfluxDB } = require('./database/db_init.js');
 
 const frontEndHost = 'front-end';
 const frontEndPort = 3001;
