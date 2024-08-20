@@ -1,0 +1,149 @@
+{
+    "AWSEBDockerrunVersion": "2",
+    "containerDefinitions": [
+      {
+        "name": "nginx",
+        "image": "nginx:latest",
+        "essential": true,
+        "memory": 128,
+        "portMappings": [
+          {
+            "hostPort": 80,
+            "containerPort": 80
+          }
+        ],
+        "volumesFrom": [
+          {
+            "sourceContainer": "nginx-config"
+          }
+        ]
+      },
+      {
+        "name": "front-end",
+        "image": "front-end-image", 
+        "essential": true,
+        "memory": 256,
+        "portMappings": [
+          {
+            "hostPort": 3001,
+            "containerPort": 3001
+          }
+        ]
+      },
+      {
+        "name": "back-end",
+        "image": "back-end-image",
+        "essential": true,
+        "memory": 256,
+        "portMappings": [
+          {
+            "hostPort": 3000,
+            "containerPort": 3000
+          }
+        ],
+        "mountPoints": [
+          {
+            "sourceVolume": "env-file",
+            "containerPath": "/back-end/.env"
+          }
+        ]
+      },
+      {
+        "name": "influxdb",
+        "image": "influxdb-image",
+        "essential": true,
+        "memory": 256,
+        "portMappings": [
+          {
+            "hostPort": 8086,
+            "containerPort": 8086
+          }
+        ],
+        "mountPoints": [
+          {
+            "sourceVolume": "influxdb2-data",
+            "containerPath": "/var/lib/influxdb2"
+          },
+          {
+            "sourceVolume": "influxdb2-config",
+            "containerPath": "/etc/influxdb2"
+          }
+        ]
+      },
+      {
+        "name": "mosquitto",
+        "image": "mosquitto-image",
+        "essential": true,
+        "memory": 128,
+        "portMappings": [
+          {
+            "hostPort": 1883,
+            "containerPort": 1883
+          },
+          {
+            "hostPort": 9001,
+            "containerPort": 9001
+          }
+        ],
+        "mountPoints": [
+          {
+            "sourceVolume": "mosquitto-config",
+            "containerPath": "/mosquitto/config"
+          },
+          {
+            "sourceVolume": "mosquitto-data",
+            "containerPath": "/mosquitto/data"
+          },
+          {
+            "sourceVolume": "mosquitto-log",
+            "containerPath": "/mosquitto/log"
+          }
+        ]
+      }
+    ],
+    "volumes": [
+      {
+        "name": "env-file",
+        "host": {
+          "sourcePath": "./back-end/.env"
+        }
+      },
+      {
+        "name": "influxdb2-data",
+        "host": {
+          "sourcePath": "/path/to/influxdb2-data"
+        }
+      },
+      {
+        "name": "influxdb2-config",
+        "host": {
+          "sourcePath": "/path/to/influxdb2-config"
+        }
+      },
+      {
+        "name": "mosquitto-config",
+        "host": {
+          "sourcePath": "/path/to/mosquitto/config"
+        }
+      },
+      {
+        "name": "mosquitto-data",
+        "host": {
+          "sourcePath": "/path/to/mosquitto/data"
+        }
+      },
+      {
+        "name": "mosquitto-log",
+        "host": {
+          "sourcePath": "/path/to/mosquitto/log"
+        }
+      },
+      {
+        "name": "nginx-config",
+        "host": {
+          "sourcePath": "./nginx.conf"
+        }
+      }
+    ]
+  }
+  
