@@ -99,7 +99,6 @@ function DoughnutChart(){
     const [ doughnutData, setDoughnutData ] = useState(null);
 
     useEffect(() => {
-      // const url = "http://localhost:3000/sleep";
       const url = "http://" + backEndHost + ":" + backEndPort + "/action"
       axios.get(url)
       .then(response => {
