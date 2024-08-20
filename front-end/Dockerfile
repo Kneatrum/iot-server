@@ -8,7 +8,6 @@ RUN npm install
 
 COPY ./public ./public
 COPY ./src ./src
-COPY ./config.json ./config.json
 
 RUN npm run build
 
