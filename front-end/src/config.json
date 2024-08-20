@@ -1,8 +1,0 @@
-{
-    "back-end": {
-        "localhost": "localhost",
-        "servicename": "back-end",
-        "port": "3000"
-    }
-}
-    
