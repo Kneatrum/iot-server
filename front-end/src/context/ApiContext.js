@@ -9,8 +9,10 @@ const today = new Date("2024-08-01");
 let startDate =  new Date(today.setHours(0, 0, 0, 0)).toISOString();
 let numOfSleepQueryDays = 6;
 
-const backEndHost = 'back-end';
-const backEndPort = 3000;
+// const baseURL = null;
+// Dev variables
+// const backEndHost = 'back-end';
+// const backEndPort = 3000;
 
 const heartRateColor = "lightsalmon";
 const oxygenSaturation = "lightskyblue";
@@ -287,17 +289,49 @@ function setStepsData(stepsData){
 export const ApiProvider = (props) => {
     const [data, setData] = useState({sleep: null, idling: null, walking: null, jogging: null, steps: null, biking: null, oxygen: null});
     const [dashboardData, setDashboardData] = useState(dashboard);
+    const [baseURL, setBaseURL] = useState('');
+
+    useEffect(() => {
+        // Fetch the public IP address using an IP service
+        fetch('https://api.ipify.org?format=json')
+          .then(response => response.json())
+          .then(data => {
+            setBaseURL(`http://${data.ip}/api`);
+          })
+          .catch(error => {
+            console.error("Error fetching the public IP:", error);
+          });
+      }, []);
+
     
     useEffect(() => {
+
+        if (!baseURL) return; // Wait until baseURL is set
+        console.log("######################")
+        console.log("######################")
+        console.log(baseURL)
+        console.log("######################")
+        console.log("######################")
+
         const urls = [
-            "http://" + backEndHost + ":" + backEndPort + "/sleep/" + numOfSleepQueryDays,
-            "http://" + backEndHost + ":" + backEndPort + "/idling/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/walking/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/jogging/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/steps/" + numOfstepsQueryDays,
-            "http://" + backEndHost + ":" + backEndPort + "/biking/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/heart/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/oxygen/" + startDate
+            `${baseURL}/sleep/${numOfSleepQueryDays}`,
+            `${baseURL}/idling/${startDate}`,
+            `${baseURL}/walking/${startDate}`,
+            `${baseURL}/jogging/${startDate}`,
+            `${baseURL}/steps/${numOfstepsQueryDays}`,
+            `${baseURL}/biking/${startDate}`,
+            `${baseURL}/heart/${startDate}`,
+            `${baseURL}/oxygen/${startDate}`
+
+            // Dev parameters
+            // "http://" + backEndHost + ":" + backEndPort + "/sleep/" + numOfSleepQueryDays,
+            // "http://" + backEndHost + ":" + backEndPort + "/idling/" + startDate,
+            // "http://" + backEndHost + ":" + backEndPort + "/walking/" + startDate,
+            // "http://" + backEndHost + ":" + backEndPort + "/jogging/" + startDate,
+            // "http://" + backEndHost + ":" + backEndPort + "/steps/" + numOfstepsQueryDays,
+            // "http://" + backEndHost + ":" + backEndPort + "/biking/" + startDate,
+            // "http://" + backEndHost + ":" + backEndPort + "/heart/" + startDate,
+            // "http://" + backEndHost + ":" + backEndPort + "/oxygen/" + startDate
         ];
 
         const fetchData = async () => {
@@ -320,7 +354,7 @@ export const ApiProvider = (props) => {
         };
 
         fetchData();
-    }, []);
+    }, [baseURL]);
 
     useEffect(() => {
         if (data) {
