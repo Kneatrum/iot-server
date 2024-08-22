@@ -3,8 +3,9 @@ import axios from 'axios';
 import { Chart as ChartJS, ArcElement, Legend, Tooltip, plugins } from "chart.js";
 import { useEffect, useState } from 'react';
 
-const backEndHost = 'back-end';
-const backEndPort = 3000;
+const backEndHost = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+
+const url = `${backEndHost}/api/action`
 
 ChartJS.register(
   ArcElement, 
@@ -99,7 +100,6 @@ function DoughnutChart(){
     const [ doughnutData, setDoughnutData ] = useState(null);
 
     useEffect(() => {
-      const url = "http://" + backEndHost + ":" + backEndPort + "/action"
       axios.get(url)
       .then(response => {
         const processedData = getTimeTrackerResults(response.data.data);

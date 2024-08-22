@@ -13,7 +13,7 @@ console.log("File path : " + ENV_FILE_PATH);
 
 
 const adminUsername = process.env.ADMIN_USERNAME;
-const influxHost = 'http://influxdb:8086';
+const influxBaseURL =  process.env.INFLUXDB_HOST || 'http://localhost:8086';
 const adminPassword = process.env.ADMIN_PASSWORD;
 const org = process.env.ORG_NAME;
 const bucket = process.env.BUCKET_NAME;
@@ -27,7 +27,7 @@ async function setupInfluxDB() {
     try {
         // Step 1: Set up the initial admin user, org, and bucket
         
-        const setupResponse = await axios.post(`${influxHost}/api/v2/setup`, {
+        const setupResponse = await axios.post(`${influxBaseURL}/api/v2/setup`, {
             username: adminUsername,
             password: adminPassword,
             org: org,
@@ -41,7 +41,7 @@ async function setupInfluxDB() {
         console.log('Setup Response:', setupResponse.data);
 
         // Step 2: Generate an API token
-        const tokenResponse = await axios.post(`${influxHost}/api/v2/authorizations`, {
+        const tokenResponse = await axios.post(`${influxBaseURL}/api/v2/authorizations`, {
             orgID: setupResponse.data.org.id,
             permissions: [
                 {

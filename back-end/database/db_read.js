@@ -4,11 +4,9 @@ require('dotenv').config({ path: '../.env'});
 const {InfluxDB} = require('@influxdata/influxdb-client')
 const { measurements, devices, tags, fields} = require('../constants');
 
-const dbHost = 'influxdb';
-const dbPort = 8086;
 const token = process.env.INFLUXDB_API_TOKEN;
 
-const url = "http://" + dbHost + ":" + dbPort;
+const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 const org = process.env.ORG_NAME
 const bucket = process.env.BUCKET_NAME
 

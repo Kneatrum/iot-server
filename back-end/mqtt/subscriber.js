@@ -1,7 +1,5 @@
 const mqtt = require('mqtt');
-
-const brokerHost = 'mosquitto';
-const brokerPort = 1883;
+require('dotenv').config({ path: '../.env'});
 
 const {     
     ch_temperature,
@@ -18,7 +16,7 @@ const {
 
 // const { ch_microphone, ch_temperature, ch_action, ch_heart, ch_steps, ch_sleep } = require('./channels');
 
-const mqttUrl = "mqtt://" + brokerHost + ":" + brokerPort;
+const mqttUrl = process.env.MQTT_HOST || 'mqtt://localhost:1883';
 const client = mqtt.connect(mqttUrl);
 
 client.on('connect', () => {

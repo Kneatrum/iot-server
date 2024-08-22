@@ -3,13 +3,11 @@ require('dotenv').config({ path: '../.env' });
 
 const {InfluxDB, Point} = require('@influxdata/influxdb-client')
 
-const dbHost = 'influxdb';
-const dbPort = 8086;
 const org = process.env.ORG_NAME;
 const bucket = process.env.BUCKET_NAME;
 const token = process.env.INFLUXDB_API_TOKEN
 
-const url = "http://" + dbHost + ":" + dbPort;
+const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 const client = new InfluxDB({url, token});
 
 let writeClient = client.getWriteApi(org, bucket, 'ns');

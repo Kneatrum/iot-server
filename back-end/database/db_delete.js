@@ -4,12 +4,10 @@ const {InfluxDB} = require('@influxdata/influxdb-client');
 const { DeleteAPI } = require('@influxdata/influxdb-client-apis');
 
 
-const dbHost = 'influxdb';
-const dbPort = 8086;
 
 const token = process.env.INFLUXDB_API_TOKEN
 
-const url = "http://" + dbHost + ":" + dbPort;
+const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 const org = process.env.ORG_NAME
 
 const client = new InfluxDB({url, token})

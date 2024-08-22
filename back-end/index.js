@@ -9,12 +9,12 @@ const mqttClient = require('./mqtt/subscriber');
 const cron = require('node-cron');
 const { setupInfluxDB } = require('./database/db_init.js');
 
-const frontEndHost = 'front-end';
-const frontEndPort = 3001;
+const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost:3001';
 
 
-const backEndHost = 'back-end';
-const backEndPort = 3000;
+const backEndHost = process.env.BACKEND_HOST || 'http://localhost:3000';
+const bEnd = new URL(backEndHost)
+const backEndPort = bEnd.port;
 
 
 // Check and Setup InfluxDB
@@ -66,7 +66,7 @@ const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: `http://${frontEndHost}:${frontEndPort}` // Allow requests from this origin
+    origin: frontEndHost  // Allow requests from the front-end origin
 }));
 
 mqttClient.on('message', (topic, message) => {
