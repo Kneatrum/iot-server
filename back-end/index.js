@@ -60,14 +60,27 @@ const {
     ch_oxygen_saturation
 } = require('./mqtt/channels');
 
-
+const allowedOrigins = [
+    frontEndHost,
+    HOST_URL,
+  ];
 
 const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: frontEndHost  // Allow requests from the front-end origin
-}));
+    origin: function (origin, callback) {
+      // Allow requests with no origin, like mobile apps or curl requests
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        // If the origin is in the allowedOrigins array, allow the request
+        callback(null, true);
+      } else {
+        // If the origin is not allowed, return an error
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  }));
 
 mqttClient.on('message', (topic, message) => {
     latestMessage = `Received message: ${message.toString()} on topic: ${topic}`;
