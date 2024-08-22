@@ -10,7 +10,7 @@ const cron = require('node-cron');
 const { setupInfluxDB } = require('./database/db_init.js');
 
 const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost:3001';
-
+const HOST_URL =  process.env.HOST_URL || 'localhost'
 
 const backEndHost = process.env.BACKEND_HOST || 'http://localhost:3000';
 const bEnd = new URL(backEndHost)
