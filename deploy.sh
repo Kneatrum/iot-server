@@ -38,7 +38,7 @@ else
     BUCKET_NAME=adminbucket
 
     # Defining the constants for the service names and URLs
-    INFLUXDB_HOST=http://Influxdb:8086
+    INFLUXDB_HOST=http://influxdb:8086
     FRONTEND_HOST=http://front-end:3001
     BACKEND_HOST=http://back-end:3000
     MQTT_HOST=mqtt://mosquitto:1883
