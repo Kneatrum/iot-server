@@ -23,13 +23,13 @@ else
     echo ".env file does not exist in the ./back-end/ directory."
 
     # Get the hostname IP address
-    HOST_URL=$(hostname -I)
+    HOST_URL=$(curl http://checkip.amazonaws.com)
 
     # Navigate to the ./back-end/ directory (ensure this directory exists)
     cd ./back-end/ || { echo "Failed to change directory to ./back-end/"; exit 1; }
 
     # Create the .env file and save the hostname IP address in it
-    echo "HOST_URL=$HOST_URL" | sudo tee .env > /dev/null
+    echo "HOST_URL=http://$HOST_URL" | sudo tee .env > /dev/null
 
     # Defining constants for influxdb initialization
     ADMIN_USERNAME=admin
