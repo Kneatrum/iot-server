@@ -10,7 +10,9 @@ let startDate =  new Date(today.setHours(0, 0, 0, 0)).toISOString();
 let numOfSleepQueryDays = 6;
 
 const baseURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000'; 
-
+console.log("###############")
+console.log(baseURL)
+console.log("###############")
 const heartRateColor = "lightsalmon";
 const oxygenSaturation = "lightskyblue";
 
