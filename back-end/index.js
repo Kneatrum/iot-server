@@ -173,6 +173,6 @@ cron.schedule('0 0 * * *', async () => {
 app.use("/", general_routes);
 
 app.listen(backEndPort, () => {
-    console.log(`Web server listening at http://${backEndHost}:${backEndPort}`);
+    console.log(`Web server listening at ${backEndHost}`);
 });
 
