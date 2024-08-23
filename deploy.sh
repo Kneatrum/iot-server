@@ -58,4 +58,4 @@ else
 fi
 
 # Run the docker containers
-sudo docker-compose up -d || { echo "Failed to start Docker Compose"; exit 1; }
+sudo docker-compose up  || { echo "Failed to start Docker Compose"; exit 1; }
