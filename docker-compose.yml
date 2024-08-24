@@ -35,8 +35,16 @@ services:
     build:
       context: ./back-end
       dockerfile: Dockerfile
-    ports:
-      - 3000:3000
+    env_file:
+      - .env
+    secrets:
+      - influxdb_api_token
+      - influxdb_admin_username
+      - influxdb_admin_password
+    environment:
+      INFLUXDB_API_TOKEN_FILE: /run/secrets/influxdb_api_token
+      ADMIN_USERNAME_FILE: /run/secrets/influxdb_admin_username
+      ADMIN_PASSWORD_FILE: /run/secrets/influxdb_admin_password
     restart: always
     networks:
       - iot-network
@@ -74,7 +82,11 @@ services:
 
 secrets:
   influxdb_api_token:
-    file: api_token.txt
+    external: true
+  influxdb_admin_username:
+    external: true
+  influxdb_admin_password:
+    external: true
 
 networks:
   iot-network:
