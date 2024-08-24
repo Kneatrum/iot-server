@@ -21,8 +21,6 @@ services:
     build:
       context: ./front-end
       dockerfile: Dockerfile
-    ports:
-      - 3001:3001
     restart: always
     networks:
       - iot-network
@@ -48,8 +46,6 @@ services:
     restart: always
     networks:
       - iot-network
-    volumes:
-      - ./back-end/.env:/back-end/.env:rw  # Mount .env file
 
   influxdb:
     container_name: influxdb
