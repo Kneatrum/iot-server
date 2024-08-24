@@ -9,28 +9,43 @@ const mqttClient = require('./mqtt/subscriber');
 const cron = require('node-cron');
 const { setupInfluxDB } = require('./database/db_init.js');
 
-const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost:3001';
-const HOST_URL =  process.env.HOST_URL || 'http://localhost:80'
+const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost';
+const HOST_URL =  process.env.HOST_URL || 'http://localhost'
 
-const backEndHost = process.env.BACKEND_HOST || 'http://localhost:3000';
-const bEnd = new URL(backEndHost)
-const backEndPort = bEnd.port;
+const backEndHost = process.env.BACKEND_HOST || 'http://localhost';
+// const bEnd = new URL(backEndHost)
+// const backEndPort = bEnd.port;
+const backEndPort = 80;
 
+const ADMIN_USERNAME = 'Martin Mwiti';
+const ADMIN_PASSWORD = 'password1234';
+const ORGANISATION = 'Fitness';
+const BUCKET = 'fitnessbucket';
 
-// Check and Setup InfluxDB
-(async () => {
-    let result = process.env.INFLUXDB_API_TOKEN;
+const apiTokenPath = process.env.INFLUXDB_API_TOKEN_FILE;
 
-    if (!result) {
+let apiToken;
+
+if (fs.existsSync(apiTokenPath)) {
+    // Read the existing API token
+    apiToken = fs.readFileSync(apiTokenPath, 'utf8').trim();
+    console.log('API Token found:', apiToken);
+} else {
+    // API token does not exist, so generate a new one
+    console.log('API Token not found, generating a new one...');
+
+    // Check and Setup InfluxDB
+    (async () => {
+        
         try {
-            await setupInfluxDB(); // Ensure setupInfluxDB completes before proceeding
+            await setupInfluxDB(ADMIN_USERNAME, ADMIN_PASSWORD, ORGANISATION, BUCKET); 
         } catch (error) {
             console.error("Error setting up InfluxDB:", error);
         }
-    } else {
-        console.log("A user exists");
-    }
-})();
+        
+    })();
+
+}
 
 let previous_sleep_value = null;
 
