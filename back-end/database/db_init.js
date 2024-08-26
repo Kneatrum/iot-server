@@ -17,7 +17,6 @@ const influxBaseURL =  process.env.INFLUXDB_HOST || 'http://localhost:8086';
 async function setupInfluxDB(adminUsername, adminPassword, org, bucket) {
     try {
         // Step 1: Set up the initial admin user, org, and bucket
-        
         const setupResponse = await axios.post(`${influxBaseURL}/api/v2/setup`, {
             username: adminUsername,
             password: adminPassword,
@@ -28,7 +27,7 @@ async function setupInfluxDB(adminUsername, adminPassword, org, bucket) {
                 everySeconds: 0  // Retention policy (0 means infinite)
             }]
         });
-       
+
         console.log('Setup Response:', setupResponse.data);
 
         // Step 2: Generate an API token
@@ -53,21 +52,43 @@ async function setupInfluxDB(adminUsername, adminPassword, org, bucket) {
 
         const apiToken = tokenResponse.data.token;
         const apiTokenPath = process.env.INFLUXDB_API_TOKEN_FILE;
-        const usernamePath = process.env.ADMIN_USERNAME_FILE
-        const passwordPath = process.env.ADMIN_PASSWORD_FILE
-        
-         // Write the new token to the secret file
-         fs.writeFileSync(apiTokenPath, apiToken);
-         fs.writeFileSync(usernamePath, username);
-         fs.writeFileSync(passwordPath, password);
-         console.log(`API Token written to ${apiTokenPath}`);
+        const usernamePath = process.env.ADMIN_USERNAME_FILE;
+        const passwordPath = process.env.ADMIN_PASSWORD_FILE;
+
+        console.log("#################")
+        console.log(apiToken);
+        console.log(apiTokenPath);
+        console.log(usernamePath);
+        console.log(passwordPath);
+        console.log("##################");
+
+        // Ensure the directory exists before writing the files
+        const tokenDir = path.dirname(apiTokenPath);
+        const usernameDir = path.dirname(usernamePath);
+        const passwordDir = path.dirname(passwordPath);
+
+        if (!fs.existsSync(tokenDir)) {
+            fs.mkdirSync(tokenDir, { recursive: true });
+        }
+        if (!fs.existsSync(usernameDir)) {
+            fs.mkdirSync(usernameDir, { recursive: true });
+        }
+        if (!fs.existsSync(passwordDir)) {
+            fs.mkdirSync(passwordDir, { recursive: true });
+        }
+
+        // Write the new token, username, and password to their respective files
+        fs.writeFileSync(apiTokenPath, apiToken);
+        fs.writeFileSync(usernamePath, adminUsername);
+        fs.writeFileSync(passwordPath, adminPassword);
+
+        console.log(`API Token ${apiToken} written to ${apiTokenPath}`);
+        console.log(`Username ${adminUsername} written to ${usernamePath}`);
+        console.log(`Password ${adminPassword} written to ${passwordPath}`);
 
     } catch (error) {
-        console.error('Error setting up InfluxDB:', error.response ? error.response.data : error.message);
+        console.error('Inside: Error setting up InfluxDB:', error.response ? error.response.data : error.message);
     }
-
-    setupInfluxDB().catch(console.error);
-
 }
 
 

@@ -26,25 +26,22 @@ const apiTokenPath = process.env.INFLUXDB_API_TOKEN_FILE;
 
 let apiToken;
 
+const fs = require('fs');
+const initializeInfluxDB = async () => {
+    try {
+        await setupInfluxDB(ADMIN_USERNAME, ADMIN_PASSWORD, ORGANISATION, BUCKET);
+    } catch (error) {
+        console.error("Error setting up InfluxDB:", error);
+        // Additional fallback behavior can be implemented here
+    }
+};
+
 if (fs.existsSync(apiTokenPath)) {
-    // Read the existing API token
     apiToken = fs.readFileSync(apiTokenPath, 'utf8').trim();
     console.log('API Token found:', apiToken);
 } else {
-    // API token does not exist, so generate a new one
     console.log('API Token not found, generating a new one...');
-
-    // Check and Setup InfluxDB
-    (async () => {
-        
-        try {
-            await setupInfluxDB(ADMIN_USERNAME, ADMIN_PASSWORD, ORGANISATION, BUCKET); 
-        } catch (error) {
-            console.error("Error setting up InfluxDB:", error);
-        }
-        
-    })();
-
+    initializeInfluxDB();
 }
 
 let previous_sleep_value = null;
