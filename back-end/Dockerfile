@@ -18,9 +18,7 @@ COPY ./constants.js ./constants.js
 COPY ./index.js ./index.js
 COPY ./.env ./.env
 
-# Ensure the application runs as a non-root user for security
-RUN adduser -D myuser
-USER myuser
+
 
 # Expose the application port
 EXPOSE 3000
