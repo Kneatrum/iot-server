@@ -306,14 +306,14 @@ export const ApiProvider = (props) => {
 
 
         const urls = [
-            `${baseURL}/api/sleep/${numOfSleepQueryDays}`,
-            `${baseURL}/api/idling/${startDate}`,
-            `${baseURL}/api/walking/${startDate}`,
-            `${baseURL}/api/jogging/${startDate}`,
-            `${baseURL}/api/steps/${numOfstepsQueryDays}`,
-            `${baseURL}/api/biking/${startDate}`,
-            `${baseURL}/api/heart/${startDate}`,
-            `${baseURL}/api/oxygen/${startDate}`
+            `/api/sleep/${numOfSleepQueryDays}`,
+            `/api/idling/${startDate}`,
+            `/api/walking/${startDate}`,
+            `/api/jogging/${startDate}`,
+            `/api/steps/${numOfstepsQueryDays}`,
+            `/api/biking/${startDate}`,
+            `/api/heart/${startDate}`,
+            `/api/oxygen/${startDate}`
         ];
 
         const fetchData = async () => {
