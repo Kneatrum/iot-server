@@ -43,6 +43,10 @@ services:
       INFLUXDB_API_TOKEN_FILE: ./secrets/influxdb_api_token
       ADMIN_USERNAME_FILE: ./secrets/influxdb_admin_username
       ADMIN_PASSWORD_FILE: ./secrets/influxdb_admin_password
+    volumes:
+      - ./secrets/influxdb_api_token:./secrets/influxdb_api_token
+      - ./secrets/influxdb_admin_username:./secrets/influxdb_admin_username
+      - ./secrets/influxdb_admin_password:./secrets/influxdb_admin_password
     restart: always
     networks:
       - iot-network
