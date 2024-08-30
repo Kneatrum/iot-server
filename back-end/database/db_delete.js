@@ -18,7 +18,7 @@ const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
 
 // Function to check if a file exists with a timeout
-function fileExists(filePath, timeout = 60000) {
+function fileExists(filePath, timeout = 5000) {
     return new Promise((resolve, reject) => {
         const start = Date.now();
 

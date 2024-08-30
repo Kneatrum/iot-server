@@ -1,5 +1,5 @@
 require('dotenv').config();
-require('./database/db_init.js');
+const { startApp } = require('./database/db_init.js');
 const cors = require('cors');
 const express = require('express');
 const general_routes = require('./router/general.js').general;
@@ -7,7 +7,7 @@ const general_routes = require('./router/general.js').general;
 // const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
 const mqttClient = require('./mqtt/subscriber');
 // const cron = require('node-cron');
-
+startApp();
 const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost';
 const HOST_URL =  process.env.HOST_URL || 'http://localhost'
 
