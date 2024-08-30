@@ -1,18 +1,75 @@
-
 require('dotenv').config({ path: '../.env'});
 
 const {InfluxDB} = require('@influxdata/influxdb-client')
 const { measurements, devices, tags, fields} = require('../constants');
 
-const token = process.env.INFLUXDB_API_TOKEN;
+const fs = require('fs');
+
+const apiTokenPath = process.env.INFLUXDB_API_TOKEN_FILE;
+const orgNamePath = process.env.INFLUXDB_ORGANISATION;
+const bucketNamePath = process.env.INFLUXDB_BUCKET;
+
+let token = null;
+let org = null;
+let bucket = null;
+let client = null;
+let queryClient = null;
 
 const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
-const org = process.env.ORG_NAME
-const bucket = process.env.BUCKET_NAME
 
-const client = new InfluxDB({url, token})
 
-let queryClient = client.getQueryApi(org)
+// Function to check if a file exists with a timeout
+function fileExists(filePath, timeout = 60000) {
+    return new Promise((resolve, reject) => {
+        const start = Date.now();
+
+        const checkInterval = setInterval(() => {
+            if (fs.existsSync(filePath)) {
+                clearInterval(checkInterval);
+                resolve(true);
+            } else if (Date.now() - start >= timeout) {
+                clearInterval(checkInterval);
+                reject(new Error(`Timeout: File ${filePath} did not appear within ${timeout}ms`));
+            }
+        }, 100); // Check every 100ms
+    });
+}
+
+// Function to wait for the file to exist and then read it
+function waitForFileAndRead(filePath, timeout) {
+    return fileExists(filePath, timeout)
+        .then(() => {
+            return fs.readFileSync(filePath, 'utf8').trim();
+        });
+}
+
+
+waitForFileAndRead(apiTokenPath)
+    .then((apiToken) => {
+        token = apiToken;
+        client = new InfluxDB({url, token})
+    })
+    .catch((error) => {
+        console.error('Error reading API token:', error);
+    });
+
+waitForFileAndRead(orgNamePath)
+    .then((orgName) => {
+        org = orgName;
+        queryClient = client.getQueryApi(org)
+    })
+    .catch((error) => {
+        console.error('Error reading API token:', error);
+    });
+
+waitForFileAndRead(bucketNamePath)
+    .then((bucketName) => {
+        bucket = bucketName;
+    })
+    .catch((error) => {
+        console.error('Error reading API token:', error);
+    });
+
 
 const sleepStates = ['deep', 'light', 'rem', 'awake'];
 

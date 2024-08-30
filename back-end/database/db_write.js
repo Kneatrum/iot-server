@@ -3,14 +3,78 @@ require('dotenv').config({ path: '../.env' });
 
 const {InfluxDB, Point} = require('@influxdata/influxdb-client')
 
-const org = process.env.ORG_NAME;
-const bucket = process.env.BUCKET_NAME;
-const token = process.env.INFLUXDB_API_TOKEN
+const fs = require('fs');
 
+const apiTokenPath = process.env.INFLUXDB_API_TOKEN_FILE;
+const orgNamePath = process.env.INFLUXDB_ORGANISATION;
+const bucketNamePath = process.env.INFLUXDB_BUCKET;
+
+let token = null;
+let org = null;
+let bucket = null;
+let client = null;
+let writeClient = null;
 const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
-const client = new InfluxDB({url, token});
 
-let writeClient = client.getWriteApi(org, bucket, 'ns');
+
+// Function to check if a file exists with a timeout
+function fileExists(filePath, timeout = 60000) {
+    return new Promise((resolve, reject) => {
+        const start = Date.now();
+
+        const checkInterval = setInterval(() => {
+            if (fs.existsSync(filePath)) {
+                clearInterval(checkInterval);
+                resolve(true);
+            } else if (Date.now() - start >= timeout) {
+                clearInterval(checkInterval);
+                reject(new Error(`Timeout: File ${filePath} did not appear within ${timeout}ms`));
+            }
+        }, 100); // Check every 100ms
+    });
+}
+
+// Function to wait for the file to exist and then read it
+function waitForFileAndRead(filePath, timeout) {
+    return fileExists(filePath, timeout)
+        .then(() => {
+            return fs.readFileSync(filePath, 'utf8').trim();
+        });
+}
+
+
+waitForFileAndRead(apiTokenPath)
+    .then((apiToken) => {
+        console.log('############ API Token:', apiToken);
+        token = apiToken;
+        client = new InfluxDB({url, token})
+    })
+    .catch((error) => {
+        console.error('Error reading API token:', error);
+        console.log("!!!!!!!!!!!!!! Can't proceed");
+    });
+
+waitForFileAndRead(orgNamePath)
+    .then((orgName) => {
+        console.log('############ Organisation :', orgName);
+        org = orgName;
+    })
+    .catch((error) => {
+        console.error('Error reading API token:', error);
+        console.log("!!!!!!!!!!!!!! Can't proceed");
+    });
+
+waitForFileAndRead(bucketNamePath)
+    .then((bucketName) => {
+        console.log('############ Bucket :', bucketName);
+        bucket = bucketName;
+        writeClient = client.getWriteApi(org, bucket, 'ns');
+    })
+    .catch((error) => {
+        console.error('Error reading API token:', error);
+        console.log("!!!!!!!!!!!!!! Can't proceed");
+    });
+
 
 const { measurements, devices, tags, fields} = require('../constants');
 

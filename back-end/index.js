@@ -1,48 +1,19 @@
 require('dotenv').config();
+require('./database/db_init.js');
 const cors = require('cors');
 const express = require('express');
 const general_routes = require('./router/general.js').general;
-const bucket = "fitbit"
-const { getAllData, getTemperature, getSteps } = require('./database/db_read');
-const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
+// const { getAllData, getTemperature, getSteps } = require('./database/db_read');
+// const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
 const mqttClient = require('./mqtt/subscriber');
-const cron = require('node-cron');
-const { setupInfluxDB } = require('./database/db_init.js');
+// const cron = require('node-cron');
 
 const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost';
 const HOST_URL =  process.env.HOST_URL || 'http://localhost'
 
 const backEndHost = process.env.BACKEND_HOST || 'http://localhost';
-// const bEnd = new URL(backEndHost)
-// const backEndPort = bEnd.port;
 const backEndPort = 80;
 
-const ADMIN_USERNAME = 'Martin Mwiti';
-const ADMIN_PASSWORD = 'password1234';
-const ORGANISATION = 'Fitness';
-const BUCKET = 'fitnessbucket';
-
-const apiTokenPath = process.env.INFLUXDB_API_TOKEN_FILE;
-
-let apiToken;
-
-const fs = require('fs');
-const initializeInfluxDB = async () => {
-    try {
-        await setupInfluxDB(ADMIN_USERNAME, ADMIN_PASSWORD, ORGANISATION, BUCKET);
-    } catch (error) {
-        console.error("Error setting up InfluxDB:", error);
-        // Additional fallback behavior can be implemented here
-    }
-};
-
-if (fs.existsSync(apiTokenPath)) {
-    apiToken = fs.readFileSync(apiTokenPath, 'utf8').trim();
-    console.log('API Token found:', apiToken);
-} else {
-    console.log('API Token not found, generating a new one...');
-    initializeInfluxDB();
-}
 
 let previous_sleep_value = null;
 
@@ -166,21 +137,21 @@ mqttClient.on('message', (topic, message) => {
 // stepsInitialisation();
 
 // Schedule the cron job to run at midnight
-cron.schedule('0 0 * * *', async () => {
-    console.log('Resetting the number of steps at midnight');
-        const data = await getSteps(0);
-        if(data.labels.length === 0){
-            writeSteps(0);
-        } else {
-            let today = new Date().getDate();
-            let latestDataPoint = data.labels[data.labels.length - 1];
-            let latestDataPointDate = latestDataPoint.getDate();
-            let difference = today - latestDataPointDate;
-            if(difference > 0){
-                writeSteps(0);
-            }
-        }
-  });
+// cron.schedule('0 0 * * *', async () => {
+//     console.log('Resetting the number of steps at midnight');
+//         const data = await getSteps(0);
+//         if(data.labels.length === 0){
+//             writeSteps(0);
+//         } else {
+//             let today = new Date().getDate();
+//             let latestDataPoint = data.labels[data.labels.length - 1];
+//             let latestDataPointDate = latestDataPoint.getDate();
+//             let difference = today - latestDataPointDate;
+//             if(difference > 0){
+//                 writeSteps(0);
+//             }
+//         }
+//   });
 
 app.use("/", general_routes);
 

@@ -3,17 +3,72 @@ require('dotenv').config({ path: '../.env'});
 const {InfluxDB} = require('@influxdata/influxdb-client');
 const { DeleteAPI } = require('@influxdata/influxdb-client-apis');
 
+const fs = require('fs');
 
+const apiTokenPath = process.env.INFLUXDB_API_TOKEN_FILE;
+const orgNamePath = process.env.INFLUXDB_ORGANISATION;
+const bucketNamePath = process.env.INFLUXDB_BUCKET;
 
-const token = process.env.INFLUXDB_API_TOKEN
-
+let token = null;
+let org = null;
+let bucket = null;
+let client = null;
+let deleteAPI = null;
 const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
-const org = process.env.ORG_NAME
-
-const client = new InfluxDB({url, token})
-const deleteAPI = new DeleteAPI(client)
 
 
+// Function to check if a file exists with a timeout
+function fileExists(filePath, timeout = 60000) {
+    return new Promise((resolve, reject) => {
+        const start = Date.now();
+
+        const checkInterval = setInterval(() => {
+            if (fs.existsSync(filePath)) {
+                clearInterval(checkInterval);
+                resolve(true);
+            } else if (Date.now() - start >= timeout) {
+                clearInterval(checkInterval);
+                reject(new Error(`Timeout: File ${filePath} did not appear within ${timeout}ms`));
+            }
+        }, 100); // Check every 100ms
+    });
+}
+
+// Function to wait for the file to exist and then read it
+function waitForFileAndRead(filePath, timeout) {
+    return fileExists(filePath, timeout)
+        .then(() => {
+            return fs.readFileSync(filePath, 'utf8').trim();
+        });
+}
+
+
+
+waitForFileAndRead(apiTokenPath)
+    .then((apiToken) => {
+        token = apiToken;
+        client = new InfluxDB({url, token});
+        deleteAPI = new DeleteAPI(client);
+    })
+    .catch((error) => {
+        console.error('Error reading API token:', error);
+    });
+
+waitForFileAndRead(orgNamePath)
+    .then((orgName) => {
+        org = orgName;
+    })
+    .catch((error) => {
+        console.error('Error reading API token:', error);
+    });
+
+waitForFileAndRead(bucketNamePath)
+    .then((bucketName) => {
+        bucket = bucketName;
+    })
+    .catch((error) => {
+        console.error('Error reading API token:', error);
+    });
 
 
 // Delete all records 
