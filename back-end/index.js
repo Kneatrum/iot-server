@@ -156,6 +156,6 @@ mqttClient.on('message', (topic, message) => {
 app.use("/", general_routes);
 
 app.listen(backEndPort, () => {
-    console.log(`Web server listening at ${backEndHost}`);
+    console.log(`Web server listening at ${backEndPort}`);
 });
 
