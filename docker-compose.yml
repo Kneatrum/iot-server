@@ -27,6 +27,8 @@ services:
     depends_on:
       - influxdb
       - mosquitto
+    ports:
+      - 3000:3000
     container_name: back-end
     build:
       context: ./back-end
@@ -37,6 +39,8 @@ services:
       - influxdb_api_token
       - influxdb_admin_username
       - influxdb_admin_password
+      - influxdb_organisation
+      - influxdb_bucket
     environment:
       INFLUXDB_API_TOKEN_FILE: ./secrets/influxdb_api_token
       ADMIN_USERNAME_FILE: ./secrets/influxdb_admin_username
@@ -83,6 +87,10 @@ secrets:
     file: ./secrets/influxdb_admin_username
   influxdb_admin_password:
     file: ./secrets/influxdb_admin_password
+  influxdb_organisation:
+    file: ./secrets/influxdb_organisation
+  influxdb_bucket:
+    file: ./secrets/influxdb_bucket
 
 networks:
   iot-network:
