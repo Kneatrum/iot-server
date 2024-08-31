@@ -303,7 +303,8 @@ export const ApiProvider = (props) => {
 
     
     useEffect(() => {
-
+        
+        let isMounted = true; // track component mount status
 
         const urls = [
             `/api/sleep/${numOfSleepQueryDays}`,
@@ -331,12 +332,14 @@ export const ApiProvider = (props) => {
                     oxygenSaturation: oxygen
                 });
             } catch (err) {
-                console.error("Error fetching data:", err.message);
+                if (isMounted) {
+                    console.error("Error fetching data:", err.message);
+                }
             }
         };
 
         fetchData();
-    }, []);
+    }, [numOfSleepQueryDays, startDate]);
 
     useEffect(() => {
         if (data) {
