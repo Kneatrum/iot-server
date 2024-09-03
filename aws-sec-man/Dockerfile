@@ -13,7 +13,8 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-COPY index.js ./
+COPY test.js ./
+COPY aws_secrets.js ./
 
 # Start an interactive shell
 CMD ["sh"]
