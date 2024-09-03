@@ -23,11 +23,33 @@ class InfluxClient {
         }
     }
 
-    getClient() {
-        if (!this.client || !this.queryClient || !this.getWriteApi || !this.deleteAPI) {
-            throw new Error('InfluxDB client is not initialized.');
-        }
-        return { client: this.client, deleteAPI: this.deleteAPI, queryClient: this.queryClient, org: this.org, bucket: this.bucket, token: this.token };
+    // Method to ensure the client is fully initialized before proceeding
+    async ensureInitialized() {
+        return new Promise((resolve, reject) => {
+            const checkInitialization = () => {
+                if (this.client && this.queryClient && this.writeClient && this.deleteAPI) {
+                    resolve();
+                } else {
+                    reject(new Error('InfluxDB client is not fully initialized.'));
+                }
+            };
+
+            // Immediately check if already initialized
+            checkInitialization();
+        });
+    }
+
+    async getClient() {
+        await this.ensureInitialized(); // Wait for the client to be initialized
+        return {
+            client: this.client,
+            deleteAPI: this.deleteAPI,
+            queryClient: this.queryClient,
+            writeClient: this.writeClient,
+            org: this.org,
+            bucket: this.bucket,
+            token: this.token,
+        };
     }
 }
 
