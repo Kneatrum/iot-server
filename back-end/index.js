@@ -1,5 +1,7 @@
 require('dotenv').config();
-const { startApp } = require('./database/db_init.js');
+const { getSecret } = require('./secrets/aws_secrets.js')
+const { setupInfluxDB } = require('./database/db_init.js');
+const influxClient = require('./database/influxdbClient.js');
 const cors = require('cors');
 const express = require('express');
 const general_routes = require('./router/general.js').general;
@@ -7,7 +9,39 @@ const general_routes = require('./router/general.js').general;
 // const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
 const mqttClient = require('./mqtt/subscriber');
 // const cron = require('node-cron');
-startApp();
+
+const USERNAME = "Martin";
+const PASSWORD = "password1234";
+const ORG = "fitnessOrg";
+const BUCKET = "fitBucket";
+
+const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
+
+
+try {
+    const result = getSecret();
+
+    if(result != null){
+        influxClient.initialize(
+            url, 
+            result.SecretString.apiKey, 
+            result.SecretString.organisation, 
+            result.SecretString.bucket
+        );
+    } else {
+
+        try {
+            await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+        } catch{
+            console.error("Failed to set up database")
+        }
+    }
+
+} catch {
+    console.error("Error occured while retrieving scredentials")
+}
+
+
 const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost';
 const HOST_URL =  process.env.HOST_URL || 'http://localhost'
 

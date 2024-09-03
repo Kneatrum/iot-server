@@ -1,89 +1,10 @@
 
 require('dotenv').config({ path: '../.env' });
-
-const {InfluxDB, Point} = require('@influxdata/influxdb-client')
-
-const fs = require('fs');
-
-const apiTokenPath = process.env.INFLUXDB_API_TOKEN_FILE;
-const orgNamePath = process.env.INFLUXDB_ORGANISATION;
-const bucketNamePath = process.env.INFLUXDB_BUCKET;
-
-let token = null;
-let org = null;
-let bucket = null;
-let client = null;
-let writeClient = null;
-const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
-
-
-// Function to check if a file exists with a timeout
-function fileExists(filePath, timeout = 5000) {
-    return new Promise((resolve, reject) => {
-        const start = Date.now();
-
-        const checkInterval = setInterval(() => {
-            if (fs.existsSync(filePath)) {
-                clearInterval(checkInterval);
-                resolve(true);
-            } else if (Date.now() - start >= timeout) {
-                clearInterval(checkInterval);
-                reject(new Error(`Timeout: File ${filePath} did not appear within ${timeout}ms`));
-            }
-        }, 100); // Check every 100ms
-    });
-}
-
-// Function to wait for the file to exist and then read it
-function waitForFileAndRead(filePath, timeout) {
-    return fileExists(filePath, timeout)
-        .then(() => {
-            return fs.readFileSync(filePath, 'utf8').trim();
-        });
-}
-
-
-waitForFileAndRead(apiTokenPath)
-    .then((apiToken) => {
-        console.log('############ API Token:', apiToken);
-        token = apiToken;
-        client = new InfluxDB({url, token})
-    })
-    .catch((error) => {
-        console.error('Error reading API token:', error);
-        console.log("!!!!!!!!!!!!!! Can't proceed");
-    });
-
-waitForFileAndRead(orgNamePath)
-    .then((orgName) => {
-        console.log('############ Organisation :', orgName);
-        org = orgName;
-    })
-    .catch((error) => {
-        console.error('Error reading API token:', error);
-        console.log("!!!!!!!!!!!!!! Can't proceed");
-    });
-
-waitForFileAndRead(bucketNamePath)
-    .then((bucketName) => {
-        console.log('############ Bucket :', bucketName);
-        console.log('############ Org :', org);
-        bucket = bucketName;
-        if(org != null){
-          writeClient = client.getWriteApi(org, bucket, 'ns');
-        } else {
-          console.log("Org has not been set !!!!!!!!!!!!!!!")
-        }
-    })
-    .catch((error) => {
-        console.error('Error reading API token:', error);
-        console.log("!!!!!!!!!!!!!! Can't proceed");
-    });
+const { writeClient } = influxClient.getClient();
+const { Point } = require('@influxdata/influxdb-client')
 
 
 const { measurements, devices, tags, fields} = require('../constants');
-
-
 
 
 // // Write action.

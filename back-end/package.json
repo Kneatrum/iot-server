@@ -9,6 +9,8 @@
   "author": "Martin Mwiti",
   "license": "MIT",
   "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.637.0",
+    "@aws-sdk/credential-providers": "^3.637.0",
     "@influxdata/influxdb-client": "^1.33.2",
     "@influxdata/influxdb-client-apis": "^1.33.2",
     "axios": "^1.7.4",
