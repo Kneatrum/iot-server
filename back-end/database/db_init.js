@@ -37,13 +37,11 @@ const setupInfluxDB = async (adminUsername, adminPassword, org, bucket) => {
             headers: { 'Authorization': `Token ${setupResponse.data.auth.token}` }
         });
 
-        const apiToken = tokenResponse.data.token;
+        return {success: true, data: tokenResponse.data.token};
         
-
-        createSecret(adminUsername, adminPassword, apiToken, bucket, org);
-
     } catch (error) {
         console.error('Error setting up InfluxDB:', error.response ? error.response.data : error.message);
+        return { success: false, error: error }
     }
 };
 
