@@ -20,6 +20,7 @@ class InfluxClient {
             this.deleteAPI = new DeleteAPI(this.client);
             this.queryClient = this.client.getQueryApi(org);
             this.writeClient = this.client.getWriteApi(org, bucket, 'ns');
+            console.log("######Done initializing")
         }
     }
 
