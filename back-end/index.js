@@ -20,30 +20,32 @@ const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
 try {
     const result = getSecret();
-    console.log("Result :", result)
-    // if(result.success){
-    //     console.log("Success Result :", result.data)
-    //     influxClient.initialize(
-    //         url, 
-    //         result.SecretString.apiKey, 
-    //         result.SecretString.organisation, 
-    //         result.SecretString.bucket
-    //     );
-    // } else {
-    //     console.log("Failure Error ", result.error);
-    //     try {
-    //         console.log("Setting up db");
-    //         setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
-    //         influxClient.initialize(
-    //             url, 
-    //             result.SecretString.apiKey, 
-    //             result.SecretString.organisation, 
-    //             result.SecretString.bucket
-    //         );
-    //     } catch{
-    //         console.error("Failed to set up database")
-    //     }
-    // }
+
+    if(result.success){
+        console.log("Success Result :", result.data)
+        // influxClient.initialize(
+        //     url, 
+        //     result.SecretString.apiKey, 
+        //     result.SecretString.organisation, 
+        //     result.SecretString.bucket
+        // );
+    } else {
+        console.log("Failure Error ", result.error);
+        // try {
+        //     console.log("Setting up db");
+        //     setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+        //     const result = getSecret();
+
+        //     influxClient.initialize(
+        //         url, 
+        //         result.SecretString.apiKey, 
+        //         result.SecretString.organisation, 
+        //         result.SecretString.bucket
+        //     );
+        // } catch{
+        //     console.error("Failed to set up database")
+        // }
+    }
 
 } catch {
     console.error("Error occured while retrieving scredentials")
