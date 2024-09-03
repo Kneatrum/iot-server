@@ -46,7 +46,6 @@ async function createSecret(userName, password, apiKey, bucket, organisation) {
 
 async function getSecret() {
 
-    let response = null;
   const secret = { 
     SecretId: SECRETS
   };
@@ -54,15 +53,11 @@ async function getSecret() {
   const command = new GetSecretValueCommand(secret);
 
   try {
-    response = await client.send(command);
-    return response;
+    const response = await client.send(command);
+    return { success: true, data: response }
   } catch (error) {
-    if (error.__type === 'ResourceNotFoundException') {
-        console.error("Secret not found:", error);
-    } else {
-        console.error("Error retrieving secret:", error);
-    }
-    return response;
+    console.log("Error: ", error)
+    return { success: false,  error: error }
   }
   
 }
