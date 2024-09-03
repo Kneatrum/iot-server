@@ -39,7 +39,7 @@ async function useSecret() {
             influxClient.initialize(url, response.data, ORG, BUCKET);
             console.log("Wohoo");
         } else {
-            console.log("Unable to get the API token :", apiToken.error);
+            console.log("Unable to get the API token :");
         }
     }
   }
