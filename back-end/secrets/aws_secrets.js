@@ -6,7 +6,7 @@ const { fromInstanceMetadata } = require("@aws-sdk/credential-providers");
 
 const AWS_REGION = process.env.AWS_REGION;
 const SECRETS = process.env.SECRETS;
-const META_TIMEOUT = process.env.META_TIMEOUT;
+const META_TIMEOUT = parseInt(process.env.META_TIMEOUT, 10) || 1000;
 const META_RETRIES = process.env.META_RETRIES;
 
 
