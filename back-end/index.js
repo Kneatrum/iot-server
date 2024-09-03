@@ -23,12 +23,12 @@ async function useSecret() {
     
     if (result.success) {
         console.log("#################\nSecret retrieved successfully:", result.data);
-        // influxClient.initialize(
-        //     url, 
-        //     result.data.apiKey, 
-        //     result.data.organisation, 
-        //     result.data.bucket
-        // );
+        influxClient.initialize(
+            url, 
+            result.data.apiKey, 
+            result.data.organisation, 
+            result.data.bucket
+        );
     } else {
         console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:", result.error);
         console.log("Setting up db");
