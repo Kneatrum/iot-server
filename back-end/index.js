@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { getSecret } = require('./secrets/aws_secrets.js')
+const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
 const { setupInfluxDB } = require('./database/db_init.js');
 const influxClient = require('./database/influxdbClient.js');
 const cors = require('cors');
