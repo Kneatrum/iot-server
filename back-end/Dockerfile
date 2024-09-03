@@ -17,6 +17,7 @@ COPY ./router ./router
 COPY ./constants.js ./constants.js
 COPY ./index.js ./index.js
 COPY ./.env ./.env
+COPY ./secrets ./secrets
 
 
 
