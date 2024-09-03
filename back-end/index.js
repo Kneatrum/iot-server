@@ -30,13 +30,13 @@ async function useSecret() {
             result.data.bucket
         );
     } else {
-        console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:", result.error);
+        console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
         console.log("Setting up db");
-        let result = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
-        if(result.success){
-            console.log("Api token :", result);
-            createSecret(USERNAME, PASSWORD, result.data, BUCKET, ORG);
-            influxClient.initialize(url, result.data, ORG, BUCKET);
+        let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+        if(response.success){
+            console.log("Api token :", response);
+            createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
+            influxClient.initialize(url, response.data, ORG, BUCKET);
             console.log("Wohoo");
         } else {
             console.log("Unable to get the API token :", apiToken.error);
