@@ -31,7 +31,7 @@ try {
     } else {
 
         try {
-            await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+             setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
         } catch{
             console.error("Failed to set up database")
         }
