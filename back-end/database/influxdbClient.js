@@ -6,6 +6,7 @@ class InfluxClient {
         this.client = null;
         this.queryClient = null;
         this.writeClient = null;
+        this.deleteAPI = null;
         this.org = null;
         this.bucket = null;
         this.token = null;
@@ -16,7 +17,7 @@ class InfluxClient {
             this.token = token;
             this.org = org;
             this.client = new InfluxDB({ url, token });
-            this.deleteAPI = new DeleteAPI(client);
+            this.deleteAPI = new DeleteAPI(this.client);
             this.queryClient = this.client.getQueryApi(org);
             this.writeClient = this.client.getWriteApi(org, bucket, 'ns');
         }
