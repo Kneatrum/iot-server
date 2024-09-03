@@ -23,17 +23,23 @@ try {
 
     if(result.success){
         console.log("Success Result :", result.data)
-        // influxClient.initialize(
-        //     url, 
-        //     result.SecretString.apiKey, 
-        //     result.SecretString.organisation, 
-        //     result.SecretString.bucket
-        // );
+        influxClient.initialize(
+            url, 
+            result.SecretString.apiKey, 
+            result.SecretString.organisation, 
+            result.SecretString.bucket
+        );
     } else {
         console.log("Failure Error ", result.error);
         try {
             console.log("Setting up db");
-            //  setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+            setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+            influxClient.initialize(
+                url, 
+                result.SecretString.apiKey, 
+                result.SecretString.organisation, 
+                result.SecretString.bucket
+            );
         } catch{
             console.error("Failed to set up database")
         }
