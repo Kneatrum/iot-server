@@ -35,18 +35,6 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./back-end/.env
-    secrets:
-      - influxdb_api_token
-      - influxdb_admin_username
-      - influxdb_admin_password
-      - influxdb_organisation
-      - influxdb_bucket
-    environment:
-      INFLUXDB_API_TOKEN_FILE: ./secrets/influxdb_api_token
-      ADMIN_USERNAME_FILE: ./secrets/influxdb_admin_username
-      ADMIN_PASSWORD_FILE: ./secrets/influxdb_admin_password
-      INFLUXDB_ORGANISATION: ./secrets/influxdb_organisation
-      INFLUXDB_BUCKET: ./secrets/influxdb_bucket
     restart: always
     networks:
       - iot-network
@@ -80,17 +68,7 @@ services:
     networks:
       - iot-network
 
-secrets:
-  influxdb_api_token:
-    file: ./secrets/influxdb_api_token
-  influxdb_admin_username:
-    file: ./secrets/influxdb_admin_username
-  influxdb_admin_password:
-    file: ./secrets/influxdb_admin_password
-  influxdb_organisation:
-    file: ./secrets/influxdb_organisation
-  influxdb_bucket:
-    file: ./secrets/influxdb_bucket
+
 
 networks:
   iot-network:
