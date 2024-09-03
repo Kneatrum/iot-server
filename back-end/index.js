@@ -18,38 +18,27 @@ const BUCKET = "fitBucket";
 const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
 
-try {
-    const result = getSecret();
-
-    if(result.success){
-        console.log("Success Result :", result.data)
+async function useSecret() {
+    const result = await getSecret();
+    
+    if (result.success) {
+        console.log("#################\nSecret retrieved successfully:", result.data);
         // influxClient.initialize(
         //     url, 
-        //     result.SecretString.apiKey, 
-        //     result.SecretString.organisation, 
-        //     result.SecretString.bucket
+        //     result.data.apiKey, 
+        //     result.data.organisation, 
+        //     result.data.bucket
         // );
     } else {
-        console.log("Failure Error ", result.error);
-        // try {
-        //     console.log("Setting up db");
-        //     setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
-        //     const result = getSecret();
-
-        //     influxClient.initialize(
-        //         url, 
-        //         result.SecretString.apiKey, 
-        //         result.SecretString.organisation, 
-        //         result.SecretString.bucket
-        //     );
-        // } catch{
-        //     console.error("Failed to set up database")
-        // }
+        console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:", result.error);
+        console.log("Setting up db");
+        // setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+        // useSecret();
     }
+  }
 
-} catch {
-    console.error("Error occured while retrieving scredentials")
-}
+
+useSecret();
 
 
 const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost';
