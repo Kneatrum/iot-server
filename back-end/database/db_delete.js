@@ -3,7 +3,7 @@ const influxClient = require('./influxdbClient');
 const { deleteAPI } = influxClient.getClient();
 
 
-
+console.log("$$$$deleteAPI:", deleteAPI);
 
 // Delete all records 
 async function deleteAllMeasurementData(bucket, measurement, tag) {

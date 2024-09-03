@@ -4,6 +4,8 @@ const influxClient = require('./influxdbClient');
 const { writeClient } = influxClient.getClient();
 const { Point } = require('@influxdata/influxdb-client')
 
+console.log("$$$$writeClient:", writeClient);
+
 
 const { measurements, devices, tags, fields} = require('../constants');
 
