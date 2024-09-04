@@ -5,7 +5,7 @@ useSecret();
 require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
-const mqttClient = require('./mqtt/subscriber');
+// const mqttClient = require('./mqtt/subscriber');
 const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
 const general_routes = require('./router/general.js').general;
 
@@ -61,18 +61,18 @@ const backEndPort = 3000;
 
 let previous_sleep_value = null;
 
-const { 
-    writeTemperature, 
-    writeHeartRate, 
-    writeSound, 
-    writeSleepData,
-    writeWalkingDuration,
-    writeJoggingDuration,
-    writeSteps,
-    writeBikingData,
-    writeIdlingDuration,
-    writeOxygenSaturation
-} = require('./database/db_write');
+// const { 
+//     writeTemperature, 
+//     writeHeartRate, 
+//     writeSound, 
+//     writeSleepData,
+//     writeWalkingDuration,
+//     writeJoggingDuration,
+//     writeSteps,
+//     writeBikingData,
+//     writeIdlingDuration,
+//     writeOxygenSaturation
+// } = require('./database/db_write');
 
 const {     
     ch_temperature,
