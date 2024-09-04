@@ -35,6 +35,7 @@ async function useSecret() {
     const result = await getSecret();
     
     if (result.success) {
+        console.log(result.data)
         initializeReadClient(url,result.data)
         initializeWriteClient(url,result.data)
         initializeDeleteClient(url,result.data)
