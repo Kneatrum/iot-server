@@ -8,11 +8,11 @@ const { measurements, devices, tags, fields} = require('../constants');
 let writeClient = null;
 
 
-function initializeWriteClient(arg_url, arg_token, arg_organisation, arg_bucket) {
+function initializeWriteClient(arg_url, input_string) {
   url = arg_url;
-  token = arg_token;
-  org = arg_organisation;
-  bucket = arg_bucket;
+  token = input_string.apiToken;
+  org = input_string.organisation;
+  bucket = input_string.bucket;
   let client = new InfluxDB({ url, token });
   writeClient = client.getWriteApi(org, bucket, 'ns');
 }
