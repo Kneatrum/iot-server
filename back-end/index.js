@@ -74,18 +74,18 @@ let previous_sleep_value = null;
 //     writeOxygenSaturation
 // } = require('./database/db_write');
 
-const {     
-    ch_temperature,
-    ch_sound,
-    ch_heart,
-    ch_sleep,
-    ch_walking,
-    ch_jogging,
-    ch_biking,
-    ch_idle, 
-    ch_steps,
-    ch_oxygen_saturation
-} = require('./mqtt/channels');
+// const {     
+//     ch_temperature,
+//     ch_sound,
+//     ch_heart,
+//     ch_sleep,
+//     ch_walking,
+//     ch_jogging,
+//     ch_biking,
+//     ch_idle, 
+//     ch_steps,
+//     ch_oxygen_saturation
+// } = require('./mqtt/channels');
 
 const allowedOrigins = [
     frontEndHost,
@@ -109,56 +109,56 @@ app.use(cors({
     }
   }));
 
-mqttClient.on('message', (topic, message) => {
-    latestMessage = `Received message: ${message.toString()} on topic: ${topic}`;
+// mqttClient.on('message', (topic, message) => {
+//     latestMessage = `Received message: ${message.toString()} on topic: ${topic}`;
 
-    if (topic === ch_temperature){
-        writeTemperature(message);
-        console.log(`Temperature: ${message}.`)
-    } else if (topic === ch_sound){
-        writeSound(message)
-        console.log(`Sound Type: ${message}.`)
-    } else if (topic === ch_heart){
-        writeHeartRate(message);
-        console.log(`Heart rate: ${message} beats per minute.`)
-    } else if (topic === ch_sleep){
-        if (previous_sleep_value !== null){
-            writeSleepData(previous_sleep_value);
-        }
-        writeSleepData(message);
-        previous_sleep_value = message;
-        console.log(`Sleep level: ${message}.`)
-    } else if (topic === ch_walking){
-        writeWalkingDuration(message);
-        console.log(`Walking for ${message} minutes.`)
-    } else if (topic === ch_jogging){
-        writeJoggingDuration(message);
-        console.log(`Jogging for ${message} minutes.`)
-    } else if (topic === ch_steps){
-        writeSteps(message);
-        console.log(`${message} steps so far`);
-    } else if (topic === ch_biking){
-        writeBikingData(message);
-        console.log(`Biking data: ${message}.`)
-    } else if (topic === ch_idle){
-        writeIdlingDuration(message);
-        console.log(`Idling data: ${message}.`)
-    } else if( topic === ch_oxygen_saturation ){
-        writeOxygenSaturation(message);
-        console.log(`Oxygen saturation: ${message}`);
-    }
+//     if (topic === ch_temperature){
+//         writeTemperature(message);
+//         console.log(`Temperature: ${message}.`)
+//     } else if (topic === ch_sound){
+//         writeSound(message)
+//         console.log(`Sound Type: ${message}.`)
+//     } else if (topic === ch_heart){
+//         writeHeartRate(message);
+//         console.log(`Heart rate: ${message} beats per minute.`)
+//     } else if (topic === ch_sleep){
+//         if (previous_sleep_value !== null){
+//             writeSleepData(previous_sleep_value);
+//         }
+//         writeSleepData(message);
+//         previous_sleep_value = message;
+//         console.log(`Sleep level: ${message}.`)
+//     } else if (topic === ch_walking){
+//         writeWalkingDuration(message);
+//         console.log(`Walking for ${message} minutes.`)
+//     } else if (topic === ch_jogging){
+//         writeJoggingDuration(message);
+//         console.log(`Jogging for ${message} minutes.`)
+//     } else if (topic === ch_steps){
+//         writeSteps(message);
+//         console.log(`${message} steps so far`);
+//     } else if (topic === ch_biking){
+//         writeBikingData(message);
+//         console.log(`Biking data: ${message}.`)
+//     } else if (topic === ch_idle){
+//         writeIdlingDuration(message);
+//         console.log(`Idling data: ${message}.`)
+//     } else if( topic === ch_oxygen_saturation ){
+//         writeOxygenSaturation(message);
+//         console.log(`Oxygen saturation: ${message}`);
+//     }
 
-    // deleteMeasurement(bucket, 'sleep');
-    // deleteMeasurement(bucket, 'idling');
-    // deleteMeasurement(bucket, 'walking');
-    // deleteMeasurement(bucket, 'jogging');
-    // deleteMeasurement(bucket, 'biking');
-    // deleteMeasurement(bucket, 'heart');
-    // deleteMeasurement(bucket, 'steps');
-    // deleteMeasurement(bucket, 'temperature');
-    // deleteMeasurement(bucket, 'oxygen');
+//     // deleteMeasurement(bucket, 'sleep');
+//     // deleteMeasurement(bucket, 'idling');
+//     // deleteMeasurement(bucket, 'walking');
+//     // deleteMeasurement(bucket, 'jogging');
+//     // deleteMeasurement(bucket, 'biking');
+//     // deleteMeasurement(bucket, 'heart');
+//     // deleteMeasurement(bucket, 'steps');
+//     // deleteMeasurement(bucket, 'temperature');
+//     // deleteMeasurement(bucket, 'oxygen');
 
-});
+// });
 
 
 
