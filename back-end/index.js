@@ -1,13 +1,17 @@
-require('dotenv').config();
-const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
-const { setupInfluxDB } = require('./database/db_init.js');
 const influxClient = require('./database/influxdbClient.js');
+useSecret();
+
+
+require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
+const mqttClient = require('./mqtt/subscriber');
+const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
 const general_routes = require('./router/general.js').general;
+
+const { setupInfluxDB } = require('./database/db_init.js');
 // const { getAllData, getTemperature, getSteps } = require('./database/db_read');
 // const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
-const mqttClient = require('./mqtt/subscriber');
 // const cron = require('node-cron');
 
 const USERNAME = "Martin";
@@ -45,7 +49,6 @@ async function useSecret() {
   }
 
 
-useSecret();
 
 
 
