@@ -25,26 +25,25 @@ class InfluxClient {
     }
 
     async ensureInitialized(timeout = 60000, interval = 100) {
-        const startTime = Date.now();
+        return new Promise((resolve, reject) => {
+            const startTime = Date.now();
 
-        const checkInitialization = () => {
-            if (this.isFullyInitialized()) {
-                return true;
-            }
-            if (Date.now() - startTime >= timeout) {
-                throw new Error('Timeout: InfluxDB client is not fully initialized.');
-            }
-            return false;
-        };
+            const checkInitialization = () => {
+                if (this.client && this.queryClient && this.writeClient && this.deleteAPI) {
+                    console.log("Yaaaaaaaaaay InfluxDB client is now fully initialized'")
+                    resolve(); // Resolve if all components are initialized
+                } else if (Date.now() - startTime >= timeout) {
+                    reject(new Error('Timeout: InfluxDB client is not fully initialized.')); // Reject if the timeout is reached
+                } else {
+                    setTimeout(checkInitialization, interval); // Continue checking after the specified interval
+                }
+            };
 
-        while (!checkInitialization()) {
-            await new Promise(resolve => setTimeout(resolve, interval));
-        }
+            // Start checking initialization immediately
+            checkInitialization();
+        });
     }
 
-    isFullyInitialized() {
-        return !!(this.client && this.queryClient && this.writeClient && this.deleteAPI);
-    }
 
     async getClient() {
         await this.ensureInitialized(); // Wait for the client to be initialized
