@@ -1,6 +1,5 @@
 const path = require('path');  // Import the path module
 const ENV_FILE_PATH = path.resolve(__dirname, '../.env');
-const { createSecret } = require('../secrets/aws_secrets.js');
 
 const dotenv = require('dotenv');
 dotenv.config({ path: ENV_FILE_PATH});
