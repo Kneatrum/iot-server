@@ -16,6 +16,7 @@ initializeInfluxClient().catch(error => {
 async function initializeInfluxClient() {
     try {
         // Ensure the client is initialized and destructure the necessary properties
+        console.trace("##############################");
         const clientData = await influxClient.getClient();
         bucket = clientData.bucket;
         queryClient = clientData.queryClient;
