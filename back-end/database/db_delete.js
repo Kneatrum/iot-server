@@ -1,5 +1,5 @@
 require('dotenv').config({ path: '../.env'});
-const influxClient = require('./influxdbClient');
+const influxClient = require('../index');
 
 let bucket;
 let deleteAPI;

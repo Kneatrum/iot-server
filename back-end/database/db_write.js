@@ -1,6 +1,6 @@
 
 require('dotenv').config({ path: '../.env' });
-const influxClient = require('./influxdbClient');
+const influxClient = require('../index');
 const { Point } = require('@influxdata/influxdb-client')
 
 
