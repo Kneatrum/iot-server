@@ -35,10 +35,11 @@ async function useSecret() {
     const result = await getSecret();
     
     if (result.success) {
-        console.log("#################\nSecret retrieved successfully:", result.data);
-        let token = result.data.apiKey;
-        let org = result.data.organisation;
-        let bucket = result.data.bucket
+        let obj = result.data;
+        console.log("#################\nSecret retrieved successfully:");
+        let token = obj.apiKey;
+        let org = obj.organisation;
+        let bucket = obj.bucket
         // console.log("Debug result.data:", result.data);
         console.log("apiKey:", token);
         console.log("organisation:", org);
