@@ -19,17 +19,33 @@ initializeInfluxClient().catch(error => {
 
 
 async function initializeInfluxClient() {
-    try {
-        // Ensure the client is initialized and destructure the necessary properties
-        const clientData = await influxClient.getClient();
-        
-        writeClient = clientData.writeClient;
+  const retryInterval = 1000; // Interval between retries (in ms)
+  const maxRetryDuration = 60000; // Maximum duration to keep retrying (in ms) - 1 minute in this case
 
-        console.log('InfluxDB client initialized successfully.');
+  const startTime = Date.now();
+
+  while (Date.now() - startTime < maxRetryDuration) {
+    try {
+      // Try to initialize the client
+      const clientData = await influxClient.getClient();
+      bucket = clientData.bucket;
+      deleteAPI = clientData.deleteAPI;
+
+      console.log('InfluxDB client initialized successfully.');
+      return; // Exit the loop if successful
     } catch (error) {
-        console.error('Failed to initialize InfluxDB client:', error);
-        throw error; 
+      console.error('Failed to initialize InfluxDB client. Retrying...', error);
+      await delay(retryInterval); // Wait before retrying
     }
+  }
+
+  console.error(`Failed to initialize InfluxDB client after ${maxRetryDuration / 1000} seconds.`);
+  throw new Error('Failed to initialize InfluxDB client within the allowed time frame.');
+}
+
+// Helper function to add delay between retries
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 
