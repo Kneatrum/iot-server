@@ -53,7 +53,7 @@ const general_routes = require('./router/general.js').general;
 
 
 const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost';
-// const HOST_URL =  process.env.HOST_URL || 'http://localhost'
+const HOST_URL =  process.env.HOST_URL || 'http://localhost'
 
 // const backEndHost = process.env.BACKEND_HOST || 'http://localhost';
 const backEndPort = 3000;
