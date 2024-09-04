@@ -3,11 +3,11 @@
 
 
 // require('dotenv').config();
-// const cors = require('cors');
+const cors = require('cors');
 // const express = require('express');
 // const mqttClient = require('./mqtt/subscriber');
 // const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
-// const general_routes = require('./router/general.js').general;
+const general_routes = require('./router/general.js').general;
 
 // const { setupInfluxDB } = require('./database/db_init.js');
 // const { getAllData, getTemperature, getSteps } = require('./database/db_read');
@@ -56,7 +56,7 @@
 // const HOST_URL =  process.env.HOST_URL || 'http://localhost'
 
 // const backEndHost = process.env.BACKEND_HOST || 'http://localhost';
-// const backEndPort = 3000;
+const backEndPort = 3000;
 
 
 // let previous_sleep_value = null;
@@ -87,27 +87,27 @@
 //     ch_oxygen_saturation
 // } = require('./mqtt/channels');
 
-// const allowedOrigins = [
-//     frontEndHost,
-//     HOST_URL,
-//   ];
+const allowedOrigins = [
+    frontEndHost,
+    HOST_URL,
+  ];
 
-// const app = express();
+const app = express();
 
-// app.use(express.json());
-// app.use(cors({
-//     origin: function (origin, callback) {
-//       // Allow requests with no origin, like mobile apps or curl requests
-//       if (!origin) return callback(null, true);
-//       if (allowedOrigins.indexOf(origin) !== -1) {
-//         // If the origin is in the allowedOrigins array, allow the request
-//         callback(null, true);
-//       } else {
-//         // If the origin is not allowed, return an error
-//         callback(new Error('Not allowed by CORS'));
-//       }
-//     }
-//   }));
+app.use(express.json());
+app.use(cors({
+    origin: function (origin, callback) {
+      // Allow requests with no origin, like mobile apps or curl requests
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        // If the origin is in the allowedOrigins array, allow the request
+        callback(null, true);
+      } else {
+        // If the origin is not allowed, return an error
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  }));
 
 // mqttClient.on('message', (topic, message) => {
 //     latestMessage = `Received message: ${message.toString()} on topic: ${topic}`;
@@ -197,9 +197,9 @@
 //         }
 //   });
 
-// app.use("/", general_routes);
+app.use("/", general_routes);
 
-// app.listen(backEndPort, () => {
-//     console.log(`Web server listening at ${backEndPort}`);
-// });
-console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@")
+app.listen(backEndPort, () => {
+    console.log(`Web server listening at ${backEndPort}`);
+});
+
