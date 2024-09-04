@@ -1,13 +1,36 @@
 
 require('dotenv').config({ path: '../.env' });
 const influxClient = require('./influxdbClient');
-const { writeClient } = influxClient.getClient();
 const { Point } = require('@influxdata/influxdb-client')
 
 console.log("$$$$writeClient:", writeClient);
 
 
 const { measurements, devices, tags, fields} = require('../constants');
+
+
+let writeClient;
+
+initializeInfluxClient().catch(error => {
+    console.error('Error during module initialization:', error);
+});
+
+
+
+
+async function initializeInfluxClient() {
+    try {
+        // Ensure the client is initialized and destructure the necessary properties
+        const clientData = await influxClient.getClient();
+        
+        writeClient = clientData.writeClient;
+
+        console.log('InfluxDB client initialized successfully.');
+    } catch (error) {
+        console.error('Failed to initialize InfluxDB client:', error);
+        throw error; 
+    }
+}
 
 
 // // Write action.

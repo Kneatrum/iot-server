@@ -1,13 +1,31 @@
 require('dotenv').config({ path: '../.env'});
-
-const influxClient = require('./influxdbClient');
-const { bucket, queryClient } = influxClient.getClient();
 const { measurements, devices, tags, fields} = require('../constants');
 
-
 const sleepStates = ['deep', 'light', 'rem', 'awake'];
-console.log("$$$$Bucket:", bucket);
-console.log("$$$$Queryclient:", queryClient);
+
+
+let bucket;
+let queryClient;
+
+initializeInfluxClient().catch(error => {
+    console.error('Error during module initialization:', error);
+});
+
+
+async function initializeInfluxClient() {
+    try {
+        // Ensure the client is initialized and destructure the necessary properties
+        const clientData = await influxClient.getClient();
+        bucket = clientData.bucket;
+        queryClient = clientData.queryClient;
+
+        console.log('InfluxDB client initialized successfully.');
+    } catch (error) {
+        console.error('Failed to initialize InfluxDB client:', error);
+        throw error; 
+    }
+}
+
 
 
 function formatMinutes(minutes) {

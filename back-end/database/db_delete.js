@@ -1,9 +1,26 @@
 require('dotenv').config({ path: '../.env'});
 const influxClient = require('./influxdbClient');
-const { deleteAPI } = influxClient.getClient();
 
+let bucket;
+let deleteAPI;
 
-console.log("$$$$deleteAPI:", deleteAPI);
+initializeInfluxClient().catch(error => {
+  console.error('Error during module initialization:', error);
+});
+
+async function initializeInfluxClient() {
+  try {
+      // Ensure the client is initialized and destructure the necessary properties
+      const clientData = await influxClient.getClient();
+      bucket = clientData.bucket;
+      deleteAPI = clientData.deleteAPI;
+
+      console.log('InfluxDB client initialized successfully.');
+  } catch (error) {
+      console.error('Failed to initialize InfluxDB client:', error);
+      throw error; 
+  }
+}
 
 // Delete all records 
 async function deleteAllMeasurementData(bucket, measurement, tag) {

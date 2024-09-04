@@ -27,10 +27,22 @@ class InfluxClient {
     async ensureInitialized(timeout = 60000, interval = 100) {
         return new Promise((resolve, reject) => {
             const startTime = Date.now();
+            console.time("WaitTimer");
 
             const checkInitialization = () => {
-                if (this.client && this.queryClient && this.writeClient && this.deleteAPI) {
+                if (this.client && 
+                    this.queryClient && 
+                    this.writeClient && 
+                    this.deleteAPI &&
+                    this.bucket && 
+                    this.org &&
+                    this.token
+                ) {
+                    console.timeEnd("waitTimer");
                     console.log("Yaaaaaaaaaay InfluxDB client is now fully initialized'")
+                    console.log(this.bucket)
+                    console.log(this.bucket)
+                    console.log(this.token)
                     resolve(); // Resolve if all components are initialized
                 } else if (Date.now() - startTime >= timeout) {
                     reject(new Error('Timeout: InfluxDB client is not fully initialized.')); // Reject if the timeout is reached
@@ -46,16 +58,21 @@ class InfluxClient {
 
 
     async getClient() {
-        await this.ensureInitialized(); // Wait for the client to be initialized
-        return {
-            client: this.client,
-            deleteAPI: this.deleteAPI,
-            queryClient: this.queryClient,
-            writeClient: this.writeClient,
-            org: this.org,
-            bucket: this.bucket,
-            token: this.token,
-        };
+        try {
+            await this.ensureInitialized();
+            return {
+                client: this.client,
+                deleteAPI: this.deleteAPI,
+                queryClient: this.queryClient,
+                writeClient: this.writeClient,
+                org: this.org,
+                bucket: this.bucket,
+                token: this.token,
+            };
+        } catch (error) {
+            console.error("Failed to initialize InfluxDB client:", error);
+            throw error; 
+        }
     }
 }
 
