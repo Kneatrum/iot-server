@@ -2,6 +2,8 @@ require('dotenv').config();
 const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
 const { setupInfluxDB } = require('./database/db_init.js');
 const {influxClient} = require('./database/influxdbClient.js');
+console.log("@@@@@@@@@@@@@@@@@")
+console.log("Bucket",influxClient.bucket);
 const cors = require('cors');
 const express = require('express');
 const general_routes = require('./router/general.js').general;
