@@ -54,7 +54,7 @@ async function getSecret() {
 
   try {
     const response = await client.send(command);
-    return { success: true, data: response.SecretString };
+    return { success: true, data: JSON.parse(response.SecretString) };
   } catch (error) {
     console.log("Error: ", error)
     return { success: false,  error: error }
