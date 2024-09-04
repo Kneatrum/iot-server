@@ -1,8 +1,9 @@
 require('dotenv').config();
 const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
 const { setupInfluxDB } = require('./database/db_init.js');
-const influxClient = require('./database/influxdbClient.js');
-
+const { initializeReadClient } = require('./database/db_read.js')
+const { initializeWriteClient } = require('./database/db_write.js')
+const { initializeDeleteClient } = require('./database/db_delete.js')
 const cors = require('cors');
 const express = require('express');
 
@@ -19,17 +20,19 @@ const BUCKET = "fitBucket";
 const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
 
+function initializeDbClients(arg_url, arg_token, arg_org, arg_bucket){
+    initializeReadClient(arg_url, arg_token, arg_org, arg_bucket)
+    initializeWriteClient(arg_url, arg_token, arg_org, arg_bucket)
+    initializeDeleteClient(arg_url, arg_token, arg_org, arg_bucket)
+}
+
+
 async function useSecret() {
     const result = await getSecret();
     
     if (result.success) {
         console.log("#################\nSecret retrieved successfully:", result.data);
-        influxClient.initialize(
-            url, 
-            result.data.apiKey, 
-            result.data.organisation, 
-            result.data.bucket
-        );
+        initializeDbClients(url, result.data.apiKey, result.data.organisation, result.data.bucket);
     } else {
         console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
         console.log("Setting up db");
@@ -38,6 +41,7 @@ async function useSecret() {
             console.log("Api token :", response);
             createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
             influxClient.initialize(url, response.data, ORG, BUCKET);
+            initializeDbClients(url, response.data, ORG, BUCKET);
             console.log("Wohoo");
         } else {
             console.log("Unable to get the API token :");
@@ -107,7 +111,7 @@ app.use(cors({
     }
   }));
 
-const general_routes = require('./router/general.js').general;
+
 
 mqttClient.on('message', (topic, message) => {
     latestMessage = `Received message: ${message.toString()} on topic: ${topic}`;
@@ -197,6 +201,7 @@ mqttClient.on('message', (topic, message) => {
 //         }
 //   });
 
+const general_routes = require('./router/general.js').general;
 app.use("/", general_routes);
 
 app.listen(backEndPort, () => {

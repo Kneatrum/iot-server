@@ -1,49 +1,26 @@
+const { InfluxDB } = require('@influxdata/influxdb-client');
 require('dotenv').config({ path: '../.env'});
 const { measurements, devices, tags, fields} = require('../constants');
-const { influxClient } = require('./influxdbClient');
 
-const sleepStates = ['deep', 'light', 'rem', 'awake'];
+
+
 
 
 let bucket;
 let queryClient;
 
-initializeInfluxClient().catch(error => {
-    console.error('Error during module initialization:', error);
-});
+const sleepStates = ['deep', 'light', 'rem', 'awake'];
 
 
-async function initializeInfluxClient() {
-  const retryInterval = 5000; // Interval between retries (in ms)
-  const maxRetryDuration = 60000; // Maximum duration to keep retrying (in ms) - 1 minute in this case
-
-  const startTime = Date.now();
-
-  while (Date.now() - startTime < maxRetryDuration) {
-    try {
-      // Try to initialize the client
-      const clientData = await influxClient.getClient();
-      bucket = clientData.bucket;
-      deleteAPI = clientData.deleteAPI;
-
-      console.log('InfluxDB client initialized successfully.');
-      return; // Exit the loop if successful
-    } catch (error) {
-      console.error('Failed to initialize InfluxDB client. Retrying...', error);
-      await delay(retryInterval); // Wait before retrying
-    }
-  }
-
-  console.error(`Failed to initialize InfluxDB client after ${maxRetryDuration / 1000} seconds.`);
-  throw new Error('Failed to initialize InfluxDB client within the allowed time frame.');
+function initializeReadClient(arg_url, arg_token, arg_organisation, arg_bucket) {
+    url = arg_url;
+    token = arg_token;
+    org = arg_organisation;
+    bucket = arg_bucket;
+    let client = new InfluxDB({ url, token });
+    queryClient = client.getQueryApi(org);
 }
-
-// Helper function to add delay between retries
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
+  
 
 function formatMinutes(minutes) {
     const strMinutes = minutes.toFixed(1)
@@ -652,5 +629,6 @@ module.exports = {
     getSteps,
     getBikingData,
     getIdlingData,
-    getOxygenSaturationData
+    getOxygenSaturationData,
+    initializeReadClient
 };

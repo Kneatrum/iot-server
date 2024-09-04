@@ -1,42 +1,20 @@
 require('dotenv').config({ path: '../.env'});
-const { influxClient } = require('./influxdbClient');
+const { InfluxDB } = require('@influxdata/influxdb-client');
+const { DeleteAPI } = require('@influxdata/influxdb-client-apis');
 
-let bucket;
-let deleteAPI;
 
-initializeInfluxClient().catch(error => {
-  console.error('Error during module initialization:', error);
-});
+let deleteAPI = null;
 
-async function initializeInfluxClient() {
-  const retryInterval = 1000; // Interval between retries (in ms)
-  const maxRetryDuration = 60000; // Maximum duration to keep retrying (in ms) - 1 minute in this case
-
-  const startTime = Date.now();
-
-  while (Date.now() - startTime < maxRetryDuration) {
-    try {
-      // Try to initialize the client
-      const clientData = await influxClient.getClient();
-      bucket = clientData.bucket;
-      deleteAPI = clientData.deleteAPI;
-
-      console.log('InfluxDB client initialized successfully.');
-      return; // Exit the loop if successful
-    } catch (error) {
-      console.error('Failed to initialize InfluxDB client. Retrying...', error);
-      await delay(retryInterval); // Wait before retrying
-    }
-  }
-
-  console.error(`Failed to initialize InfluxDB client after ${maxRetryDuration / 1000} seconds.`);
-  throw new Error('Failed to initialize InfluxDB client within the allowed time frame.');
+function initializeDeleteClient(arg_url, arg_token, arg_organisation, arg_bucket) {
+  url = arg_url;
+  token = arg_token;
+  org = arg_organisation;
+  bucket = arg_bucket;
+  let client = new InfluxDB({ url, token });
+  deleteAPI = new DeleteAPI(client);
+  queryClient = client.getQueryApi(org);
 }
 
-// Helper function to add delay between retries
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
 
 // Delete all records 
 async function deleteAllMeasurementData(bucket, measurement, tag) {
@@ -77,4 +55,4 @@ async function deleteMeasurement(bucket, measurement) {
   }
 
 
-module.exports = {deleteAllMeasurementData, deleteMeasurement}
+module.exports = {deleteAllMeasurementData, deleteMeasurement, initializeDeleteClient }

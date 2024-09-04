@@ -1,51 +1,20 @@
 
 require('dotenv').config({ path: '../.env' });
-const { influxClient } = require('./influxdbClient');
+const { InfluxDB } = require('@influxdata/influxdb-client');
 const { Point } = require('@influxdata/influxdb-client')
-
-
-
-
 const { measurements, devices, tags, fields} = require('../constants');
 
 
-let writeClient;
-
-initializeInfluxClient().catch(error => {
-    console.error('Error during module initialization:', error);
-});
+let writeClient = null;
 
 
-
-
-async function initializeInfluxClient() {
-  const retryInterval = 1000; // Interval between retries (in ms)
-  const maxRetryDuration = 60000; // Maximum duration to keep retrying (in ms) - 1 minute in this case
-
-  const startTime = Date.now();
-
-  while (Date.now() - startTime < maxRetryDuration) {
-    try {
-      // Try to initialize the client
-      const clientData = await influxClient.getClient();
-      bucket = clientData.bucket;
-      deleteAPI = clientData.deleteAPI;
-
-      console.log('InfluxDB client initialized successfully.');
-      return; // Exit the loop if successful
-    } catch (error) {
-      console.error('Failed to initialize InfluxDB client. Retrying...', error);
-      await delay(retryInterval); // Wait before retrying
-    }
-  }
-
-  console.error(`Failed to initialize InfluxDB client after ${maxRetryDuration / 1000} seconds.`);
-  throw new Error('Failed to initialize InfluxDB client within the allowed time frame.');
-}
-
-// Helper function to add delay between retries
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+function initializeWriteClient(arg_url, arg_token, arg_organisation, arg_bucket) {
+  url = arg_url;
+  token = arg_token;
+  org = arg_organisation;
+  bucket = arg_bucket;
+  let client = new InfluxDB({ url, token });
+  writeClient = client.getWriteApi(org, bucket, 'ns');
 }
 
 
@@ -233,5 +202,6 @@ module.exports = {
   writeJoggingDuration,
   writeBikingData,
   writeIdlingDuration,
-  writeOxygenSaturation
+  writeOxygenSaturation,
+  initializeWriteClient
 };
