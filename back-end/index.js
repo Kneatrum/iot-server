@@ -41,6 +41,8 @@ async function useSecret() {
 
         // Now the string should be valid JSON
         console.log(correctedSecretString);
+        let res = JSON.parse(correctedSecretString)
+        console.log(res.apiToken)
         initializeReadClient(url,correctedSecretString)
         initializeWriteClient(url,correctedSecretString)
         initializeDeleteClient(url,correctedSecretString)
