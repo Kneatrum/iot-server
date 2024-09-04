@@ -42,16 +42,10 @@ async function useSecret() {
             console.log("Unable to get the API token :");
         }
     }
-}
+  }
 
-const initializeApp = async () => {
-    await useSecret();  
-    return influxClient;
-};
 
-module.exports = {
-    influxClient: initializeApp()
-};
+useSecret();
 
 
 
