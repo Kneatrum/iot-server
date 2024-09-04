@@ -17,15 +17,6 @@ const BUCKET = "fitBucket";
 
 const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
-module.exports = {
-    influxClient: initializeApp()
-};
-
-
-const initializeApp = async () => {
-    await useSecret();  
-    return influxClient;
-};
 
 async function useSecret() {
     const result = await getSecret();
@@ -51,9 +42,16 @@ async function useSecret() {
             console.log("Unable to get the API token :");
         }
     }
-  }
+}
 
+const initializeApp = async () => {
+    await useSecret();  
+    return influxClient;
+};
 
+module.exports = {
+    influxClient: initializeApp()
+};
 
 
 
