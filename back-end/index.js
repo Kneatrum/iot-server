@@ -1,12 +1,12 @@
-const influxClient = require('./database/influxdbClient.js');
-useSecret();
+// const influxClient = require('./database/influxdbClient.js');
+
 
 
 require('dotenv').config();
 const cors = require('cors');
 const express = require('express');
 // const mqttClient = require('./mqtt/subscriber');
-const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
+// const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
 const general_routes = require('./router/general.js').general;
 
 // const { setupInfluxDB } = require('./database/db_init.js');
@@ -22,20 +22,20 @@ const BUCKET = "fitBucket";
 const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
 
-async function useSecret() {
-    const result = await getSecret();
+// async function useSecret() {
+//     const result = await getSecret();
     
-    if (result.success) {
-        console.log("#################\nSecret retrieved successfully:", result.data);
-        influxClient.initialize(
-            url, 
-            result.data.apiKey, 
-            result.data.organisation, 
-            result.data.bucket
-        );
-    } else {
-        console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
-        console.log("Setting up db");
+//     if (result.success) {
+//         console.log("#################\nSecret retrieved successfully:", result.data);
+//         influxClient.initialize(
+//             url, 
+//             result.data.apiKey, 
+//             result.data.organisation, 
+//             result.data.bucket
+//         );
+//     } else {
+//         console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
+//         console.log("Setting up db");
         // let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
         // if(response.success){
         //     console.log("Api token :", response);
@@ -45,10 +45,10 @@ async function useSecret() {
         // } else {
         //     console.log("Unable to get the API token :");
         // }
-    }
-  }
+//     }
+//   }
 
-
+//   useSecret();
 
 
 
