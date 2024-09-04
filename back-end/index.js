@@ -41,9 +41,9 @@ async function useSecret() {
 
         // Now the string should be valid JSON
         console.log(correctedSecretString);
-        initializeReadClient(url,result.data)
-        initializeWriteClient(url,result.data)
-        initializeDeleteClient(url,result.data)
+        initializeReadClient(url,correctedSecretString)
+        initializeWriteClient(url,correctedSecretString)
+        initializeDeleteClient(url,correctedSecretString)
     } else {
         console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
         console.log("Setting up db");
