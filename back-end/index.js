@@ -4,7 +4,7 @@
 
 require('dotenv').config();
 const cors = require('cors');
-// const express = require('express');
+const express = require('express');
 // const mqttClient = require('./mqtt/subscriber');
 // const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
 const general_routes = require('./router/general.js').general;
