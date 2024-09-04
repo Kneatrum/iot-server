@@ -36,6 +36,11 @@ async function useSecret() {
     
     if (result.success) {
         console.log(result.data)
+        // Regular expression to match key-value pairs and add quotes around values
+        let correctedSecretString = secretString.replace(/:\s*([a-zA-Z0-9\-_=+@.]+)/g, ': "$1"');
+
+        // Now the string should be valid JSON
+        console.log(correctedSecretString);
         initializeReadClient(url,result.data)
         initializeWriteClient(url,result.data)
         initializeDeleteClient(url,result.data)
