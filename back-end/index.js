@@ -36,11 +36,14 @@ async function useSecret() {
     
     if (result.success) {
         console.log("#################\nSecret retrieved successfully:", result.data);
-        console.log("Debug result.data:", result.data);
-        console.log("apiKey:", result.data.apiKey);
-        console.log("organisation:", result.data.organisation);
-        console.log("bucket:", result.data.bucket);
-        initializeDbClients(url, result.data.apiKey, result.data.organisation, result.data.bucket);
+        let token = result.data.apiKey;
+        let org = result.data.organisation;
+        let bucket = result.data.bucket
+        // console.log("Debug result.data:", result.data);
+        console.log("apiKey:", token);
+        console.log("organisation:", org);
+        console.log("bucket:", bucket);
+        initializeDbClients(url, token, org, bucket);
     } else {
         console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
         console.log("Setting up db");
