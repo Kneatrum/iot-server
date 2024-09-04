@@ -9,7 +9,7 @@ const mqttClient = require('./mqtt/subscriber');
 const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
 const general_routes = require('./router/general.js').general;
 
-const { setupInfluxDB } = require('./database/db_init.js');
+// const { setupInfluxDB } = require('./database/db_init.js');
 // const { getAllData, getTemperature, getSteps } = require('./database/db_read');
 // const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
 // const cron = require('node-cron');
@@ -36,15 +36,15 @@ async function useSecret() {
     } else {
         console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
         console.log("Setting up db");
-        let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
-        if(response.success){
-            console.log("Api token :", response);
-            createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
-            influxClient.initialize(url, response.data, ORG, BUCKET);
-            console.log("Wohoo");
-        } else {
-            console.log("Unable to get the API token :");
-        }
+        // let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+        // if(response.success){
+        //     console.log("Api token :", response);
+        //     createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
+        //     influxClient.initialize(url, response.data, ORG, BUCKET);
+        //     console.log("Wohoo");
+        // } else {
+        //     console.log("Unable to get the API token :");
+        // }
     }
   }
 
