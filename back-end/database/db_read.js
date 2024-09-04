@@ -1,5 +1,6 @@
 require('dotenv').config({ path: '../.env'});
 const { measurements, devices, tags, fields} = require('../constants');
+const influxClient = require('./influxdbClient');
 
 const sleepStates = ['deep', 'light', 'rem', 'awake'];
 
