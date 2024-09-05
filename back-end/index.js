@@ -35,7 +35,7 @@ async function useSecret() {
     const result = await getSecret();
     
     if (result.success) {
-        initializeDbClients(url, result.data.apiKey, result.data.organisation, result.data.bucket)
+        initializeDbClients(url, result.data.apiKey, result.data.organisation, result.data.bucket);
     } else {
         console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
         console.log("Setting up db");
