@@ -43,9 +43,9 @@ async function useSecret() {
         // console.log(correctedSecretString);
         // let res = JSON.parse(correctedSecretString)
         console.log("Bucket :", result.data.bucket)
-        initializeReadClient(url,correctedSecretString)
-        initializeWriteClient(url,correctedSecretString)
-        initializeDeleteClient(url,correctedSecretString)
+        initializeReadClient(url,result.data)
+        initializeWriteClient(url,result.data)
+        initializeDeleteClient(url,result.data)
     } else {
         console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
         console.log("Setting up db");
