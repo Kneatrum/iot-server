@@ -12,18 +12,17 @@ let queryClient;
 const sleepStates = ['deep', 'light', 'rem', 'awake'];
 
 
-function initializeReadClient(arg_url, input_string) {
+function initializeReadClient(arg_url, arg_token, arg_organisation, arg_bucket) {
     url = arg_url;
-    token = input_string.apiKey;
-    org = input_string.organisation;
-    bucket = input_string.bucket;
+    token = arg_token;
+    org = arg_organisation;
+    bucket = arg_bucket;
     let client = new InfluxDB({ url, token });
     queryClient = client.getQueryApi(org);
     console.log("##########\nInternal")
     console.log("URL: ", url)
     console.log("Token: ", token)
     console.log("Org: ", org)
-    console.log("Bucket: ", bucket)
 }
   
 

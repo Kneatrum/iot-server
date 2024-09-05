@@ -5,11 +5,12 @@ const { DeleteAPI } = require('@influxdata/influxdb-client-apis');
 
 let deleteAPI = null;
 
-function initializeDeleteClient(arg_url, input_string) {
+
+function initializeDeleteClient(arg_url, arg_token, arg_organisation, arg_bucket) {
   url = arg_url;
-  token = input_string.apiKey;
-  org = input_string.organisation;
-  bucket = input_string.bucket;
+  token = arg_token;
+  org = arg_organisation;
+  bucket = arg_bucket;
   let client = new InfluxDB({ url, token });
   deleteAPI = new DeleteAPI(client);
   queryClient = client.getQueryApi(org);

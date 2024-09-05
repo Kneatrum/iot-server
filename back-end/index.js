@@ -35,17 +35,7 @@ async function useSecret() {
     const result = await getSecret();
     
     if (result.success) {
-        console.log(result.data)
-        // Regular expression to match key-value pairs and add quotes around values
-        // let correctedSecretString = result.data.replace(/:\s*([a-zA-Z0-9\-_=+@.]+)/g, ': "$1"');
-
-        // Now the string should be valid JSON
-        // console.log(correctedSecretString);
-        // let res = JSON.parse(correctedSecretString)
-        console.log("Bucket :", result.data.bucket)
-        initializeReadClient(url,result.data)
-        initializeWriteClient(url,result.data)
-        initializeDeleteClient(url,result.data)
+        initializeDbClients(url, result.data.apiKey, result.data.organisation, result.data.bucket)
     } else {
         console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
         console.log("Setting up db");
@@ -53,7 +43,6 @@ async function useSecret() {
         if(response.success){
             console.log("Api token :", response);
             createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
-            // influxClient.initialize(url, response.data, ORG, BUCKET);
             initializeDbClients(url, response.data, ORG, BUCKET);
             console.log("Wohoo");
         } else {
