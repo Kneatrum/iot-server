@@ -37,12 +37,12 @@ async function useSecret() {
     if (result.success) {
         console.log(result.data)
         // Regular expression to match key-value pairs and add quotes around values
-        let correctedSecretString = result.data.replace(/:\s*([a-zA-Z0-9\-_=+@.]+)/g, ': "$1"');
+        // let correctedSecretString = result.data.replace(/:\s*([a-zA-Z0-9\-_=+@.]+)/g, ': "$1"');
 
         // Now the string should be valid JSON
-        console.log(correctedSecretString);
-        let res = JSON.parse(correctedSecretString)
-        console.log(res.apiToken)
+        // console.log(correctedSecretString);
+        // let res = JSON.parse(correctedSecretString)
+        console.log("Bucket :", result.data.bucket)
         initializeReadClient(url,correctedSecretString)
         initializeWriteClient(url,correctedSecretString)
         initializeDeleteClient(url,correctedSecretString)
