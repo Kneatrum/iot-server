@@ -53,7 +53,7 @@ async function useSecret() {
         if(response.success){
             console.log("Api token :", response);
             createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
-            influxClient.initialize(url, response.data, ORG, BUCKET);
+            // influxClient.initialize(url, response.data, ORG, BUCKET);
             initializeDbClients(url, response.data, ORG, BUCKET);
             console.log("Wohoo");
         } else {

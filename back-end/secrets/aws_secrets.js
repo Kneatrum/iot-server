@@ -26,11 +26,11 @@ async function createSecret(userName, password, apiKey, bucket, organisation) {
     const input = {
         Name: SECRETS,
         SecretString: `{
-        "username":${userName},
-        "password":${password}, 
-        "apiKey":${apiKey}, 
-        "bucket":${bucket}, 
-        "organisation":${organisation}
+        "username":"${userName}",
+        "password":"${password}", 
+        "apiKey":"${apiKey}", 
+        "bucket":"${bucket}", 
+        "organisation":"${organisation}"
         }`
         // SecretString: "{\"username\":\"martin\",\"password\":\"martin1234\"}"
     };
