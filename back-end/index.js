@@ -21,10 +21,6 @@ const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
 
 function initializeDbClients(arg_url, arg_token, arg_org, arg_bucket){
-    console.log("##########\nExternal")
-    console.log("URL: ", arg_url)
-    console.log("Token: ", arg_token)
-    console.log("Org: ", arg_bucket)
     initializeReadClient(arg_url, arg_token, arg_org, arg_bucket)
     initializeWriteClient(arg_url, arg_token, arg_org, arg_bucket)
     initializeDeleteClient(arg_url, arg_token, arg_org, arg_bucket)
@@ -37,14 +33,10 @@ async function useSecret() {
     if (result.success) {
         initializeDbClients(url, result.data.apiKey, result.data.organisation, result.data.bucket);
     } else {
-        console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
-        console.log("Setting up db");
         let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
         if(response.success){
-            console.log("Api token :", response);
             createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
             initializeDbClients(url, response.data, ORG, BUCKET);
-            console.log("Wohoo");
         } else {
             console.log("Unable to get the API token :");
         }

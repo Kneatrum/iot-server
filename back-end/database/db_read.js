@@ -19,10 +19,6 @@ function initializeReadClient(arg_url, arg_token, arg_organisation, arg_bucket) 
     bucket = arg_bucket;
     let client = new InfluxDB({ url, token });
     queryClient = client.getQueryApi(org);
-    console.log("##########\nInternal")
-    console.log("URL: ", url)
-    console.log("Token: ", token)
-    console.log("Org: ", org)
 }
   
 

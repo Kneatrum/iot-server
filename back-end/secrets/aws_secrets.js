@@ -32,14 +32,12 @@ async function createSecret(userName, password, apiKey, bucket, organisation) {
         "bucket":"${bucket}", 
         "organisation":"${organisation}"
         }`
-        // SecretString: "{\"username\":\"martin\",\"password\":\"martin1234\"}"
     };
     const command = new CreateSecretCommand(input);
     try {
-        const response = await client.send(command);
-        console.log(response);
+      await client.send(command);
     } catch (error) {
-        console.error("Error creating secret:", error);
+      console.error("Error creating secret:", error);
     }
 }
 
