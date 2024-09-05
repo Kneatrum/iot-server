@@ -460,7 +460,6 @@ const getSteps = (numDays) => {
     
 
     return new Promise((resolve, reject) => {
-        console.log("BBBBBBBBBBBBBucket", bucket)
         let fluxQuery = `from(bucket: "${bucket}")
         |> range(start: ${param})
         |> filter(fn: (r) => r._measurement == "${measurements.steps}" and
