@@ -10,7 +10,7 @@ let writeClient = null;
 
 function initializeWriteClient(arg_url, input_string) {
   url = arg_url;
-  token = input_string.apiToken;
+  token = input_string.apiKey;
   org = input_string.organisation;
   bucket = input_string.bucket;
   let client = new InfluxDB({ url, token });
