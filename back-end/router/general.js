@@ -26,7 +26,7 @@ public_users.get('/',function (req, res) {
 
 
 // Get all data
-public_users.get('/all',async function (req, res) {
+public_users.get('/api/all',async function (req, res) {
     try {
         let myPromise = new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -50,7 +50,7 @@ public_users.get('/all',async function (req, res) {
 
 
 // Get heart beat rate
-public_users.get('/heart/:date?',async function (req, res) {
+public_users.get('/api/heart/:date?',async function (req, res) {
     try {
 
         let date = req.params.date || 0;
@@ -77,7 +77,7 @@ public_users.get('/heart/:date?',async function (req, res) {
 
 
 // Get temperature
-public_users.get('/temperature/:date?',async function (req, res) {
+public_users.get('/api/temperature/:date?',async function (req, res) {
     try {
 
         let date =  req.params.date || 0;
@@ -104,7 +104,7 @@ public_users.get('/temperature/:date?',async function (req, res) {
 
 
 // Get action
-public_users.get('/action/:date?',async function (req, res) {
+public_users.get('/api/action/:date?',async function (req, res) {
     try {
 
         let date =  req.params.date || 0;
@@ -131,7 +131,7 @@ public_users.get('/action/:date?',async function (req, res) {
 
 
 // Get sound
-public_users.get('/sound/:date?',async function (req, res) {
+public_users.get('/api/sound/:date?',async function (req, res) {
     try {
 
         let date =  req.params.date || 0;
@@ -158,7 +158,7 @@ public_users.get('/sound/:date?',async function (req, res) {
 
 
 // Get sleep data
-public_users.get('/sleep/:date?',async function (req, res) {
+public_users.get('/api/sleep/:date?',async function (req, res) {
     try {
         let date =  req.params.date || 0;
         let myPromise = new Promise((resolve, reject) => {
@@ -183,7 +183,7 @@ public_users.get('/sleep/:date?',async function (req, res) {
 
 
 // Get walking data
-public_users.get('/walking/:date?',async function (req, res) {
+public_users.get('/api/walking/:date?',async function (req, res) {
     try {
 
         let date =  req.params.date || 0;
@@ -210,7 +210,7 @@ public_users.get('/walking/:date?',async function (req, res) {
 
 
 // Get jogging data
-public_users.get('/jogging/:date?',async function (req, res) {
+public_users.get('/api/jogging/:date?',async function (req, res) {
     try {
 
         let date =  req.params.date || 0;
@@ -237,7 +237,7 @@ public_users.get('/jogging/:date?',async function (req, res) {
 
 
 // Get steps
-public_users.get('/steps/:days?',async function (req, res) {
+public_users.get('/api/steps/:days?',async function (req, res) {
     try {
         
         let days = req.params.days || 0; // If no parameter is passed, use 0 as the default
@@ -264,7 +264,7 @@ public_users.get('/steps/:days?',async function (req, res) {
 
 
 // Get biking data
-public_users.get('/biking/:date?',async function (req, res) {
+public_users.get('/api/biking/:date?',async function (req, res) {
     try {
 
         let date =  req.params.date || 0;
@@ -291,7 +291,7 @@ public_users.get('/biking/:date?',async function (req, res) {
 
 
 // Get idling data
-public_users.get('/idling/:date?',async function (req, res) {
+public_users.get('/api/idling/:date?',async function (req, res) {
     try {
 
         let date =  req.params.date || 0;
@@ -318,7 +318,7 @@ public_users.get('/idling/:date?',async function (req, res) {
 
 
 // Get idling data
-public_users.get('/oxygen/:date',async function (req, res) {
+public_users.get('/api/oxygen/:date',async function (req, res) {
     try {
 
         let date = req.params.date; 

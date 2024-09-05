@@ -1,24 +1,21 @@
 
 require('dotenv').config({ path: '../.env' });
-
-const {InfluxDB, Point} = require('@influxdata/influxdb-client')
-const CONFIG = require('../../config.json');
-
-const dbHost = CONFIG.influxdb.host;
-const dbPort = CONFIG.influxdb.port;
-
-const token = process.env.API_TOKEN
-const url = "http://" + dbHost + ":" + dbPort;
-let org = "kneatrum"
-let bucket = "fitbit"
-
-const client = new InfluxDB({url, token});
-
-let writeClient = client.getWriteApi(org, bucket, 'ns');
-
+const { InfluxDB } = require('@influxdata/influxdb-client');
+const { Point } = require('@influxdata/influxdb-client')
 const { measurements, devices, tags, fields} = require('../constants');
 
 
+let writeClient = null;
+
+
+function initializeWriteClient(arg_url, arg_token, arg_organisation, arg_bucket) {
+  url = arg_url;
+  token = arg_token;
+  org = arg_organisation;
+  bucket = arg_bucket;
+  let client = new InfluxDB({ url, token });
+  writeClient = client.getWriteApi(org, bucket, 'ns');
+}
 
 
 // // Write action.
@@ -205,5 +202,6 @@ module.exports = {
   writeJoggingDuration,
   writeBikingData,
   writeIdlingDuration,
-  writeOxygenSaturation
+  writeOxygenSaturation,
+  initializeWriteClient
 };

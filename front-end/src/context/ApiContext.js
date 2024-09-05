@@ -9,10 +9,7 @@ const today = new Date("2024-08-06");
 let startDate =  new Date(today.setHours(0, 0, 0, 0)).toISOString();
 let numOfSleepQueryDays = 1;
 
-const localhost = "localhost"
-// const servicename = "servicename"
-const backEndHost = localhost;
-const backEndPort = 3000;
+const baseURL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000'; 
 
 const heartRateColor = "lightsalmon";
 const oxygenSaturation = "lightskyblue";
@@ -231,17 +228,7 @@ function findAverage(strArray){
 
 
 
-function getOrdinalSuffix(day) {
-    if (day > 3 && day < 21) {
-        return 'th';
-    }
-    switch (day % 10) {
-        case 1: return 'st';
-        case 2: return 'nd';
-        case 3: return 'rd';
-        default: return 'th';
-    }
-}
+
 
 
 
@@ -299,17 +286,35 @@ function setStepsData(stepsData){
 export const ApiProvider = (props) => {
     const [data, setData] = useState({sleep: null, idling: null, walking: null, jogging: null, steps: null, biking: null, oxygen: null});
     const [dashboardData, setDashboardData] = useState(dashboard);
+    // const [baseURL, setBaseURL] = useState('');
+    // setBaseURL(`http://localhost/api`);
+
+    // useEffect(() => {
+    //     // Fetch the public IP address using an IP service
+    //     fetch('https://api.ipify.org?format=json')
+    //       .then(response => response.json())
+    //       .then(data => {
+    //         setBaseURL(`http://${data.ip}/api`);
+    //       })
+    //       .catch(error => {
+    //         console.error("Error fetching the public IP:", error);
+    //       });
+    //   }, []);
+
     
     useEffect(() => {
+        
+        let isMounted = true; // track component mount status
+
         const urls = [
-            "http://" + backEndHost + ":" + backEndPort + "/sleep/" + numOfSleepQueryDays,
-            "http://" + backEndHost + ":" + backEndPort + "/idling/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/walking/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/jogging/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/steps/" + numOfstepsQueryDays,
-            "http://" + backEndHost + ":" + backEndPort + "/biking/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/heart/" + startDate,
-            "http://" + backEndHost + ":" + backEndPort + "/oxygen/" + startDate
+            `/api/sleep/${numOfSleepQueryDays}`,
+            `/api/idling/${startDate}`,
+            `/api/walking/${startDate}`,
+            `/api/jogging/${startDate}`,
+            `/api/steps/${numOfstepsQueryDays}`,
+            `/api/biking/${startDate}`,
+            `/api/heart/${startDate}`,
+            `/api/oxygen/${startDate}`
         ];
 
         const fetchData = async () => {
@@ -327,12 +332,14 @@ export const ApiProvider = (props) => {
                     oxygenSaturation: oxygen
                 });
             } catch (err) {
-                console.error("Error fetching data:", err.message);
+                if (isMounted) {
+                    console.error("Error fetching data:", err.message);
+                }
             }
         };
 
         fetchData();
-    }, []);
+    }, [numOfSleepQueryDays, startDate]);
 
     useEffect(() => {
         if (data) {

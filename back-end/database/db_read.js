@@ -1,26 +1,30 @@
-
-require('dotenv').config({ path: '../.env' });
-
-const {InfluxDB} = require('@influxdata/influxdb-client')
+const { InfluxDB } = require('@influxdata/influxdb-client');
+require('dotenv').config({ path: '../.env'});
 const { measurements, devices, tags, fields} = require('../constants');
-const CONFIG = require('../../config.json');
-
-const dbHost = CONFIG.influxdb.host;
-const dbPort = CONFIG.influxdb.port;
 
 
-const token = process.env.API_TOKEN
-const url = "http://" + dbHost + ":" + dbPort;
-const org = "kneatrum"
-const bucket = "fitbit"
 
-const client = new InfluxDB({url, token})
 
-let queryClient = client.getQueryApi(org)
+
+let bucket;
+let queryClient;
 
 const sleepStates = ['deep', 'light', 'rem', 'awake'];
 
 
+function initializeReadClient(arg_url, arg_token, arg_organisation, arg_bucket) {
+    url = arg_url;
+    token = arg_token;
+    org = arg_organisation;
+    bucket = arg_bucket;
+    let client = new InfluxDB({ url, token });
+    queryClient = client.getQueryApi(org);
+    console.log("##########\nInternal")
+    console.log("URL: ", url)
+    console.log("Token: ", token)
+    console.log("Org: ", org)
+}
+  
 
 function formatMinutes(minutes) {
     const strMinutes = minutes.toFixed(1)
@@ -628,5 +632,6 @@ module.exports = {
     getSteps,
     getBikingData,
     getIdlingData,
-    getOxygenSaturationData
+    getOxygenSaturationData,
+    initializeReadClient
 };

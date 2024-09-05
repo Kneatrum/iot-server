@@ -1,21 +1,20 @@
-require('dotenv').config({ path: '../.env' });
-
-const {InfluxDB} = require('@influxdata/influxdb-client')
+require('dotenv').config({ path: '../.env'});
+const { InfluxDB } = require('@influxdata/influxdb-client');
 const { DeleteAPI } = require('@influxdata/influxdb-client-apis');
-const CONFIG = require('../../config.json');
 
 
-const dbHost = CONFIG.influxdb.host;
-const dbPort = CONFIG.influxdb.port;
-
-const token = process.env.API_TOKEN
-const url = "http://" + dbHost + ":" + dbPort;
-const org = "kneatrum"
-
-const client = new InfluxDB({url, token})
-const deleteAPI = new DeleteAPI(client)
+let deleteAPI = null;
 
 
+function initializeDeleteClient(arg_url, arg_token, arg_organisation, arg_bucket) {
+  url = arg_url;
+  token = arg_token;
+  org = arg_organisation;
+  bucket = arg_bucket;
+  let client = new InfluxDB({ url, token });
+  deleteAPI = new DeleteAPI(client);
+  queryClient = client.getQueryApi(org);
+}
 
 
 // Delete all records 
@@ -57,4 +56,4 @@ async function deleteMeasurement(bucket, measurement) {
   }
 
 
-module.exports = {deleteAllMeasurementData, deleteMeasurement}
+module.exports = {deleteAllMeasurementData, deleteMeasurement, initializeDeleteClient }

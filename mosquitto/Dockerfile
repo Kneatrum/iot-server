@@ -6,9 +6,9 @@ WORKDIR /mosquitto
 
 # Copy configuration files
 COPY config /mosquitto/config
-COPY data /mosquitto/data
-COPY log /mosquitto/log
-COPY config.json /mosquitto/config.json
+# COPY data /mosquitto/data
+# COPY log /mosquitto/log
+# COPY config.json /mosquitto/config.json
 
 # Expose the necessary ports
 EXPOSE 1883

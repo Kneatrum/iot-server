@@ -1,18 +1,67 @@
 require('dotenv').config();
+const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
+const { setupInfluxDB } = require('./database/db_init.js');
+const { initializeReadClient } = require('./database/db_read.js')
+const { initializeWriteClient } = require('./database/db_write.js')
+const { initializeDeleteClient } = require('./database/db_delete.js')
 const cors = require('cors');
 const express = require('express');
-const general_routes = require('./router/general.js').general;
-const bucket = "fitbit"
-const { getAllData, getTemperature, getSteps } = require('./database/db_read');
-const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
-const mqttClient = require('./mqtt/subscriber');
-const CONFIG = require('../config.json');
-const cron = require('node-cron');
 
-const frontEndHost = CONFIG["front-end"].host;
-const frontEndPort = CONFIG["front-end"].port;
-const backEndHost = CONFIG['back-end'].host
-const backEndPort = CONFIG['back-end'].port
+// const { getAllData, getTemperature, getSteps } = require('./database/db_read');
+// const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
+const mqttClient = require('./mqtt/subscriber');
+// const cron = require('node-cron');
+
+const USERNAME = "Martin";
+const PASSWORD = "password1234";
+const ORG = "fitnessOrg";
+const BUCKET = "fitBucket";
+
+const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
+
+
+function initializeDbClients(arg_url, arg_token, arg_org, arg_bucket){
+    console.log("##########\nExternal")
+    console.log("URL: ", arg_url)
+    console.log("Token: ", arg_token)
+    console.log("Org: ", arg_bucket)
+    initializeReadClient(arg_url, arg_token, arg_org, arg_bucket)
+    initializeWriteClient(arg_url, arg_token, arg_org, arg_bucket)
+    initializeDeleteClient(arg_url, arg_token, arg_org, arg_bucket)
+}
+
+
+async function useSecret() {
+    const result = await getSecret();
+    
+    if (result.success) {
+        initializeDbClients(url, result.data.apiKey, result.data.organisation, result.data.bucket);
+    } else {
+        console.error("!!!!!!!!!!!!!!!!!!!\nFailed to retrieve secret:");
+        console.log("Setting up db");
+        let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+        if(response.success){
+            console.log("Api token :", response);
+            createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
+            initializeDbClients(url, response.data, ORG, BUCKET);
+            console.log("Wohoo");
+        } else {
+            console.log("Unable to get the API token :");
+        }
+    }
+  }
+
+
+useSecret();
+
+
+
+const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost';
+const HOST_URL =  process.env.HOST_URL || 'http://localhost'
+
+const backEndHost = process.env.BACKEND_HOST || 'http://localhost';
+const backEndPort = 3000;
+
 
 let previous_sleep_value = null;
 
@@ -42,14 +91,29 @@ const {
     ch_oxygen_saturation
 } = require('./mqtt/channels');
 
-
+const allowedOrigins = [
+    frontEndHost,
+    HOST_URL,
+  ];
 
 const app = express();
 
 app.use(express.json());
 app.use(cors({
-    origin: `http://${frontEndHost}:${frontEndPort}` // Allow requests from this origin
-}));
+    origin: function (origin, callback) {
+      // Allow requests with no origin, like mobile apps or curl requests
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        // If the origin is in the allowedOrigins array, allow the request
+        callback(null, true);
+      } else {
+        // If the origin is not allowed, return an error
+        callback(new Error('Not allowed by CORS'));
+      }
+    }
+  }));
+
+
 
 mqttClient.on('message', (topic, message) => {
     latestMessage = `Received message: ${message.toString()} on topic: ${topic}`;
@@ -102,44 +166,47 @@ mqttClient.on('message', (topic, message) => {
 
 });
 
-async function stepsInitialisation(){
-    const data = await getSteps(0);
-    if(data.labels.length === 0){
-        writeSteps(0);
-    } else {
-        let today = new Date().getDate();
-        let latestDataPoint = data.labels[data.labels.length - 1];
-        let latestDataPointDate = latestDataPoint.getDate();
-        let difference = today - latestDataPointDate;
-        if(difference > 0){
-            writeSteps(0);
-        }
-        
-    }
-}
 
-stepsInitialisation();
+
+// async function stepsInitialisation(){
+//     const data = await getSteps(0);
+//     if(data.labels.length === 0){
+//         writeSteps(0);
+//     } else {
+//         let today = new Date().getDate();
+//         let latestDataPoint = data.labels[data.labels.length - 1];
+//         let latestDataPointDate = latestDataPoint.getDate();
+//         let difference = today - latestDataPointDate;
+//         if(difference > 0){
+//             writeSteps(0);
+//         }
+        
+//     }
+// }
+
+// stepsInitialisation();
 
 // Schedule the cron job to run at midnight
-cron.schedule('0 0 * * *', async () => {
-    console.log('Resetting the number of steps at midnight');
-        const data = await getSteps(0);
-        if(data.labels.length === 0){
-            writeSteps(0);
-        } else {
-            let today = new Date().getDate();
-            let latestDataPoint = data.labels[data.labels.length - 1];
-            let latestDataPointDate = latestDataPoint.getDate();
-            let difference = today - latestDataPointDate;
-            if(difference > 0){
-                writeSteps(0);
-            }
-        }
-  });
+// cron.schedule('0 0 * * *', async () => {
+//     console.log('Resetting the number of steps at midnight');
+//         const data = await getSteps(0);
+//         if(data.labels.length === 0){
+//             writeSteps(0);
+//         } else {
+//             let today = new Date().getDate();
+//             let latestDataPoint = data.labels[data.labels.length - 1];
+//             let latestDataPointDate = latestDataPoint.getDate();
+//             let difference = today - latestDataPointDate;
+//             if(difference > 0){
+//                 writeSteps(0);
+//             }
+//         }
+//   });
 
+const general_routes = require('./router/general.js').general;
 app.use("/", general_routes);
 
-app.listen(port, () => {
-    console.log(`Web server listening at http://${backEndHost}:${backEndPort}`);
+app.listen(backEndPort, () => {
+    console.log(`Web server listening at ${backEndPort}`);
 });
 
