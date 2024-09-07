@@ -5,10 +5,12 @@ back-end/node_modules/
 back-end/mqtt/publisher.js
 back-end/mqtt/automated_mqtt.py
 back-end/doc/
+back-end/.env.development
 
 
 front-end/node_modules
 front-end/src/components/charts/FAKE_DATA.js
+front-end/.env.production
 
 
 influxdb/.dockerignore
