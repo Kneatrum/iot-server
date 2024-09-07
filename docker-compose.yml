@@ -35,6 +35,11 @@ services:
       dockerfile: Dockerfile
     env_file:
       - ./back-end/.env
+    NODE_ENV: development  # Default to 'development' if not set. Valid options are development and production
+    command: >
+      sh -c 'if [ "$NODE_ENV" = "development" ]; then npm run dev;
+      elif [ "$NODE_ENV" = "production" ]; then npm run start;
+      else echo "Unknown NODE_ENV=$NODE_ENV"; exit 1; fi'
     restart: always
     networks:
       - iot-network

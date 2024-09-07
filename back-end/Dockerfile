@@ -25,4 +25,7 @@ COPY ./secrets ./secrets
 EXPOSE 3000
 
 # Use a more direct way to run the app
-CMD ["node", "index.js"]
+CMD ["sh", "-c", \
+"if [ \"$NODE_ENV\" = \"development\" ]; then npm run dev; \
+elif [ \"$NODE_ENV\" = \"production\" ]; then npm run start; \
+else echo \"Unknown NODE_ENV=$NODE_ENV\"; exit 1; fi"]

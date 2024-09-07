@@ -1,5 +1,8 @@
-require('dotenv').config();
-const { getSecret, createSecret } = require('./secrets/aws_secrets.js')
+const env = process.env.NODE_ENV || 'development';
+const envFile = env === 'production' ? './.env' : `./.env.${env}`;
+require('dotenv').config({path: envFile});
+
+const { getSecret, createSecret, createDevSecret, getDevSecrets } = require('./secrets/aws_secrets.js')
 const { setupInfluxDB } = require('./database/db_init.js');
 const { initializeReadClient } = require('./database/db_read.js')
 const { initializeWriteClient } = require('./database/db_write.js')
@@ -17,7 +20,7 @@ const PASSWORD = "password1234";
 const ORG = "fitnessOrg";
 const BUCKET = "fitBucket";
 
-const url = process.env.INFLUXDB_HOST || 'http://localhost:8086';
+const INFLUXDB_URL = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
 
 function initializeDbClients(arg_url, arg_token, arg_org, arg_bucket){
@@ -28,19 +31,64 @@ function initializeDbClients(arg_url, arg_token, arg_org, arg_bucket){
 
 
 async function useSecret() {
-    const result = await getSecret();
-    
-    if (result.success) {
-        initializeDbClients(url, result.data.apiKey, result.data.organisation, result.data.bucket);
-    } else {
-        let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
-        if(response.success){
-            createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
-            initializeDbClients(url, response.data, ORG, BUCKET);
+
+    if(env === 'production'){
+        const result = await getSecret();
+
+        if (result.success) {
+            initializeDbClients(INFLUXDB_URL, result.data.apiKey, result.data.organisation, result.data.bucket);
         } else {
-            console.log("Unable to get the API token :");
+            let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+            if(response.success){
+                createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
+                initializeDbClients(INFLUXDB_URL, response.data, ORG, BUCKET);
+            } else {
+                console.log("Unable to get the API token :");
+            }
+        }
+
+    } else if (env === 'development'){
+        /* 
+        .
+        .
+        Ensure that you have manually finished the onboarding process by going to this url http://localhost:8086 before getting here.
+        In the onboarding process, fill in the required details and copy the following for use in the .env.development file.
+        - api token
+        - bucket name
+        - organisation name
+
+        In the .env.development file, create the following environment variables and assign their respective values (outlined above)
+        - API_KEY=<api token>
+        - ORG=<organisation name>
+        - BUCKET=<bucket name>
+        .
+        .
+        */
+        let result = getDevSecrets();
+        if(result.success){
+            let API_KEY = result.data.apiKey;
+            let ORG = result.data.organisation;
+            let BUCKET = result.data.bucket;
+            initializeDbClients(INFLUXDB_URL, API_KEY, ORG, BUCKET);
+        } else {
+            console.log(`Please got to ${INFLUXDB_URL} \
+                and finish \ the onboarding process, \
+                then save the bucket, organisation and \
+                api token in the development environment variables file`)
+            /*
+            TODO: 
+
+            let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+            if(response.success){
+                createDevSecret(USERNAME, PASSWORD, response.data.apiKey, BUCKET, ORG);
+                initializeDbClients(INFLUXDB_URL, response.data, ORG, BUCKET);
+            } else {
+                console.log("Unable to get the API token");
+            }
+            */
         }
     }
+    
   }
 
 

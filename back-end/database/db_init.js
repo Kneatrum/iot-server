@@ -1,8 +1,7 @@
-const path = require('path');  // Import the path module
-const ENV_FILE_PATH = path.resolve(__dirname, '../.env');
+const env = process.env.NODE_ENV || 'development';
+const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
+require('dotenv').config({path: envFile});
 
-const dotenv = require('dotenv');
-dotenv.config({ path: ENV_FILE_PATH});
 
 const axios = require('axios');
 

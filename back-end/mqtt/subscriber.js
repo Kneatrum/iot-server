@@ -1,5 +1,8 @@
+const env = process.env.NODE_ENV || 'development';
+const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
+require('dotenv').config({path: envFile});
+
 const mqtt = require('mqtt');
-require('dotenv').config({ path: '../.env'});
 
 const {     
     ch_temperature,

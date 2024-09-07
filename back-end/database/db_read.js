@@ -1,5 +1,8 @@
+const env = process.env.NODE_ENV || 'development';
+const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
+require('dotenv').config({path: envFile});
+
 const { InfluxDB } = require('@influxdata/influxdb-client');
-require('dotenv').config({ path: '../.env'});
 const { measurements, devices, tags, fields} = require('../constants');
 
 

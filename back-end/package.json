@@ -4,7 +4,8 @@
   "description": "back-end server for a fitness tracking application",
   "main": "index.js",
   "scripts": {
-    "start": "node --trace-deprecation index.js"
+    "start": "NODE_ENV=production node  index.js",
+    "dev": "NODE_ENV=development node index.js"
   },
   "author": "Martin Mwiti",
   "license": "MIT",
