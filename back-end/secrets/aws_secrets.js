@@ -1,6 +1,8 @@
 const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
 require('dotenv').config({path: envFile});
+const path = require('path');
+const fs = require('fs');
 
 const { SecretsManagerClient, CreateSecretCommand, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
 const { fromInstanceMetadata } = require("@aws-sdk/credential-providers");
@@ -85,45 +87,44 @@ function getDevSecrets(){
 
 }
 
-// Function to create a new secret in AWS Secrets Manager
+// Function to create a new secret in the development environment
 async function createDevSecret(userName, password, apiKey, bucket, organisation) {
   const ENV_FILE_PATH = path.resolve(__dirname, envFile);
   
-  const fs = require('fs');
-  userName = `USERNAME=${userName}`;
-  password = `PASSWORD=${password}`;
-  apiKey = `API_KEY=${apiKey}`;
-  bucket = `BUCKET=${bucket}`;
-  organisation = `ORG=${organisation}`;
+  userName = `\nUSERNAME=${userName}`;
+  password = `\nPASSWORD=${password}`;
+  apiKey = `\nAPI_KEY=${apiKey}`;
+  bucket = `\nBUCKET=${bucket}`;
+  organisation = `\nORG=${organisation}`;
 
   try {
-    fs.writeFileSync(ENV_FILE_PATH, userName);
-    fs.writeFileSync(ENV_FILE_PATH, password);
-    fs.writeFileSync(ENV_FILE_PATH, apiKey);
-    fs.writeFileSync(ENV_FILE_PATH, bucket);
-    fs.writeFileSync(ENV_FILE_PATH, organisation);
-
-    console.log('File written successfully');
+    fs.appendFileSync(ENV_FILE_PATH, userName);
   } catch (err) {
     console.error(err);
   }
 
-
-  const input = {
-      Name: SECRETS,
-      SecretString: `{
-      "username":"${userName}",
-      "password":"${password}", 
-      "apiKey":"${apiKey}", 
-      "bucket":"${bucket}", 
-      "organisation":"${organisation}"
-      }`
-  };
-  const command = new CreateSecretCommand(input);
   try {
-    await client.send(command);
-  } catch (error) {
-    console.error("Error creating secret:", error);
+    fs.appendFileSync(ENV_FILE_PATH, password);
+  } catch (err) {
+    console.error(err);
+  }
+
+  try {
+    fs.appendFileSync(ENV_FILE_PATH, bucket);
+  } catch (err) {
+    console.error(err);
+  }
+
+  try {
+    fs.appendFileSync(ENV_FILE_PATH, organisation);
+  } catch (err) {
+    console.error(err);
+  }
+
+  try {
+    fs.appendFileSync(ENV_FILE_PATH, apiKey);
+  } catch (err) {
+    console.error(err);
   }
 }
 
