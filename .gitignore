@@ -1,5 +1,5 @@
-api_token.txt
 .dockerignore
+influxdata-archive.key
 
 back-end/node_modules/
 back-end/mqtt/publisher.js
