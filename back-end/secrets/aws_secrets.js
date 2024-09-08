@@ -74,11 +74,9 @@ function getDevSecrets(){
 
   if(username && password && organisation && bucket && apiKey){
     let secrets = {
-      "username": `"${username}"`,
-      "password": `"${password}"`,
-      "organisation": `"${organisation}"`,
-      "bucket": `"${bucket}"`,
-      "apiKey": `"${apiKey}"`
+      "organisation": organisation,
+      "bucket": bucket,
+      "apiKey": apiKey
     }
     
     return {success: true, data: secrets}
