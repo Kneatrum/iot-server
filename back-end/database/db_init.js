@@ -44,5 +44,32 @@ const setupInfluxDB = async (adminUsername, adminPassword, org, bucket) => {
 };
 
 
+async function getUsers(adminToken) {
+    const usersResponse = await axios.get(`${influxBaseURL}/api/v2/users`, {
+      headers: {
+        Authorization: `Token ${adminToken}`  // Use a valid admin token
+      }
+    });
+    return usersResponse.data.users;
+}
 
-module.exports = { setupInfluxDB }
+
+async function getOrgs(adminToken){
+    const orgsResponse = await axios.get(`${influxBaseURL}/api/v2/orgs`, {
+        headers: {
+            Authorization: `Token ${adminToken}`
+        }
+    });
+    return orgsResponse.data.orgs;
+}
+
+async function getBuckets(adminToken) {
+    const bucketsResponse = await axios.get(`${influxBaseURL}/api/v2/buckets`, {
+        headers: {
+            Authorization: `Token ${adminToken}`
+        }
+    });
+    return bucketsResponse.data.buckets
+}
+
+module.exports = { setupInfluxDB, getUsers, getOrgs, getBuckets }
