@@ -66,13 +66,11 @@ async function getSecret() {
 
 function getDevSecrets(){
 
-  let username = process.env.USERNAME;
-  let password = process.env.PASSWORD;
   let organisation = process.env.ORG;
   let bucket = process.env.BUCKET;
   let apiKey = process.env.API_KEY;
 
-  if(username && password && organisation && bucket && apiKey){
+  if(organisation && bucket && apiKey){
     let secrets = {
       "organisation": organisation,
       "bucket": bucket,
