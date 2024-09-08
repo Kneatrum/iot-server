@@ -48,44 +48,23 @@ async function useSecret() {
         }
 
     } else if (env === 'development'){
-        /* 
-        .
-        .
-        Ensure that you have manually finished the onboarding process by going to this url http://localhost:8086 before getting here.
-        In the onboarding process, fill in the required details and copy the following for use in the .env.development file.
-        - api token
-        - bucket name
-        - organisation name
-
-        In the .env.development file, create the following environment variables and assign their respective values (outlined above)
-        - API_KEY=<api token>
-        - ORG=<organisation name>
-        - BUCKET=<bucket name>
-        .
-        .
-        */
+        console.log("Retrieving secrets from the development environment")
         let result = getDevSecrets();
         if(result.success){
             let API_KEY = result.data.apiKey;
             let ORG = result.data.organisation;
             let BUCKET = result.data.bucket;
             initializeDbClients(INFLUXDB_URL, API_KEY, ORG, BUCKET);
+            console.log("Logged in successfully")
         } else {
-            console.log(`Please got to ${INFLUXDB_URL} \
-                and finish \ the onboarding process, \
-                then save the bucket, organisation and \
-                api token in the development environment variables file`)
-            /*
-            TODO: 
-
             let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
             if(response.success){
-                createDevSecret(USERNAME, PASSWORD, response.data.apiKey, BUCKET, ORG);
+                createDevSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
                 initializeDbClients(INFLUXDB_URL, response.data, ORG, BUCKET);
+                console.log("Onboarding success")
             } else {
                 console.log("Unable to get the API token");
             }
-            */
         }
     }
     
