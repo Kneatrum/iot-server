@@ -14,6 +14,7 @@ RUN npm install --production
 COPY ./public ./public
 COPY ./src ./src
 COPY .env .env
+COPY ./.env.production ./.env.production
 
 # Build the React app
 RUN npm run build
