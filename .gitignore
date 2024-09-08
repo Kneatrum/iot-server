@@ -11,6 +11,7 @@ back-end/.env.development
 front-end/node_modules
 front-end/src/components/charts/FAKE_DATA.js
 front-end/.env.production
+front-end/build
 
 
 influxdb/.dockerignore
