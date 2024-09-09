@@ -9,8 +9,8 @@ export function LittleCard({title, progress, duration, color}){
                 <h6 style={{ paddingLeft: '10px'}}>{title}</h6>
                 <p style={{ margin: '10px', fontSize: '10px', textAlign: 'right' }}>{duration}</p>
             </div>
-            <div class="progress" style={{ borderRadius: '0', margin: '10px', }}>
-                <div class="progress-bar" role="progressbar" style={{ width: `${progress}%`, backgroundColor: color }} aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">{progress}%</div>
+            <div className="progress" style={{ borderRadius: '0', margin: '10px', }}>
+                <div className="progress-bar" role="progressbar" style={{ width: `${progress}%`, backgroundColor: color }} aria-valuenow={progress} aria-valuemin="0" aria-valuemax="100">{progress}%</div>
             </div>
         </div>
     )
@@ -23,7 +23,7 @@ export function NightSleepCard({title}){
     const [data, setData ] = useState(0);
 
     useEffect(() => {
-        if(dashboardData){
+        if(dashboardData && dashboardData.nightSleep){
             setData(dashboardData.nightSleep)
         }
 
@@ -46,9 +46,9 @@ export function NightSleepCard({title}){
     
 
     return(
-        <div class="card" style={{  borderRadius: '10px' }}>
+        <div className="card" style={{  borderRadius: '10px' }}>
             <p style={{paddingLeft: '20px'}}>{title}</p>
-            <div class="card-body" style={{ textAlign: 'center' }}>
+            <div className="card-body" style={{ textAlign: 'center' }}>
                 {formatTime(data)}
             </div>
         </div>
@@ -60,16 +60,16 @@ export function AvgHeartRate({title}){
     const [data, setData ] = useState(0);
 
     useEffect(() => {
-        if(dashboardData){
+        if(dashboardData && dashboardData.avgHeartRate){
             setData(dashboardData.avgHeartRate)
         }
 
     }, [dashboardData]);
 
     return(
-        <div class="card" style={{  borderRadius: '10px' }}>
+        <div className="card" style={{  borderRadius: '10px' }}>
             <p style={{paddingLeft: '20px'}}>{title}</p>
-            <div class="card-body" style={{ textAlign: 'center' }}>
+            <div className="card-body" style={{ textAlign: 'center' }}>
                 {data}{" bpm"}
             </div>
         </div>
@@ -82,41 +82,40 @@ export function AvgOxygenSaturation({title}){
     const [data, setData ] = useState(0);
 
     useEffect(() => {
-        if(dashboardData){
+        if(dashboardData && dashboardData.avgOxygenSaturation){
             setData(dashboardData.avgOxygenSaturation)
         }
 
     }, [dashboardData]);
 
     return(
-        <div class="card" style={{  borderRadius: '10px' }}>
+        <div className="card" style={{  borderRadius: '10px' }}>
             <p style={{paddingLeft: '20px'}}>{title}</p>
-            <div class="card-body" style={{ textAlign: 'center' }}>
+            <div className="card-body" style={{ textAlign: 'center' }}>
                 {data}{" %"}
             </div>
         </div>
     )
 }
 
-export function Steps({title}){
+export function Steps({ title }) {
     const { dashboardData } = useContext(ApiContext);
-    const [data, setData ] = useState(0);
+    const [data, setData] = useState(0);
 
     useEffect(() => {
-        if(dashboardData){
-            setData(dashboardData.steps)
+        if (dashboardData && dashboardData.steps) {
+            setData(dashboardData.steps);
         }
-
     }, [dashboardData]);
 
-    return(
-        <div class="card" style={{  borderRadius: '10px' }}>
-            <p style={{paddingLeft: '20px'}}>{title}</p>
-            <div class="card-body" style={{ textAlign: 'center' }}>
+    return (
+        <div className="card" style={{ borderRadius: '10px' }}>
+            <p style={{ paddingLeft: '20px' }}>{title}</p>
+            <div className="card-body" style={{ textAlign: 'center' }}>
                 {data}
             </div>
         </div>
-    )
+    );
 }
 
 
