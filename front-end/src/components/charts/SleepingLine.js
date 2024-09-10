@@ -77,28 +77,6 @@ function SleepingLine(){
         }
     }, [dashboardData]);
 
-    const data = {
-            labels: [
-                '2024-08-01T13:00:00', 
-                '2024-08-01T13:05:00', 
-
-                '2024-08-01T13:05:00', 
-                '2024-08-01T13:15:00',
-
-                '2024-08-01T13:15:00',
-                '2024-08-01T13:20:00',
-
-                '2024-08-01T13:20:00'
-            ],
-        datasets: [
-            {
-                label: "Time",
-                data: [ 3, 3, 2, 2, 1, 1, 0],
-                borderColor: 'orange'
-            },
-        ],
-    }
-
 
 
     const options = {
@@ -144,9 +122,9 @@ function SleepingLine(){
                 ticks: {
                     callback: function(value) {
                         if (value === 3) return 'Awake';
-                        if (value === 2) return 'REM Sleep';
-                        if (value === 1) return 'Light Sleep';
-                        if (value === 0) return 'Deep Sleep';
+                        if (value === 2) return 'REM ';
+                        if (value === 1) return 'Light ';
+                        if (value === 0) return 'Deep ';
                     }
                 }
             }
@@ -157,7 +135,7 @@ function SleepingLine(){
     return( 
         <div className="card" style={{  borderRadius: '10px', height: '390px' }}>
             <div className="card-header">
-                <h5>Sleep data</h5>
+                <h5>Sleep stages</h5>
             </div>
             <div className="card-body d-flex justify-content-center align-items-center">
                 {
