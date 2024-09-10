@@ -67,7 +67,7 @@ function PieChart() {
   };
 
   return (
-    <div className="card" style={{ borderRadius: '10px', height: '800px' }}>
+    <div className="card" style={{ borderRadius: '10px', height: '800px', marginBottom: '30px'}}>
       <div className="card-header">
         <h5>{data_label}</h5>
       </div>
