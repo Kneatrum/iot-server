@@ -3,6 +3,7 @@ const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
 require('dotenv').config({path: envFile});
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto')
 
 const { SecretsManagerClient, CreateSecretCommand, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
 const { fromInstanceMetadata } = require("@aws-sdk/credential-providers");
@@ -10,6 +11,7 @@ const { fromInstanceMetadata } = require("@aws-sdk/credential-providers");
 
 const AWS_REGION = process.env.AWS_REGION;
 const SECRETS = process.env.SECRETS;
+const SESSIONSECRETS = process.env.SESSION_SECRETS;
 const META_TIMEOUT = parseInt(process.env.META_TIMEOUT, 10) || 1000;
 const META_RETRIES = process.env.META_RETRIES;
 
@@ -63,6 +65,47 @@ async function getSecret() {
     return { success: false,  error: error }
   }
   
+}
+
+// Function to create a new session secret in AWS Secrets Manager
+async function createSessionSecret() {
+  let sessionSecret = crypto.randomBytes(48).toString('base64');
+
+  const input = {
+      Name: SESSIONSECRETS,
+      SecretString: `{
+      "sessionSecret":"${sessionSecret}"
+      }`
+  };
+
+  const command = new CreateSecretCommand(input);
+
+  try {
+    await client.send(command);
+    return {success: true, data: sessionSecret};
+  } catch (error) {
+    console.error("Error creating secret:", error);
+    return {success: false, data: error};
+  }
+
+}
+
+
+async function getSessionSecret(){
+  const secret = { 
+    SecretId: SESSIONSECRETS
+  };
+
+  const command = new GetSecretValueCommand(secret);
+
+  try {
+    const response = await client.send(command);
+    const secretData = JSON.parse(response.SecretString);
+    return { success: true, data: secretData };
+  } catch (error) {
+    console.log("Error: ", error)
+    return { success: false,  error: error }
+  }
 }
 
 
@@ -128,7 +171,40 @@ async function createDevSecret(userName, password, apiKey, bucket, organisation)
   }
 }
 
-module.exports = { getSecret, createSecret, createDevSecret, getDevSecrets };
+// Function to create a new secret in the development environment
+async function createDevSessionSecret() {
+  const ENV_FILE_PATH = path.resolve(__dirname, envFile);
+  let sessionSecret = crypto.randomBytes(48).toString('base64');
+  
+  let Secret = `\nSESSION_SECRET=${sessionSecret}`;
+
+  
+
+
+  try {
+    fs.appendFileSync(ENV_FILE_PATH, Secret);
+    console.log("Secret: ", Secret)
+    return {success: true, data: Secret}
+  } catch (err) {
+    console.log("Ptho: ")
+    return {success: false, data: err}
+  }
+
+}
+
+function getDevSessionSecrets(){
+
+  let sessionSecret = process.env.SESSION_SECRET;
+
+  if(sessionSecret){
+    return {success: true, data: sessionSecret}
+  } else {
+    return {success: false, data: new Error("No secret found")}
+  }
+
+}
+
+module.exports = { getSecret, createSecret, createDevSecret, getDevSecrets, createSessionSecret, getSessionSecret, createDevSessionSecret, getDevSessionSecrets};
 
 
 
