@@ -4,7 +4,7 @@ require('dotenv').config({path: envFile});
 
 const { InfluxDB } = require('@influxdata/influxdb-client');
 const { Point } = require('@influxdata/influxdb-client')
-const { measurements, devices, tags, fields} = require('../constants');
+const { measurements, devices, tags, fields} = require('../../constants');
 
 
 let writeClient = null;
