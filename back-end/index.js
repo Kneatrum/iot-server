@@ -9,6 +9,9 @@ const { initializeWriteClient } = require('./database/db_write.js')
 const { initializeDeleteClient } = require('./database/db_delete.js')
 const cors = require('cors');
 const express = require('express');
+const { sequelize } = require('./databases/postgres/models/index.js')
+const session = require('express-session');
+const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
 // const { getAllData, getTemperature, getSteps } = require('./database/db_read');
 // const {deleteAllMeasurementData, deleteMeasurement, deleteTag} = require('./database/db_delete');
@@ -47,9 +50,25 @@ async function useSecret() {
             }
         }
 
+        if(sessionQuery.success){
+            // console.log(sessionQuery.data.sessionSecret);
+            sessionSecret = sessionQuery.data.sessionSecret;
+        } else {
+            let response = await createSessionSecret();
+            if(response.success){
+                sessionSecret = response.data.sessionSecret
+            } else {
+                console.log("Unable to retrieve session secret")
+                throw new Error("Unable to retrieve session secret")
+            }
+        }
+
+
     } else if (env === 'development'){
         console.log("Retrieving secrets from the development environment")
         let result = getDevSecrets();
+        let sessionQuery = getDevSessionSecrets();
+        
         if(result.success){
             let API_KEY = result.data.apiKey;
             let ORG = result.data.organisation;
@@ -64,8 +83,21 @@ async function useSecret() {
                 console.log("Onboarding success")
             } else {
                 console.log("Unable to get the API token");
+                throw new Error("Unable to retrieve API token");
             }
         }
+
+        if(sessionQuery.success){
+            sessionSecret =  sessionQuery.data
+        } else {
+            let result = await createDevSessionSecret();
+            if(result.success){
+                sessionSecret = result.data
+            } else {
+                throw new Error("Unable to create dev session secret");
+            }
+        }
+
     }
     
   }
@@ -223,7 +255,32 @@ mqttClient.on('message', (topic, message) => {
 //   });
 
 const general_routes = require('./router/general.js').general;
+const user_routes = require('./router/users.js');
+
 app.use("/", general_routes);
+
+const sessionStore = new SequelizeStore({
+    db: sequelize,
+    checkExpirationInterval: 15 * 60 * 1000, // 15 Minutes interval at which to cleanup expired sessions in milliseconds.
+    expiration: 24 * 60 * 60 * 1000  // One day maximum age (in milliseconds) of a valid session.
+});
+
+// Apply session middleware only for the /users routes
+app.use(
+    "/users",
+    session({
+        secret: sessionSecret,
+        store: sessionStore,
+        saveUninitialized: false,
+        resave: false,
+        cookie: {
+            maxAge: 60000 * 60,  // 1 hour
+        }
+    }),
+    user_routes
+);
+
+sessionStore.sync();
 
 app.listen(backEndPort, () => {
     console.log(`Web server listening at ${backEndPort}`);
