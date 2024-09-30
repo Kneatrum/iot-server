@@ -1,0 +1,15 @@
+/* 
+globals.css 
+
+Global CSS constants are stored here
+
+*/
+
+:root {
+    --global-background-color: #01010F;
+    --dashboard-transition: margin-left 0.7s ease;
+    --global-font-family: Arial, sans-serif;
+    --global-white-color: white;
+    --global-button-color: #3F72FE;
+    --global-button-hover-color:  #A0B8FE;
+}
