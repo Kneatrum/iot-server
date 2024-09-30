@@ -6,70 +6,32 @@ import SleepSummary from './components/charts/SleepSummary';
 import HeartChart from './components/charts/HeartChart';
 import {NightSleepCard, AvgHeartRate, AvgOxygenSaturation, Steps} from './components/Cards';
 import { ApiProvider } from './context/ApiContext';
+import React from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+
+import Auth from './components/pages/Auth.js';
+import Admin from './components/pages/Admin.js';
+import Login from './components/pages/Login';
+import Register from './components/pages/Register.js';
+import Reset from './components/pages/Reset';
+import Demo from './components/pages/Demo';
+import Dashboard from './components/pages/Dashboard';
 
 const App = () => {
 
   return (
     <ApiProvider>
-         <div style={{
-        backgroundImage: 'url("/background.jpg")', // Replace with your image name
-        backgroundSize: 'cover', // Ensures the image covers the entire background
-        backgroundRepeat: 'no-repeat', // Prevents the image from repeating
-        backgroundPosition: 'center', // Centers the image
-        color: 'black',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column'
-      }}>
-            <div className='container' style={{paddingBottom: '20px'}}>
-                <FitHeader />
-            </div>
-            <div className='container' style={{ paddingBottom: '20px' }}>
-                <div className='row'>
-                    <div className='col-md-3'><NightSleepCard title="Night Sleep" /></div>
-                    <div className='col-md-3'><AvgHeartRate title="Avg Heart Rate" /></div>
-                    <div className='col-md-3'><AvgOxygenSaturation title="Oxygen Saturation (Sp02)" /></div>
-                    <div className='col-md-3'><Steps title="Steps" /></div>
-                </div>
-            </div>
-            
-            <div className="container">
-                <div className="row">
-                    <div className="col-md-3">
-                        <ActionChart />
-                    </div>
-
-
-                    <div className="col-md-9">
-                        <div class='row'>
-
-                            <div className='col-md-8'>
-                                <SleepingLine />
-                            </div>
-
-                            <div className='col-md-4'>
-                                <SleepSummary />
-                            </div>
-
-                        </div>
-
-                        <div class='row'>
-
-                            <div className='col-8'>
-                                <HeartChart />
-                            </div>
-
-                            <div className='col-4'>
-                                <Bar />
-                            </div>
-
-                        </div>
-                    </div>
-
-                </div>
-                
-            </div>
-        </div>
+      <Router>
+        <Routes>
+          <Route path="/" element={ <Auth/> } />
+          <Route path="/admin" element={ <Admin/> } />
+          <Route path="/login" element={ <Login/> } />
+          <Route path="/register" element={ <Register/> } />
+          <Route path="/reset" element={ <Reset/> } />
+          <Route path="/demo" element={ <Demo/> } />
+          <Route path="/dashboard" element={ <Dashboard/> } />
+        </Routes>
+      </Router>
     </ApiProvider>
   );
 }
