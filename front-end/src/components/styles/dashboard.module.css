@@ -1,0 +1,9 @@
+
+
+/* Dashboard.css */
+.dashboard {
+    transition: var(--dashboard-transition);
+    overflow-x: auto; /* Allow horizontal scrolling if needed */
+    overflow-y: auto; /* Hide vertical overflow */
+    /*height: calc(100vh - 89px);  Adjust height according to your header */
+}

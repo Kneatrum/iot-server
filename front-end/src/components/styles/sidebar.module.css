@@ -1,0 +1,69 @@
+/* Sidebar with dynamic height */
+.sidebar {
+  height: calc(100% - 60px); /* Subtract header height from 100% */
+  width: 250px; /* Full width when expanded */
+  position: fixed;
+  top: 60px; /* Start below the header */
+  left: 0;
+  background-color: var(--global-background-color); /* Maintain background color */
+  padding-top: 20px;
+  transition: width 0.7s ease; /* Smooth transition */
+  overflow: hidden; /* Prevent content overflow when collapsed */
+  opacity: 1; /* Ensure no opacity issues */
+  box-shadow: none; /* Ensure no shadow is applied */
+}
+
+/* Sidebar when collapsed */
+.collapsed {
+  height: calc(100% - 60px); /* Subtract header height from 100% */
+  width: 60px; /* Full width when expanded */
+  position: fixed;
+  top: 60px; /* Start below the header */
+  left: 0;
+  background-color: var(--global-background-color); /* Maintain background color */
+  padding-top: 20px;
+  transition: width 0.7s ease; /* Smooth transition */
+  overflow: hidden; /* Prevent content overflow when collapsed */
+  opacity: 1; /* Ensure no opacity issues */
+  box-shadow: none; /* Ensure no shadow is applied */
+}
+
+/* Sidebar links */
+.link {
+  display: flex;
+  align-items: center; /* Center items vertically */
+  padding: 15px 8px;
+  text-decoration: none;
+  color: white;
+  transition: all 0.3s ease; /* Smooth transition */
+  white-space: nowrap; /* Prevent text from wrapping */
+  overflow: hidden; /* Prevent overflow */
+  text-overflow: ellipsis; /* Show ellipsis if text is too long */
+}
+
+/* Icon styling */
+.icon {
+  margin-right: 10px; /* Space between icon and text */
+}
+
+/* Show or hide text based on collapsed state */
+.hidden {
+  display: none; /* Hide the text */
+}
+
+.visible {
+  display: inline; /* Show the text */
+}
+
+/* Hover effect on links */
+.link:hover {
+  background-color: #575757;
+}
+
+/* Toggle link for expand/collapse */
+.link:last-child {
+  margin-top: auto; /* Align it to the bottom */
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+}

@@ -1,0 +1,24 @@
+/* Header.css */
+.header {
+    background-color: var(--global-background-color);
+    padding: 20px;
+    transition: background-color 0.3s ease;
+    position: fixed; /* Keep the header fixed */
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999; /* Ensure the header stays above the sidebar */
+    opacity: 1; /* Ensure no opacity issues */
+    box-shadow: none; /* Ensure no shadow is applied */
+  }
+  
+
+.header-title {
+    font-size: 25px;
+    color: #B0C4DE;
+}
+
+/* Ensure the title color does not change on header hover */
+.header:hover .header-title {
+    color: #B0C4DE; /* Keep the title color the same on hover */
+}
