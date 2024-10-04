@@ -1,0 +1,12 @@
+.gridItem {
+    background: lightblue; /* Background color */
+    border: 1px solid #ccc; /* Border color */
+    padding: 10px; /* Padding inside the grid item */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow */
+    transition: box-shadow 0.3s ease; /* Smooth transition on hover */
+}
+
+/* Optional: Add a hover effect */
+.gridItem:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
