@@ -8,3 +8,11 @@
     background-color: rgb(20, 54, 74);
     height: 100vh; 
 }
+
+.dashboard.sidebarExpanded {
+    margin-left: var(--expanded-sidebar-width); /* When the sidebar is expanded */
+}
+
+.dashboard.sidebarCollapsed {
+    margin-left: var(--collapsed-sidebar-width); /* When the sidebar is collapsed */
+}
