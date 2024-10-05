@@ -3,7 +3,8 @@
     border: 1px solid #ccc; /* Border color */
     padding: 10px; /* Padding inside the grid item */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow */
-    transition: box-shadow 0.3s ease; /* Smooth transition on hover */
+    transition: box-shadow 0.7s ease; /* Smooth transition on hover */
+    height: auto;
 }
 
 /* Optional: Add a hover effect */
