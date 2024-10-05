@@ -1,7 +1,7 @@
 /* Sidebar with dynamic height */
 .sidebar {
   height: calc(100% - 60px); /* Subtract header height from 100% */
-  width: 250px; /* Full width when expanded */
+  width: var(--expanded-sidebar-width); 
   position: fixed;
   top: 60px; /* Start below the header */
   left: 0;
@@ -16,7 +16,7 @@
 /* Sidebar when collapsed */
 .collapsed {
   height: calc(100% - 60px); /* Subtract header height from 100% */
-  width: 60px; /* Full width when expanded */
+  width: var(--collapsed-sidebar-width); 
   position: fixed;
   top: 60px; /* Start below the header */
   left: 0;
