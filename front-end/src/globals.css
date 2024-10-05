@@ -12,4 +12,5 @@ Global CSS constants are stored here
     --global-white-color: white;
     --global-button-color: #3F72FE;
     --global-button-hover-color:  #A0B8FE;
+    --header-height: 60px;
 }
