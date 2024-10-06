@@ -7,6 +7,7 @@ Global CSS constants are stored here
 
 :root {
     --global-background-color: #01010F;
+    --grid-layout-background-color: rgba(50, 150, 300, 0.2);
     --dashboard-transition: margin-left 0.7s ease;
     --global-font-family: Arial, sans-serif;
     --global-white-color: white;

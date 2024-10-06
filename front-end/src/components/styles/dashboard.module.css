@@ -5,7 +5,7 @@
     padding-top: var(--header-height);
     transition: var(--dashboard-transition);
     overflow-y: auto; 
-    background-color: rgb(20, 54, 74);
+    background-color: var(--grid-layout-background-color);
     height: 100vh; 
 }
 
