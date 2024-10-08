@@ -28,6 +28,20 @@
   box-shadow: none; /* Ensure no shadow is applied */
 }
 
+/* Panel icon */
+.panelIcon {
+  margin: 10px;
+  justify-content: center;
+  border-radius: 20%;
+  align-items: center;
+  transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+.panelIcon:hover {
+  background-color: #1a75bf6d;  
+  transform: scale(1.4); 
+} 
+
 /* Sidebar links */
 .link {
   display: flex;
@@ -57,7 +71,7 @@
 
 /* Hover effect on links */
 .link:hover {
-  background-color: #575757;
+  background-color: #2d2dbf79;
 }
 
 /* Toggle link for expand/collapse */
