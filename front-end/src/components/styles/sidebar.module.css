@@ -6,7 +6,7 @@
   top: 60px; /* Start below the header */
   left: 0;
   background-color: var(--global-background-color); /* Maintain background color */
-  padding-top: 20px;
+  padding-top: 0px;
   transition: width 0.7s ease; /* Smooth transition */
   overflow: hidden; /* Prevent content overflow when collapsed */
   opacity: 1; /* Ensure no opacity issues */
@@ -21,7 +21,7 @@
   top: 60px; /* Start below the header */
   left: 0;
   background-color: var(--global-background-color); /* Maintain background color */
-  padding-top: 20px;
+  padding-top: 0px;
   transition: width 0.7s ease; /* Smooth transition */
   overflow: hidden; /* Prevent content overflow when collapsed */
   opacity: 1; /* Ensure no opacity issues */
