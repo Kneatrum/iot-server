@@ -74,10 +74,3 @@
   background-color: #2d2dbf79;
 }
 
-/* Toggle link for expand/collapse */
-.link:last-child {
-  margin-top: auto; /* Align it to the bottom */
-  padding: 10px;
-  text-align: center;
-  font-weight: bold;
-}
