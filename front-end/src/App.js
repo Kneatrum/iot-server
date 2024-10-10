@@ -1,10 +1,4 @@
-import SleepingLine from './components/charts/SleepingLine';
-import Bar from './components/charts/Bar';
-import ActionChart from './components/charts/ActionChart';
-import FitHeader from './components/FitHeader';
-import SleepSummary from './components/charts/SleepSummary';
-import HeartChart from './components/charts/HeartChart';
-import {NightSleepCard, AvgHeartRate, AvgOxygenSaturation, Steps} from './components/Cards';
+
 import { ApiProvider } from './context/ApiContext';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
