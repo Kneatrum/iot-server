@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
-import styles from '../styles/auth.module.css'; // Import the CSS file
+import styles from '../styles/auth.module.css';
+import api from '../../api/api';
+import { useNavigate } from 'react-router-dom';
+import Toast from '../Toast.js';
+import Spinner from '../Spinner.js';
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+
+  const navigate = useNavigate();
+
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
