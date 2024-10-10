@@ -1,0 +1,46 @@
+.toast {
+    visibility: hidden; /* Hidden by default */
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #ffffff1a;
+    color: white;
+    text-align: center;
+    border-radius: 30px;
+    padding: 16px;
+    position: fixed;
+    z-index: 1;
+    left: 50%; /* Centered horizontally */
+    top: -50px; /* Start off the screen at the top */
+    font-size: 17px;
+    opacity: 0;
+    transition: opacity 0.5s, top 0.5s; /* Animate both top and opacity */
+  }
+  
+  .toast.show {
+    visibility: visible; /* Show the toast */
+    opacity: 1;
+    top: 30px; /* Slide down to 30px from the top */
+  }
+  
+  @keyframes fadein {
+    from {
+      top: -50px;
+      opacity: 0;
+    }
+    to {
+      top: 30px;
+      opacity: 1;
+    }
+  }
+  
+  @keyframes fadeout {
+    from {
+      top: 30px;
+      opacity: 1;
+    }
+    to {
+      top: -50px;
+      opacity: 0;
+    }
+  }
+  

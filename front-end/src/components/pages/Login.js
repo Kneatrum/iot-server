@@ -20,6 +20,9 @@ const Login = () => {
   return (
     <div className={styles.container}>
       <form className={styles.form} onSubmit={handleSubmit}>
+
+        {errorMessage && ( <Toast message={errorMessage}/> )}
+
         <h2 className={styles.title}>Log In</h2>
         <input
           type="email"
