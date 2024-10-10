@@ -39,6 +39,11 @@ const Login = () => {
           className={styles.input}
           required
         />
+
+        <div className={styles.spinnerContainer}>
+          {loading ? (< Spinner size={20} />) : ''}
+        </div>
+
         <button 
           type="submit" 
           className={styles.button}
