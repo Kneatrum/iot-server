@@ -3,31 +3,40 @@ import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import styles from './styles/header.module.css';
 import { Link } from 'react-router-dom';
+import api from '../api/api';
+import { useNavigate } from 'react-router-dom';
 
 function Header() {
-  const [tag, setTag] = useState("Log In");
+  const [tag, setTag] = useState('Log In');
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // if(userHasLoggedIn){ 
-      setTag('Log Out');
-    // } else{
-    //   setTag('Log In');
-    // }
-  }, [/*userHasLoggedIn*/]);
-
-  // Define the onClick event handler
-  const handleButtonClick = () => {
-    // Add your logic here
-    if (tag === "Log In") {
-      console.log("User logged in");
-      // Perform login actions
-    } else {
-      console.log("User logged out");
-      // Perform logout actions
+    const checkAuth = async () => {
+      try {
+        const response = await api.get('/status');
+        if(response.data.isAuthenticated){
+          setTag('Log Out');
+        }
+      } catch (error) {
+        console.log('Something went wrong');
+      }
     }
-    
-    // Toggle the button text (optional)
-    setTag((prevTag) => (prevTag === "Log In" ? "Log Out" : "Log In"));
+    checkAuth();
+  }, [tag]);
+
+  
+  const handleButtonClick = async () => {
+    try {
+      const response = await api.post('/logout');
+      if(response.status === 200){
+        const data = await response.data;
+        console.log(data);
+        setTag((prevTag) => (prevTag === "Log In" ? "Log Out" : "Log In"));
+        navigate('/login');
+      }
+    } catch(err) {
+      console.log('Unable to log out')
+    }
   };
 
   return (
