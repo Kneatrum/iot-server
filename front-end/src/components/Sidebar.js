@@ -1,37 +1,37 @@
 import React from "react";
 import styles from './styles/sidebar.module.css'; 
+import chartTypes  from "./ChartTypes";
+import {ReactComponent as PanelClose}  from '../assets/panel-close.svg';
+import {ReactComponent as PanelOpen} from '../assets/panel-open.svg';
 
-const Sidebar = ({ addWidget, isCollapsed, onToggle }) => {
+const Sidebar = ({ saveLayout, addWidget, isCollapsed, onToggle }) => {
+
   
   return (
     <div className={isCollapsed ? styles.collapsed : styles.sidebar}>
      
-      <a href="#toggle" className={styles.link} onClick={onToggle}>
-        {isCollapsed ? '🡆' : '🡄'}
-      </a>
-
-      <a href="#home" className={styles.link} onClick={() => addWidget('LineChart')}>
-        <span className={styles.icon}>🏠</span>
-        <span className={isCollapsed ? styles.hidden : styles.visible}>Line chart</span>
-      </a>
-
-      <a href="#news" className={styles.link}>
-        <span className={styles.icon}>📰</span>
-        <span className={isCollapsed ? styles.hidden : styles.visible}>Bar graph</span>
-      </a>
-
-      <a href="#contact" className={styles.link}>
-        <span className={styles.icon}>📞</span>
-        <span className={isCollapsed ? styles.hidden : styles.visible}>Pie chart</span>
-      </a>
-
-      <a href="#about" className={styles.link}>
-        <span className={styles.icon}>ℹ️</span>
-        <span className={isCollapsed ? styles.hidden : styles.visible}>About</span>
-      </a>
-
+      <span onClick={onToggle}>
+        {
+          isCollapsed ?(
+            <PanelOpen className={styles.panelIcon}/>
+          ) : (
+            <PanelClose className={styles.panelIcon}/>
+          )
+        }
+      </span>
+  
+      {
+        Object.entries(chartTypes).map(([key, element]) => (
+          <a href="#" className={styles.link} onClick={() => addWidget(key, element.minWidth, element.minHeight)} key={key}>
+            <span className={styles.icon}>{element.icon}</span>
+            <span className={isCollapsed ? styles.hidden : styles.visible}>{element.type}</span>
+          </a>
+        ))
+      }
+  
+      {/*saveLayout()*/}
+  
     </div>
-
   );
 };
 
