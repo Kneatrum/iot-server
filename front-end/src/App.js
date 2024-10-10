@@ -16,6 +16,7 @@ import Register from './components/pages/Register.js';
 import Reset from './components/pages/Reset';
 import Demo from './components/pages/Demo';
 import Dashboard from './components/pages/Dashboard';
+import ProtectedRoute from './components/protectedRoutes/ProtectedRoutes.js';
 
 const App = () => {
 
@@ -29,7 +30,7 @@ const App = () => {
           <Route path="/register" element={ <Register/> } />
           <Route path="/reset" element={ <Reset/> } />
           <Route path="/demo" element={ <Demo/> } />
-          <Route path="/dashboard" element={ <Dashboard/> } />
+          <Route path="/dashboard" element={ <ProtectedRoute> <Dashboard/> </ProtectedRoute> } />
         </Routes>
       </Router>
     </ApiProvider>
