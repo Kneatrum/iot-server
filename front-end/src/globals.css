@@ -11,9 +11,9 @@ Global CSS constants are stored here
     --dashboard-transition: margin-left 0.7s ease;
     --global-font-family: Arial, sans-serif;
     --global-white-color: white;
-    --global-button-color: #3F72FE;
-    --global-button-hover-color:  #A0B8FE;
+    --global-button-color: #0040ff;
+    --global-button-hover-color:  #021f75;
     --header-height: 60px;
-    --expanded-sidebar-width: 150px;
+    --expanded-sidebar-width: 200px;
     --collapsed-sidebar-width: 40px;
 }

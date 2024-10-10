@@ -1,5 +1,5 @@
 .gridItem {
-    background: lightblue; /* Background color */
+    background: rgb(255, 255, 255); /* Background color */
     border: 1px solid #ccc; /* Border color */
     padding: 10px; /* Padding inside the grid item */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow */
