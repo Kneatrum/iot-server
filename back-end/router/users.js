@@ -19,17 +19,18 @@ user_routes.post('/register', async (req, res) => {
     const { userName, email, password } = req.body
 
     try {
+        console.log("Received :", userName, password, email)
         const userExists = await User.findOne({ where: { email } });
 
         if(userExists){
-            console.log("A user already exists with the same email address")
-            return res.redirect('/register')
+            return res.status(409).json({ 
+                message: 'A user with the provided Email address already exists.' 
+            });
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        const user = await User.create({ userName, email, password: hashedPassword });
-        res.send(user)
-        // return res.redirect('/login')
+        await User.create({ userName, email, password: hashedPassword });
+        return res.status(201).json({ message: 'Registration successful' });
     } catch(err){
         console.log(err)
         return res.status(500).json(err)
@@ -45,20 +46,19 @@ user_routes.post('/login', async (req, res) => {
         const user = await User.findOne({ where: { email } });
 
         if(!user){
-            console.log("No user is registered under the provided email");
-            return res.redirect('/login');
+            return res.status(401).json({ error: 'Unauthorized. Please sign up first.' });
         }
 
         const isValidPass = await bcrypt.compare(password, user.password);
 
         if(!isValidPass){
-            console.log("Wrong password. Please try again.");
-            return res.redirect('/login');
+            return res.status(401).json({ error: 'Invalid password or email!' });
         }
 
         req.session.user = user;
-        res.send(req.session)
-        // return res.redirect('/dashboard');     
+        
+        return res.status(200).json({ message: 'Login successful' });  
+
     } catch(err){
         console.log(err);
         return res.status(500).json(err);
@@ -69,7 +69,7 @@ user_routes.post('/login', async (req, res) => {
 user_routes.post('/logout', (req, res) => {
     req.session.destroy((err) => {
         if(err) throw err;
-        res.redirect('/');
+        res.status(200).json({message: 'Success'});
     });
 });
 
@@ -207,5 +207,9 @@ user_routes.put('/:chart', isAuthenticated, async (req, res) => {
     }
 })
 
+
+user_routes.get('/status', isAuthenticated, async (req, res) => {
+    return res.status(200).json({isAuthenticated: true})
+});
 
 module.exports = user_routes;
