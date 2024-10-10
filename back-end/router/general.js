@@ -1,5 +1,5 @@
 const express = require('express');
-const { getAllData, getHeartBeatRate, getTemperature, getAction, getSound, getSleepData, getWalkingData, getJoggingData, getSteps, getBikingData, getIdlingData, getOxygenSaturationData } = require('../database/db_read');
+const { getAllData, getHeartBeatRate, getTemperature, getAction, getSound, getSleepData, getWalkingData, getJoggingData, getSteps, getBikingData, getIdlingData, getOxygenSaturationData } = require('../databases/influxdb/db_read');
 const public_users = express.Router();
 const TIMEOUT = 5;
 
