@@ -20,10 +20,28 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => { 
     e.preventDefault();
-    // Handle login logic here
-    console.log('Login data:', formData);
+    setLoading(true);
+    setErrorMessage('');
+
+    try {
+      const response = await api.post('/login', formData);
+      
+      if (response.status === 200) {
+        const data = await response.data;
+        console.log(data)
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        setErrorMessage(error.response.data.error);
+      } else {
+        setErrorMessage('An error occurred. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
