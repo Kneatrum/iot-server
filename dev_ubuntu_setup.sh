@@ -28,6 +28,42 @@ echo "Starting influxdb"
 sleep 0.5
 sudo service influxdb start
 
+echo "Installing Postgres database"
+sudo apt install postgresql -y
+
+PG_CONF_FILE="/etc/postgresql/14/main/postgresql.conf"
+LISTEN_ADDRESS="0.0.0.0"  # Set this to the IP address or IP addresses you want
+
+# Check if the file exists
+if [[ ! -f "$PG_CONF_FILE" ]]; then
+  echo "Error: Configuration file $PG_CONF_FILE does not exist."
+  exit 1
+fi
+
+# Use sed to uncomment and set listen_addresses
+# The `^` anchors the search to the beginning of the line, while `s` substitutes the text
+sed -i "/^#listen_addresses =.*/s/^#//; s/listen_addresses = .*/listen_addresses = '$LISTEN_ADDRESS'/" "$PG_CONF_FILE"
+
+# Inform the user of the change
+echo "The listen_addresses parameter has been updated in $PG_CONF_FILE to '$LISTEN_ADDRESS'."
+
+
+
+# Prompt user for the new password
+read -sp "Enter the new password for the postgres user: " POSTGRES_PASSWORD
+echo
+
+# Run the command to set the password using heredoc
+sudo -u postgres psql postgres <<EOF
+ALTER USER postgres WITH PASSWORD '${POSTGRES_PASSWORD}';
+EOF
+
+# Check if the command was successful
+if [ $? -eq 0 ]; then
+    echo "Password for the postgres user has been successfully changed."
+else
+    echo "Failed to change the password."
+fi
 
 echo "____________________________________Installing Mosquitto Broker________________________________"
 sleep 0.5
