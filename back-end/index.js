@@ -161,7 +161,8 @@ app.use(cors({
         // If the origin is not allowed, return an error
         callback(new Error('Not allowed by CORS'));
       }
-    }
+    },
+    credentials: true,
   }));
 
 
