@@ -23,9 +23,10 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setErrorMessage('');
     try {
       
-      console.log('Sign up data:', formData);
       const response = await api.post('/register', formData);
   
       if (response.status === 201) {
@@ -48,11 +49,7 @@ const Register = () => {
     <div className={styles.container}>
       <form className={styles.form} onSubmit={handleSubmit}>
         
-      {errorMessage && (
-          <div className={styles.errorMessage}>
-            {errorMessage}
-          </div>
-      )}
+        {errorMessage && ( <Toast message={errorMessage}/> )}
 
 
         <h1 className={styles.title}>Register</h1>
@@ -87,7 +84,9 @@ const Register = () => {
           required
         />
         
-        {loading ? 'Logging in...' : ''}
+        <div className={styles.spinnerContainer}>
+          {loading ? (< Spinner size={20} />) : ''}
+        </div>
 
         <button type="submit" className={styles.button}>
           Submit
