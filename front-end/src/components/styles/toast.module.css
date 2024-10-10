@@ -1,7 +1,6 @@
 .toast {
     visibility: hidden; /* Hidden by default */
     min-width: 250px;
-    margin-left: -125px;
     background-color: #ffffff1a;
     color: white;
     text-align: center;
@@ -10,6 +9,7 @@
     position: fixed;
     z-index: 1;
     left: 50%; /* Centered horizontally */
+    transform: translateX(-50%);
     top: -50px; /* Start off the screen at the top */
     font-size: 17px;
     opacity: 0;
