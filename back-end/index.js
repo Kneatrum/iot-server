@@ -2,11 +2,11 @@ const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? './.env' : `./.env.${env}`;
 require('dotenv').config({path: envFile});
 
-const { getSecret, createSecret, createDevSecret, getDevSecrets } = require('./secrets/aws_secrets.js')
-const { setupInfluxDB } = require('./database/db_init.js');
-const { initializeReadClient } = require('./database/db_read.js')
-const { initializeWriteClient } = require('./database/db_write.js')
-const { initializeDeleteClient } = require('./database/db_delete.js')
+const { getSecret, createSecret, createDevSecret, getDevSecrets, createSessionSecret, getSessionSecret, getDevSessionSecrets, createDevSessionSecret } = require('./secrets/aws_secrets.js')
+const { setupInfluxDB } = require('./databases/influxdb/db_init.js');
+const { initializeReadClient } = require('./databases/influxdb/db_read.js')
+const { initializeWriteClient } = require('./databases/influxdb/db_write.js')
+const { initializeDeleteClient } = require('./databases/influxdb/db_delete.js')
 const cors = require('cors');
 const express = require('express');
 const { sequelize } = require('./databases/postgres/models/index.js')
@@ -22,6 +22,9 @@ const USERNAME = "Martin";
 const PASSWORD = "password1234";
 const ORG = "fitnessOrg";
 const BUCKET = "fitBucket";
+const PG_USERNAME = "postgress";
+const PG_PASSWORD = "1234";
+let sessionSecret = null;
 
 const INFLUXDB_URL = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
@@ -37,6 +40,9 @@ async function useSecret() {
 
     if(env === 'production'){
         const result = await getSecret();
+        const sessionQuery = await getSessionSecret();
+        const r = await sequelize.authenticate();
+        console.log('Connected to database', r);
 
         if (result.success) {
             initializeDbClients(INFLUXDB_URL, result.data.apiKey, result.data.organisation, result.data.bucket);
@@ -46,7 +52,8 @@ async function useSecret() {
                 createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
                 initializeDbClients(INFLUXDB_URL, response.data, ORG, BUCKET);
             } else {
-                console.log("Unable to get the API token :");
+                console.log("Unable to retrieve the API token :");
+                throw new Error("Unable to retrieve the API token")
             }
         }
 
@@ -127,7 +134,7 @@ const {
     writeBikingData,
     writeIdlingDuration,
     writeOxygenSaturation
-} = require('./database/db_write');
+} = require('./databases/influxdb/db_write.js');
 
 const {     
     ch_temperature,
