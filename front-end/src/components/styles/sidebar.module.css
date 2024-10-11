@@ -28,19 +28,88 @@
   box-shadow: none; /* Ensure no shadow is applied */
 }
 
-/* Panel icon */
-.panelIcon {
-  margin: 10px;
-  justify-content: center;
-  border-radius: 20%;
+.panelIconContainer {
+  display: flex;
+  justify-content: left;
   align-items: center;
-  transition: background-color 0.3s ease; /* Smooth hover transition */
+  height: 40px;
+  width: 40px;
+  border-radius: 20px;
+  margin-bottom: 20px;
 }
 
-.panelIcon:hover {
-  background-color: #1a75bf6d;  
-  transform: scale(1.4); 
+/* Panel icon */
+.panelIcon {
+  display: flex;
+  margin-right: 10px;
+  margin-left: 8px;
+  cursor: pointer;  
+}
+
+.panelIconContainer:hover {
+  background-color: hsla(243, 89%, 67%, 0.306);
+}
+
+.panelIcon:active {
+  /* background-color: hsla(243, 89%, 67%, 0.306);   */
+  transform: scale(1.1); 
 } 
+
+.topicIconContainerBig {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  background-color: hsla(243, 89%, 67%, 0.306);
+  border-radius: 20px;
+  height: 40px;
+  margin-bottom: 20px;
+  margin-right: 10px;
+}
+
+.topicIconContainerSmall {
+  display: flex;
+  justify-content: left;
+  align-items: center;
+  background-color: hsla(243, 89%, 67%, 0.306);
+  border-radius: 20px;
+  height: 40px;
+  margin-bottom: 20px;
+}
+
+.topicIcon {
+  display: flex;
+  margin-right: 10px;
+  margin-left: 8px;
+  cursor: pointer;
+}
+
+.topicIconContainerSmall:hover,
+.topicIconContainerBig:hover
+ {
+  background-color: #2d2dbf79;
+} 
+
+.topicIconTextShow {
+  display: inline;
+  white-space: nowrap;
+  color: white;
+  cursor: pointer;
+}
+
+.topicIconTextHide {
+  display: none;
+}
+
+.linkContainer {
+  background-color: hsla(243, 89%, 67%, 0.306);
+  border-radius: 20px;
+}
+
+.linkContainerBig {
+  background-color: hsla(243, 89%, 67%, 0.306);
+  border-radius: 20px;
+  margin-right: 10px;
+}
 
 /* Sidebar links */
 .link {
@@ -53,11 +122,16 @@
   white-space: nowrap; /* Prevent text from wrapping */
   overflow: hidden; /* Prevent overflow */
   text-overflow: ellipsis; /* Show ellipsis if text is too long */
+  height: 40px;
+  border-radius: 19px;
 }
 
 /* Icon styling */
 .icon {
+  display: flex;
   margin-right: 10px; /* Space between icon and text */
+  align-items: center;
+  cursor: pointer;
 }
 
 /* Show or hide text based on collapsed state */
@@ -67,6 +141,8 @@
 
 .visible {
   display: inline; /* Show the text */
+  cursor: pointer;
+  color: white;
 }
 
 /* Hover effect on links */
