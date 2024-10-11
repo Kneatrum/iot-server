@@ -3,6 +3,7 @@ import styles from './styles/sidebar.module.css';
 import chartTypes  from "./ChartTypes";
 import {ReactComponent as PanelClose}  from '../assets/panel-close.svg';
 import {ReactComponent as PanelOpen} from '../assets/panel-open.svg';
+import { ReactComponent as AddMqtt } from '../assets/mqtt-topics.svg'
 
 const Sidebar = ({ saveLayout, addWidget, isCollapsed, onToggle }) => {
 
@@ -10,7 +11,7 @@ const Sidebar = ({ saveLayout, addWidget, isCollapsed, onToggle }) => {
   return (
     <div className={isCollapsed ? styles.collapsed : styles.sidebar}>
      
-      <span onClick={onToggle}>
+      <div className={styles.panelIconContainer} onClick={onToggle}>
         {
           isCollapsed ?(
             <PanelOpen className={styles.panelIcon}/>
@@ -18,16 +19,23 @@ const Sidebar = ({ saveLayout, addWidget, isCollapsed, onToggle }) => {
             <PanelClose className={styles.panelIcon}/>
           )
         }
-      </span>
-  
-      {
-        Object.entries(chartTypes).map(([key, element]) => (
-          <a href="#" className={styles.link} onClick={() => addWidget(key, element.minWidth, element.minHeight)} key={key}>
-            <span className={styles.icon}>{element.icon}</span>
-            <span className={isCollapsed ? styles.hidden : styles.visible}>{element.type}</span>
-          </a>
-        ))
-      }
+      </div>
+
+      <div className={ isCollapsed ? styles.topicIconContainerSmall : styles.topicIconContainerBig }>
+        <span className={styles.topicIcon}> <AddMqtt/> </span>
+        <span className={isCollapsed ? styles.topicIconTextHide : styles.topicIconTextShow}>Add Data Sources</span>
+      </div>
+
+      <div className={ isCollapsed ? styles.linkContainer : styles.linkContainerBig}>
+        {
+          Object.entries(chartTypes).map(([key, element]) => (
+            <div className={styles.link} onClick={() => addWidget(key, element.minWidth, element.minHeight)} key={key}>
+              <span className={styles.icon}>{element.icon}</span>
+              <span className={isCollapsed ? styles.hidden : styles.visible}>{element.type}</span>
+            </div>
+          ))
+        }
+      </div>
   
       {/*saveLayout()*/}
   
