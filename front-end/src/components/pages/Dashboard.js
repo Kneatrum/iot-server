@@ -11,6 +11,7 @@ import  chartTypes  from '../ChartTypes.js';
 import { Line, Bar, Pie, Doughnut } from 'react-chartjs-2'
 import 'chartjs-adapter-date-fns';
 import { v4 as uuidv4 } from 'uuid';
+import  Modal  from '../Modal/Modal.js'
 
 import {
   Chart as ChartJS, 
@@ -68,6 +69,7 @@ const Dashboard = () => {
   const [realTimeData, setRealTimeData] = useState([]);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [modalState, setModalState] = useState(false);
 
 
   useEffect(() => {
@@ -112,6 +114,10 @@ const Dashboard = () => {
       console.error('Error:', err);
     }
   };
+
+  const showModal = () => {
+    setModalState(true);
+  }
 
 
   const addWidget = (type, minWidth, minHeight) => {
@@ -208,7 +214,7 @@ const Dashboard = () => {
     
     <>
       <Header/>
-      <Sidebar saveLayout = {saveLayout} addWidget={addWidget} isCollapsed={isCollapsed} onToggle={toggleSidebar} />
+      <Sidebar showModal = {showModal} saveLayout = {saveLayout} addWidget={addWidget} isCollapsed={isCollapsed} onToggle={toggleSidebar} />
       <div className={`${styles.dashboard} ${isCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
         <GridLayout
           className="complex-interface-layout"
@@ -223,7 +229,7 @@ const Dashboard = () => {
         >
           {
             charts.map((chart) => {
-            const ChartComponent =  chartComponents[chart.type];
+              const ChartComponent =  chartComponents[chart.type];
               return (
                 <div key={chart.id}  className={gridcss.gridItem}>
                   <ChartComponent data={chart.data} options={chart.options} />
@@ -232,6 +238,7 @@ const Dashboard = () => {
             })          
           }
         </GridLayout>
+        <Modal show={modalState} onClose={() => setModalState(false)} />
       </div>
     </>
   );

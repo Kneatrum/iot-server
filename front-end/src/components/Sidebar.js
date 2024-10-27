@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from './styles/sidebar.module.css'; 
 import chartTypes  from "./ChartTypes";
 import {ReactComponent as PanelClose}  from '../assets/panel-close.svg';
 import {ReactComponent as PanelOpen} from '../assets/panel-open.svg';
 import { ReactComponent as AddMqtt } from '../assets/mqtt-topics.svg'
 
-const Sidebar = ({ saveLayout, addWidget, isCollapsed, onToggle }) => {
+const Sidebar = ({ showModal, saveLayout, addWidget, isCollapsed, onToggle }) => {
 
   
   return (
@@ -21,7 +21,7 @@ const Sidebar = ({ saveLayout, addWidget, isCollapsed, onToggle }) => {
         }
       </div>
 
-      <div className={ isCollapsed ? styles.topicIconContainerSmall : styles.topicIconContainerBig }>
+      <div className={ isCollapsed ? styles.topicIconContainerSmall : styles.topicIconContainerBig } onClick={() => showModal()}>
         <span className={styles.topicIcon}> <AddMqtt/> </span>
         <span className={isCollapsed ? styles.topicIconTextHide : styles.topicIconTextShow}>Add Data Sources</span>
       </div>
