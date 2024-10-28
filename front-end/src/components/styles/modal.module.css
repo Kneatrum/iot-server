@@ -38,8 +38,8 @@
 /* Tab bar container */
 .tabBar {
     display: flex;
-    border-bottom: 2px solid #ccc;
-    margin-bottom: 16px;
+    /* border-bottom: 2px solid #ccc; */
+    /* margin-bottom: 16px; */
 }
   
 /* Individual tab styling */
@@ -52,13 +52,12 @@
     color: #555;
     font-weight: bold;
     margin-right: 8px;
-    background-color: #f1f1f1;
+    background-color: #ffffff;
 }
   
 
 .tabItemActive {
-    background-color: white;
-    border-bottom: 2px solid white;
+    background-color: var(--grid-layout-background-color);;
     color: black;
 }
   
@@ -68,11 +67,10 @@
     flex-direction: column;
     padding: 20px;
     font-size: 16px;
-    /* border: 1px solid #ccc; */
-    border-radius: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
     min-height: 300px;
     max-height: 300px; 
-    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
     background-color: var(--grid-layout-background-color);
     overflow-y: auto;
 }
