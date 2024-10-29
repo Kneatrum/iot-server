@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../styles/modal.module.css';
 import TopicsLayout from './TopicsLayout';
+import { ReactComponent as CancelIcon } from '../../assets/cancel.svg'
 
 const Modal = ({ show, onClose }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -21,7 +22,7 @@ const Modal = ({ show, onClose }) => {
       <div className={styles.modalContent}>
         <div className={styles.modalHeader}>
           <h3>Data Sources</h3>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <CancelIcon className={styles.cancelIcon} onClick={onClose}/>
         </div>
         
         <div className={styles.tabBar}>
