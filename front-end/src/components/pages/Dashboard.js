@@ -4,6 +4,7 @@ import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
 import Header from '../Header';
 import Sidebar from '../Sidebar';
+import DeviceToolbar from './DeviceToolbar.js';
 import styles from '../styles/dashboard.module.css';
 import axios from 'axios';
 import gridcss from '../styles/grid.module.css'; 
@@ -215,6 +216,7 @@ const Dashboard = () => {
     <>
       <Header/>
       <Sidebar showModal = {showModal} saveLayout = {saveLayout} addWidget={addWidget} isCollapsed={isCollapsed} onToggle={toggleSidebar} />
+      <DeviceToolbar isCollapsed={isCollapsed}/>
       <div className={`${styles.dashboard} ${isCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
         <GridLayout
           className="complex-interface-layout"
