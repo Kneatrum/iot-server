@@ -9,7 +9,7 @@ const Modal = ({ show, onClose }) => {
   const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
 
   const tabContent = [
-    "",
+    <TopicsLayout userTopics={mqttTopics} />,
     "",
     "",
     ""
@@ -38,8 +38,7 @@ const Modal = ({ show, onClose }) => {
         </div>
 
         <div className={styles.tabContent}>
-            {/* {tabContent[activeTab]} */}
-            <TopicsLayout/>
+          {tabContent[activeTab]}
         </div>
       </div>
     </div>
