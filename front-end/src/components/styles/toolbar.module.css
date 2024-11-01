@@ -1,0 +1,96 @@
+/* toolbar.module.css */
+
+.toolbarContainer {
+  display: flex;
+  transition: var(--dashboard-transition);
+  /* flex-direction: column; */
+  /* align-items: flex-start; */
+  margin-top: 60px; 
+  /* padding: 10px; */
+  background-color: #ffffff;
+  /* width: 100%; */
+  /* height: calc(100% - 60px); */
+}
+
+.toolbarContainer.sidebarExpanded {
+  margin-left: var(--expanded-sidebar-width); /* When the sidebar is expanded */
+}
+
+.toolbarContainer.sidebarCollapsed {
+  margin-left: var(--collapsed-sidebar-width); /* When the sidebar is collapsed */
+}
+  
+.toolbarHeader {
+  display: flex;
+  /* align-items: center; */
+  /* gap: 15px; */
+  /* margin-bottom: 0; */
+}
+
+.toolbarItem {
+  padding: 10px 20px;
+  cursor: pointer;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  transition: background-color 0.3s;
+  color: #555;
+  font-weight: bold;
+  margin-right: 8px;
+  /* margin-bottom: 0; */
+  margin-top: 10px;
+  background-color: #ffffff;
+}
+
+.toolbarItemActive {
+  background-color: var(--grid-layout-background-color);
+  color: black;
+}
+
+.toolbarItemDescription {
+  background-color: white;
+  color: grey;
+  width: 90px;
+}
+  
+.addDeviceButton {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 40px;
+  width: 40px;
+  margin-top: 10px;
+  background-color: white;
+  /* color: #271818; */
+  /* border: none; */
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.addSVGIcon{
+  height: 40px;
+  width: 40px;
+  fill:  #4986e1;
+}
+
+.addSVGIcon:hover{
+  transform: scale(1.05);
+}
+
+.addSVGIcon:active{
+  transform: scale(1);
+}
+
+
+.deviceList {
+  display: flex;
+  gap: 10px;
+  margin-top: 5px;
+  /* flex-wrap: wrap; */
+}
+  
+.device {
+  padding: 8px 12px;
+  background-color: #397ada;
+  border-radius: 4px;
+}
+  
