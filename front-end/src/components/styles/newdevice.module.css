@@ -1,0 +1,228 @@
+/* Modal.module.css */
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalContent {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 500px;
+    width: 100%;
+    height: 400px;
+    text-align: center;
+}
+
+.formHeader {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 40px;
+}
+
+.stageBody {
+    height: 205px;
+}
+
+.closeIcon {
+    width: 20px;
+    height: 20px;
+    fill: #3c3d3d;
+    cursor: pointer;
+}
+
+.errorIcon {
+    width: 50px;
+    height: 50px;
+    fill: orangered;
+}
+
+.successIcon {
+    width: 50px;
+    height: 50px;
+    fill: green;
+}
+
+.spinnerContaier {
+    display: flex;
+    height: 50px;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+/* Progress Indicator */
+.progressIndicator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.step, 
+.completedStep, 
+.currentStep {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+
+.step {
+    background-color: #ccc;
+}
+
+.currentStep {
+    background-color:  #4CAF50;
+}
+
+.grayProgressLine {
+    width: 190px;
+    height: 2px;
+    background-color: #ccc;
+    margin: 0 5px;
+}
+
+.greenProgressLine {
+    width: 190px;
+    height: 2px;
+    background-color: #4CAF50;
+    margin: 0 5px;
+}
+
+.formContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.input {
+    width: 100%;
+    padding: 8px;
+    margin: 8px 0;
+    border-radius: 25px;
+    border: 1px solid #ccc;
+}
+
+.submitButton, .backButton, .finishButton {
+    color: rgb(0, 0, 0);
+    height: 30px;
+    width: 70px;
+    border: 0.2px solid #ddd;
+    border-radius: 25px;
+    cursor: pointer;
+    background-color: white;
+}
+
+.submitButton:hover {
+    background-color: #ddd;
+    transition: background-color 0.7s ease;
+}
+
+.backButton:hover {
+    background-color: #ddd;
+    transition: background-color 0.7s ease;
+}
+
+.finishButton:hover {
+    background-color: #ddd;
+    transition: background-color 0.7s ease;
+}
+
+/* Tabs for Data Source Selection */
+.tabContainer {
+    display: flex;
+    /* justify-content: space-around; */
+    /* margin-bottom: 10px; */
+    /* background-color: var(--grid-layout-background-color); */
+}
+
+/* Individual tab styling */
+.tabItem {
+    padding: 10px 20px;
+    cursor: pointer;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    transition: background-color 0.3s;
+    color: #555;
+    font-weight: bold;
+    margin-right: 8px;
+    background-color: #ffffff;
+}
+  
+.tabItemActive {
+    background-color: var(--grid-layout-background-color);;
+    color: black;
+}
+
+.activeTab {
+    background-color: #007bff;
+    color: white;
+}
+
+/* Topic List */
+.topicList {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    font-size: 16px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    min-height: 160px;
+    max-height: 160px; 
+    background-color: var(--grid-layout-background-color);
+    overflow-y: auto;
+}
+
+.topic {
+    margin-bottom: 5px;
+}
+
+.apiKeyBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.copyIcon {
+    fill: gray;
+    cursor: pointer;
+}
+
+.copyIcon:hover {
+  transform: scale(1.05);
+}
+
+.copyIcon:active {
+    transform: scale(0.9);
+}
+
+.singleButtonContainer {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    /* margin-top: 10px; */
+}
+
+.buttonContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* margin-top: 10px; */
+}
