@@ -3,7 +3,7 @@ import styles from '../styles/modal.module.css';
 import TopicsLayout from './TopicsLayout';
 import { ReactComponent as CancelIcon } from '../../assets/cancel.svg'
 
-const Modal = ({ show, onClose }) => {
+const Modal = ({ show, mqttTopics, onClose }) => {
   const [activeTab, setActiveTab] = useState(0);
 
   const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
