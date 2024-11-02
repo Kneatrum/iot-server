@@ -1,0 +1,45 @@
+
+
+.topicBadgeContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px; /* Space between badges */
+}
+
+.topicBadge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 30px;
+  width: 300px;
+  background-color: #ffffff; /* Light cyan background */
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.topicText {
+  flex-grow: 1; /* Allows the topic text to take up available space */
+  overflow: hidden; /* Ensures long text doesn’t overflow */
+  white-space: nowrap; /* Prevents text wrapping */
+  text-overflow: ellipsis; /* Adds ellipsis for overflowed text */
+}
+
+/* New styles for toggled (grayed out) state */
+.grayedOut {
+  background-color: #ffffff; /* Light gray background for toggled items */
+  border-color: #ffffff; /* Gray border */
+}
+
+.grayedText {
+  color: #9e9e9e; /* Gray color for toggled text */
+}
+
+.checkbox {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: #0062ff; /* Change the color of the checkbox */
+  border-radius: 50%;
+}
