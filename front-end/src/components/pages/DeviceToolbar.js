@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import styles from '../styles/toolbar.module.css';
 import { ReactComponent as AddSVGIcon } from '../../assets/add.svg';
-import NewDevice from '../NewDeviceModal';
+import NewDeviceModal from '../NewDeviceModal';
 
-function DeviceToolbar({isCollapsed}) {
+function DeviceToolbar({isCollapsed, mqttTopics}) {
   // State to manage the list of added devices
   const [ devices, setDevices ] = useState(["Devices"]);
   const [ activeTab, setActiveTab ] = useState(1);
@@ -41,7 +41,7 @@ function DeviceToolbar({isCollapsed}) {
           ))}
       </div>
       {addStatus ? <div className={styles.addDeviceButton}> <AddSVGIcon className={styles.addSVGIcon} onClick={addDevice} /> </div> : ''}
-      { isModalOpen ? <NewDevice isOpen={isModalOpen} onClose={() => setIsModalOpen(false) } setAddStatus={setAddStatus} setDevices={setDevices}/> : ''} 
+      { isModalOpen ? <NewDeviceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false) } setAddStatus={setAddStatus} setDevices={setDevices} mqttTopics={mqttTopics}/> : ''} 
     </div>
   );
 }
