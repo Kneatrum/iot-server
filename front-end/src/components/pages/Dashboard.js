@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import GridLayout from 'react-grid-layout';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
@@ -13,6 +13,7 @@ import { Line, Bar, Pie, Doughnut } from 'react-chartjs-2'
 import 'chartjs-adapter-date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import  Modal  from '../Modal/Modal.js'
+import { ApiContext } from '../../context/ApiContext';
 
 import {
   Chart as ChartJS, 
@@ -71,6 +72,7 @@ const Dashboard = () => {
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [modalState, setModalState] = useState(false);
+  const { apiData } = useContext(ApiContext);
 
 
   useEffect(() => {
@@ -216,7 +218,7 @@ const Dashboard = () => {
     <>
       <Header/>
       <Sidebar showModal = {showModal} saveLayout = {saveLayout} addWidget={addWidget} isCollapsed={isCollapsed} onToggle={toggleSidebar} />
-      <DeviceToolbar isCollapsed={isCollapsed}/>
+      <DeviceToolbar isCollapsed={isCollapsed} mqttTopics={apiData.topics}/>
       <div className={`${styles.dashboard} ${isCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
         <GridLayout
           className="complex-interface-layout"
@@ -240,7 +242,7 @@ const Dashboard = () => {
             })          
           }
         </GridLayout>
-        <Modal show={modalState} onClose={() => setModalState(false)} />
+        <Modal show={modalState} mqttTopics={apiData.topics} onClose={() => setModalState(false)} />
       </div>
     </>
   );
