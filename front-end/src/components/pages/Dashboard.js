@@ -66,7 +66,7 @@ const Dashboard = () => {
   const [charts, setCharts] = useState([]);
   const [layout, setLayout] = useState([]);
 
-  const [apiData, setApiData] = useState([]);
+  // const [apiData, setApiData] = useState([]);
   const [chartData, setChartData] = useState({});
   const [realTimeData, setRealTimeData] = useState([]);
 
@@ -76,26 +76,10 @@ const Dashboard = () => {
 
 
   useEffect(() => {
-    axios.get('https://6705c2e5031fd46a8310e215.mockapi.io/api/v1/chartData')
-    .then(response => {
-      setChartData( response.data[0]);
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error.message);
-    });
+    if(apiData.topics){
+      // console.log("Welcome: ", apiData.topics);
+    }
   }, []);
-
-
-  useEffect(() => {
-    axios.get('https://6705c2e5031fd46a8310e215.mockapi.io/api/v1/iotData')
-    .then(response => {
-      setRealTimeData( response.data);
-    })
-    .catch(error => {
-      console.error('Error fetching data:', error.message);
-    });
-  }, []);
-  
 
 
   const toggleSidebar = () => {
@@ -239,7 +223,7 @@ const Dashboard = () => {
                   <ChartComponent data={chart.data} options={chart.options} />
                 </div>
               );
-            })          
+            })     
           }
         </GridLayout>
         <Modal show={modalState} mqttTopics={apiData.topics} onClose={() => setModalState(false)} />
