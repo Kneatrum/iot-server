@@ -4,14 +4,14 @@ import TextInput from './TextInput';
 const { v4: uuidv4 } = require('uuid');
 
 
-const TopicsLayout = () => {
-    const [ topics, setTopics ] = useState([]);
+const TopicsLayout = (userTopics) => {
+    let topics = userTopics.userTopics
+    // const [ topics, setTopics ] = useState();
     const [ inputValue, setInputValue ] = useState(''); // Keep track of current input value
     const [ inputComponents, setInputComponents ] = useState([]);
     const [ addInput, setAddInput ] = useState(true);
     const [ isLoading, setIsloading ] = useState(false);
     
-
 
     useEffect(() => {
         const hasFailed = inputComponents.some(item => item.failed === true);
@@ -20,25 +20,9 @@ const TopicsLayout = () => {
 
 
     useEffect(() => {
-        axios.get('https://671165104eca2acdb5f4b7e2.mockapi.io/api/test/topics')
-            .then(response => {
-                // setLoading(false);
-                const rr = response.data;
-                setTopics(rr);
-    
-                rr.forEach((entry) => {
-                    const exists = topics.some(topic => topic.uID === entry.uID);
-                    if (!exists) {
-                        addNewInput({topic: entry.topic});
-                    }
-                });
-                console.log(rr);
-            })
-            .catch(error => {
-                console.error('Error fetching data:', error.message);
-                // addNewInput('fff', false, false);
-                // setLoading(false); 
-            });
+        topics.forEach((entry) => {
+            addNewInput({topic: entry.topic});
+        });
     }, []);
 
 
