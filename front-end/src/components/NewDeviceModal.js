@@ -14,7 +14,7 @@ import axios from 'axios';
 const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
 
 
-function NewDevice({ isOpen, onClose, setAddStatus }) {
+function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics }) {
     const [stage, setStage] = useState(1);
     const [deviceName, setDeviceName] = useState('');
     const [uniqueId, setUniqueId] = useState('');
@@ -28,6 +28,24 @@ function NewDevice({ isOpen, onClose, setAddStatus }) {
     const [activeTab, setActiveTab] = useState(0);
     
 
+    const handleTopicSelection = (topic) => {
+        setSelectedTopics(prev =>
+            prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]
+        );
+    };
+
+
+    const tabContent = [
+        <TopicBadge 
+            topics={mqttTopics}
+            selectedTopics={selectedTopics}
+            onToggleTopic={handleTopicSelection}
+        />,
+        "",
+        "",
+        "",
+    ];
+    
     const generateApiKey = () => `${Math.random().toString(36).substring(2, 15)}`;
 
     const handleNext = () => {
@@ -180,16 +198,7 @@ function NewDevice({ isOpen, onClose, setAddStatus }) {
                                 ))}
                             </div>
                             <div className={styles.topicList}>
-                                {mqttTopics.map((topic, index) => (
-                                    <label key={index} className={styles.topic}>
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedTopics.includes(topic)}
-                                            onChange={() => handleTopicSelection(topic)}
-                                        />
-                                        {topic}
-                                    </label>
-                                ))}
+                                {tabContent[activeTab]}
                             </div>
                         </div>
                         <div className={styles.buttonContainer}>
