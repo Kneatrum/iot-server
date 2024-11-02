@@ -6,6 +6,8 @@ import { ReactComponent as SmallTick } from '../assets/smalltick.svg';
 import { ReactComponent as ErrorIcon } from '../assets/error.svg' 
 import { ReactComponent as SuccessIcon } from '../assets/success.svg' 
 import { ReactComponent as CopyIcon } from '../assets/copy.svg' 
+import TopicBadge from './TopicBadge';
+
 
 import Spinner from '../components/Spinner';
 import api from '../api/api';
