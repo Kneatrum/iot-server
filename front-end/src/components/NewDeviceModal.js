@@ -21,14 +21,13 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics }) {
     const [deviceName, setDeviceName] = useState('');
     const [uniqueId, setUniqueId] = useState('');
     const [apiKey, setApiKey] = useState('');
-    const [mqttTopics] = useState(['Topic 1', 'Topic 2', 'Topic 3']);
     const [selectedTopics, setSelectedTopics] = useState([]);
     const [keyCopied, setApiKeyCopied] = useState(false);
     const [ loading, setLoading ] = useState(false);
     const [ failed, setFailed ] = useState(false);
     const [ success, setSuccess ] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
-    
+
 
     const handleTopicSelection = (topic) => {
         setSelectedTopics(prev =>
@@ -66,12 +65,6 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics }) {
     };
 
     const handleBack = () => setStage(stage - 1);
-
-    const handleTopicSelection = (topic) => {
-        setSelectedTopics(prev =>
-            prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]
-        );
-    };
 
     const copyToClipboard = () => {
         navigator.clipboard.writeText(apiKey);
@@ -242,4 +235,4 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics }) {
     );
 }
 
-export default NewDevice;
+export default NewDeviceModal;
