@@ -35,8 +35,17 @@
 .closeIcon {
     width: 20px;
     height: 20px;
-    fill: #3c3d3d;
+    fill: var(--icon-fill);
     cursor: pointer;
+}
+
+.closeIcon:hover {
+    background-color: var(--hover-background);
+    border-radius: 50%;
+}
+
+.closeIcon:active {
+    transform: scale(0.9);
 }
 
 .errorIcon {

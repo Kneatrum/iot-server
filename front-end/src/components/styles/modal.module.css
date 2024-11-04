@@ -31,10 +31,19 @@
 
 .cancelIcon {
     display: flex;
-    width: 40px;
-    height: 40px;
-    fill: #4986e1;
+    width: 20px;
+    height: 20px;
+    fill: var(--icon-fill);
     cursor: pointer;
+}
+
+.cancelIcon:hover {
+    background-color: var(--hover-background);
+    border-radius: 50%;
+}
+
+.cancelIcon:active {
+    transform: scale(0.9);
 }
   
 /* Tab bar container */

@@ -16,4 +16,6 @@ Global CSS constants are stored here
     --header-height: 60px;
     --expanded-sidebar-width: 200px;
     --collapsed-sidebar-width: 40px;
+    --hover-background:  #7e7e7e3e;
+    --icon-fill: #4986e1;
 }

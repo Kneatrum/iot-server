@@ -67,17 +67,18 @@
 }
 
 .addSVGIcon{
-  height: 40px;
-  width: 40px;
-  fill:  #4986e1;
+  height: 30px;
+  width: 30px;
+  fill:  var(--icon-fill);
 }
 
 .addSVGIcon:hover{
-  transform: scale(1.05);
+  background-color: var(--hover-background);
+  border-radius: 50%;
 }
 
 .addSVGIcon:active{
-  transform: scale(1);
+  transform: scale(0.9);
 }
 
 
