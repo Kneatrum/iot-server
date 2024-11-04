@@ -16,7 +16,7 @@ import axios from 'axios';
 const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
 
 
-function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics }) {
+function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, setDevices}) {
     const [stage, setStage] = useState(1);
     const [deviceName, setDeviceName] = useState('');
     const [uniqueId, setUniqueId] = useState('');
