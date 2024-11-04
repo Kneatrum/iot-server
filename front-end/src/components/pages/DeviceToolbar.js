@@ -41,7 +41,15 @@ function DeviceToolbar({isCollapsed, mqttTopics}) {
           ))}
       </div>
       {addStatus ? <div className={styles.addDeviceButton}> <AddSVGIcon className={styles.addSVGIcon} onClick={addDevice} /> </div> : ''}
-      { isModalOpen ? <NewDeviceModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false) } setAddStatus={setAddStatus} setDevices={setDevices} mqttTopics={mqttTopics}/> : ''} 
+      { isModalOpen ? 
+        <NewDeviceModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false) } 
+          setAddStatus={setAddStatus} 
+          devices={devices}
+          setDevices={setDevices} 
+          mqttTopics={mqttTopics}
+        /> : ''} 
     </div>
   );
 }
