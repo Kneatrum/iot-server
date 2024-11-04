@@ -60,7 +60,11 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics }) {
         }
 
         // Generate API key at stage 2
-        if (stage === 2) setApiKey(generateApiKey());
+        if (stage === 2) {
+            handleSubmit();
+            setApiKey(generateApiKey());
+        }
+
         setStage(stage + 1);
     };
 
@@ -173,7 +177,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics }) {
                             </label>
                         </div>
                         <div className={styles.singleButtonContainer}>
-                            <button onClick={handleNext} className={styles.submitButton}>Next</button>
+                            <button onClick={handleNext} className={styles.nextButton}>Next</button>
                         </div>
                     </div>
                 )}
@@ -198,7 +202,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics }) {
                         </div>
                         <div className={styles.buttonContainer}>
                             <button onClick={handleBack} className={styles.backButton}>Back</button>
-                            <button onClick={handleNext} className={styles.submitButton}>Next</button>
+                            <button onClick={handleNext} className={styles.nextButton}>Next</button>
                         </div>
                     </div>
                 )}
@@ -206,23 +210,34 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics }) {
                 {stage === 3 && (
                     <div className={styles.formContainer}>
                         <div className={styles.stageBody}>
-                            <p>Please copy your API Key:</p>
-                            <div className={styles.apiKeyBox}>
-                                <span>{apiKey}</span>
-                                <CopyIcon onClick={copyToClipboard} className={styles.copyIcon}/>
-                            </div>
+                            
+                            { loading ? <div> Loading </div> : ''}
+                            { success ? <div> Please copy your API Key </div> : ''}
+                            { failed ? <div> Failed </div> : ''}
+
                             <div className={styles.spinnerContaier}>
                                 { loading ? <Spinner size={50} /> : '' }
+                                
+                                { success ? (
+                                    <>
+                                        <div className={styles.apiKeyBox}>
+                                            <span>{apiKey}</span>
+                                            <CopyIcon onClick={copyToClipboard} className={styles.copyIcon}/>
+                                        </div> 
+                                    </>
+                                ) : ''}
+
                                 { failed ? <ErrorIcon className={styles.errorIcon} /> : '' }
-                                { success ? <SuccessIcon className={styles.successIcon} /> : '' }
                             </div>
+                            
+                            
                         </div>
                         <div className={styles.buttonContainer}>
                             {
                                 !success ? (
                                     <>
-                                    <button onClick={handleBack} className={styles.backButton}>Back</button>
-                                    <button onClick={handleSubmit} className={styles.finishButton}>Submit</button>
+                                        <button onClick={handleBack} className={styles.backButton}>Back</button>
+                                        <button onClick={handleSubmit} className={`${styles.retryButton} ${styles.selected}`}>Retry</button>
                                     </>
                                 ) : 
                                 ('')
