@@ -115,8 +115,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
             const rr = response.data;
 
             setSuccess(true);
-            // setTimeout(() => {
-            // }, 5000);
+            setDevices([...devices, newDeviceData.deviceName]);
 
             // onClose();
             
