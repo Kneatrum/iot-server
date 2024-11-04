@@ -56,7 +56,7 @@
     height: 50px;
     align-items: center;
     justify-content: center;
-    margin-top: 20px;
+    margin-top: 60px;
 }
 
 /* Progress Indicator */
@@ -116,7 +116,7 @@
     border: 1px solid #ccc;
 }
 
-.submitButton, .backButton, .finishButton {
+.backButton, .nextButton, .retryButton {
     color: rgb(0, 0, 0);
     height: 30px;
     width: 70px;
@@ -126,9 +126,8 @@
     background-color: white;
 }
 
-.submitButton:hover {
-    background-color: #ddd;
-    transition: background-color 0.7s ease;
+.selected {
+    border: 2px solid #000000; /* Optional: make the border color slightly darker */
 }
 
 .backButton:hover {
@@ -136,7 +135,12 @@
     transition: background-color 0.7s ease;
 }
 
-.finishButton:hover {
+.nextButton:hover {
+    background-color: #ddd;
+    transition: background-color 0.7s ease;
+}
+
+.retryButton:hover {
     background-color: #ddd;
     transition: background-color 0.7s ease;
 }
@@ -188,6 +192,13 @@
 
 .topic {
     margin-bottom: 5px;
+}
+
+.loadingContent {
+    display: flex;
+    flex-direction: column;
+    margin-top: 90px;
+    gap: 50px;
 }
 
 .apiKeyBox {
