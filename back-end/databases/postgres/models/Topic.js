@@ -3,23 +3,23 @@ const { Model } = require('sequelize');
 
 module.exports = (sequelize, DataTypes) => {
   class Topic extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
+  
     static associate(models) {
-      Topic.belongsTo(models.User,{
+
+      Topic.belongsTo(models.User, {
         foreignKey: "userId", 
         as: 'user'
       })
 
-      Topic.belongsToMany(models.Chart, { 
-        through: 'TopicCharts', 
-        foreignKey: 'topicId', 
-        otherKey: 'chartId',
-        as: 'charts', 
-      });
+      Topic.belongsTo(models.Chart, {
+        foreignKey: 'chartId', 
+        as: 'chart'
+      })
+
+      Topic.belongsTo(models.Device, {
+        foreignKey: 'deviceId',
+        as: 'device'
+      })
 
     }
 
@@ -43,8 +43,27 @@ module.exports = (sequelize, DataTypes) => {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
     },
-    name: {
-      type: DataTypes.STRING
+    chartId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'charts',
+        key: 'id'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    },
+    deviceId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'devices',
+        key: 'id'
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
+    },
+    topic: {
+      type: DataTypes.STRING,
+      allowNull: false
     }
   }, {
     sequelize,
