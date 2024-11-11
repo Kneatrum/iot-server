@@ -54,7 +54,14 @@ const TopicsLayout = (userTopics) => {
     };
     
 
-    const addNewInput = ({topic = '', readOnlyMode=true, showButtonsState=true, loading=false, failed=false, saved=true } = {}) => {
+    const addNewInput = ({
+        topic = '', 
+        readOnlyMode=true, 
+        showButtonsState=true, 
+        loading=false, 
+        failed=false, 
+        saved=true 
+    } = {}) => {
         const uniqueId = uuidv4();
         setInputComponents((prevInputs) => [
             ...prevInputs,
