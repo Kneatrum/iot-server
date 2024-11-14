@@ -4,6 +4,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px; /* Space between badges */
+  /* align-items: center; */
+  /* margin-left: 20px; */
 }
 
 .topicBadge {

@@ -10,26 +10,27 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    z-index: 1000;
 }
 
 .modalContent {
     background-color: white;
     padding: 20px;
     border-radius: 8px;
-    max-width: 500px;
+    max-width: 1000px;
     width: 100%;
-    height: 400px;
+    height: 100%;
     text-align: center;
 }
 
 .formHeader {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 40px;
+    margin-bottom: 10px;
 }
 
 .stageBody {
-    height: 205px;
+    height: 400px;
 }
 
 .closeIcon {
@@ -117,8 +118,14 @@
     gap: 10px;
 }
 
+.inputTitle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .input {
-    width: 100%;
+    width: 40%;
     padding: 8px;
     margin: 8px 0;
     border-radius: 25px;
@@ -188,16 +195,26 @@
 /* Topic List */
 .topicList {
     display: flex;
-    flex-direction: column;
+    /* position: relative; */
+    /* flex-direction: column; */
     padding: 20px;
     font-size: 16px;
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
-    min-height: 160px;
-    max-height: 160px; 
+    min-height: 355px;
+    height: 355px;  
     background-color: var(--grid-layout-background-color);
     overflow-y: auto;
 }
+
+
+.divider {
+    width: 2px; 
+    background-color: gray; 
+    /* Stretch to match container height */
+    /* height: auto; */
+}
+
 
 .topic {
     margin-bottom: 5px;

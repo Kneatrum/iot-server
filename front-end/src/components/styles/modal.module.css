@@ -86,6 +86,14 @@
     overflow-y: auto;
 }
 
+.topicName {
+    width: 150px;
+    height: 20px;
+    margin-right: 10px;
+    border-radius: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
 
 .mqttEntryRow {
     display: flex;
@@ -98,13 +106,14 @@
 
 
 .mqttInput {
-    width: 250px;
-    height: 40px;
+    width: 400px;
+    height: 30px;
     padding: 15px;
     border-radius: 20px;
     margin-right: 10px;
+    margin-bottom: 0;
     border: 1px solid #ccc;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.1); */
     background-color: rgb(255, 255, 255);
     color: rgb(0, 0, 0);
     outline: none;
@@ -113,17 +122,18 @@
 
 .mqttInputReadOnly {
     color: rgb(171, 171, 171); /* Change to gray when read-only */
+    border: none;
 }
 
 
 .mqttIconContainer {
     visibility: hidden;
     display: flex;
-    width: 40px;
-    height: 40px;
-    background-color: rgb(255, 255, 255);
+    width: 30px;
+    height: 30px;
+    /* background-color: rgb(255, 255, 255); */
     border-radius: 50%;
-    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.1); */
     margin-right: 10px;
     justify-content: center; 
     align-items: center;
@@ -134,6 +144,28 @@
 .mqttIconContainerHide {
     visibility: hidden;
 }
+
+
+.saveButton {
+    color: rgb(0, 0, 0);
+    height: 30px;
+    width: 70px;
+    border: 0.2px solid #ddd;
+    border-radius: 20px;
+    cursor: pointer;
+    background-color: white;
+}
+
+.selected {
+    border: 2px solid #000000; /* Optional: make the border color slightly darker */
+}
+
+.saveButton:hover {
+    background-color: #ddd;
+    transition: background-color 0.7s ease;
+}
+
+
 
 
 .mqttEditIcon {
