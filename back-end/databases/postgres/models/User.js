@@ -5,9 +5,9 @@ module.exports = (sequelize, DataTypes) => {
   class User extends Model {
     static associate(models) {
       
-      User.hasOne(models.Dashboard,{
+      User.hasMany(models.Device,{
         foreignKey: "userId", 
-        as: "dashboard"
+        as: 'devices'
       });
 
       User.hasMany(models.Topic,{
@@ -28,6 +28,9 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4
     },
+    sessionID: {
+      type: DataTypes.STRING
+    },
     userName: {
       type: DataTypes.STRING,
       allowNull: false
@@ -45,6 +48,7 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     tableName: "users",
     modelName: 'User',
+    timestamps: true
   });
 
   return User;

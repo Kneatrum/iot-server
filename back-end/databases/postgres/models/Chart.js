@@ -4,17 +4,19 @@ const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Chart extends Model {
     static associate(models) {
-      Chart.belongsTo(models.Dashboard, {
-        foreignKey: 'dashboardsId', 
-        as: 'dashboards' 
+
+      Chart.belongsTo(models.Layout, {
+        foreignKey: 'layoutId', 
+        as: 'layout' 
       });
 
-      Chart.belongsToMany(models.Topic, {
-        through: 'ChartTopics', 
-        as: 'topics', 
-        foreignKey: 'chartId', 
-        otherKey: 'topicId' 
+      Chart.hasMany(models.Topic, {
+        foreignKey: "chartId",
+        as: 'topics',
+        onDelete: 'CASCADE',   // If a chart is deleted, delete associated topics
+        onUpdate: 'CASCADE'
       });
+      
     }
 
     toJSON() {
@@ -24,26 +26,27 @@ module.exports = (sequelize, DataTypes) => {
   }
 
   Chart.init({
-    uuid: {
-      type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4
-    },
-    dashboardId: {
+    layoutId: {
       type: DataTypes.INTEGER,
       allowNull: false,
       references: {
-        model: 'dashboards',
+        model: 'layouts',
         key: 'id'
-      }
+      },
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE'
     },
     chartType: {
-      type: DataTypes.STRING
+      type: DataTypes.STRING,
+      allowNull: false
     },
     config: {
-      type: DataTypes.JSONB
+      type: DataTypes.JSONB,
+      allowNull: false
     },
     dateSpan: {
-      type: DataTypes.DATE
+      type: DataTypes.DATE,
+      allowNull: false
     }
   }, {
     sequelize,

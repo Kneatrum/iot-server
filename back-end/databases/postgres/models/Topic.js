@@ -6,11 +6,6 @@ module.exports = (sequelize, DataTypes) => {
   
     static associate(models) {
 
-      Topic.belongsTo(models.User, {
-        foreignKey: "userId", 
-        as: 'user'
-      })
-
       Topic.belongsTo(models.Chart, {
         foreignKey: 'chartId', 
         as: 'chart'
@@ -51,7 +46,7 @@ module.exports = (sequelize, DataTypes) => {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE'
     },
-    topicName: {
+    description: {
       type: DataTypes.STRING,
       allowNull: false
     },
