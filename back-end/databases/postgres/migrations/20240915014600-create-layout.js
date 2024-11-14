@@ -2,42 +2,26 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('topics', {
+    await queryInterface.createTable('layouts', {
       id: {
         allowNull: false,
         autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
-      uuid: {
-        type: Sequelize.UUID,
-        defaultValue: Sequelize.UUIDV4
-      },
-      chartId: {
-        type: Sequelize.INTEGER,
-        references: {
-          model: 'charts',
-          key: 'id'
-        },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
-      },
       deviceId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
         references: {
-          model: 'devices',
-          key: 'id'
+          model: 'devices', 
+          key: 'id' 
         },
-        onUpdate: 'CASCADE',
-        onDelete: 'CASCADE'
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE'
       },
-      description: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      topic: {
-        type: Sequelize.STRING,
-        allowNull: false
+      layout: {
+        allowNull: false,
+        type: Sequelize.JSONB
       },
       createdAt: {
         allowNull: false,
@@ -52,6 +36,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('topics');
+    await queryInterface.dropTable('layouts');
   }
 };
