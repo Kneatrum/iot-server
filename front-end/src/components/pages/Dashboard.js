@@ -70,16 +70,29 @@ const Dashboard = () => {
   const [chartData, setChartData] = useState({});
   const [realTimeData, setRealTimeData] = useState([]);
 
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [modalState, setModalState] = useState(false);
   const { apiData } = useContext(ApiContext);
+  const [ topics, setTopics ] = useState([]);
 
 
   useEffect(() => {
-    if(apiData.topics){
-      // console.log("Welcome: ", apiData.topics);
+    if (apiData.topics && apiData.topics.length > 0) {
+      const topicsArray = apiData.topics.map(entry => ({
+        id: entry.uuid,
+        description: entry.description,
+        topic: entry.topic
+      }));
+
+      setTopics(topicsArray);
     }
-  }, []);
+  }, [apiData.topics]); 
+
+
+  // useEffect to log `topics` whenever it changes
+  useEffect(() => {
+    console.log("Welcome: ", topics);
+  }, [topics]);
 
 
   const toggleSidebar = () => {
@@ -141,7 +154,8 @@ const Dashboard = () => {
     
     const newChart = { id: `${componentID}`, type, data: chartTypes[type].data, options: chartTypes[type].options };
     setLayout([...layout, newLayout]);
-    setCharts([...charts, newChart]);    
+    setCharts([...charts, newChart]);   
+    console.log("Layout: ", layout);
   };
 
 
@@ -202,7 +216,7 @@ const Dashboard = () => {
     <>
       <Header/>
       <Sidebar showModal = {showModal} saveLayout = {saveLayout} addWidget={addWidget} isCollapsed={isCollapsed} onToggle={toggleSidebar} />
-      <DeviceToolbar isCollapsed={isCollapsed} mqttTopics={apiData.topics}/>
+      <DeviceToolbar isCollapsed={isCollapsed} mqttTopics={topics}/>
       <div className={`${styles.dashboard} ${isCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
         <GridLayout
           className="complex-interface-layout"
@@ -226,7 +240,7 @@ const Dashboard = () => {
             })     
           }
         </GridLayout>
-        <Modal show={modalState} mqttTopics={apiData.topics} onClose={() => setModalState(false)} />
+        <Modal show={modalState} mqttTopics={topics} onClose={() => setModalState(false)} />
       </div>
     </>
   );

@@ -21,10 +21,10 @@ const Sidebar = ({ showModal, saveLayout, addWidget, isCollapsed, onToggle }) =>
         }
       </div>
 
-      <div className={ isCollapsed ? styles.topicIconContainerSmall : styles.topicIconContainerBig } onClick={() => showModal()}>
+      {/* <div className={ isCollapsed ? styles.topicIconContainerSmall : styles.topicIconContainerBig } onClick={() => showModal()}>
         <span className={styles.topicIcon}> <AddMqtt/> </span>
         <span className={isCollapsed ? styles.topicIconTextHide : styles.topicIconTextShow}>Add Data Sources</span>
-      </div>
+      </div> */}
 
       <div className={ isCollapsed ? styles.linkContainer : styles.linkContainerBig}>
         {

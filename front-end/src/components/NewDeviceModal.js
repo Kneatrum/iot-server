@@ -1,17 +1,18 @@
 // NewDevice.js
-import React, { useState } from 'react';
+import React, { act, useEffect, useState } from 'react';
 import styles from '../components/styles/newdevice.module.css';
 import { ReactComponent as CancelIcon } from '../assets/cancel.svg';
 import { ReactComponent as SmallTick } from '../assets/smalltick.svg';
 import { ReactComponent as ErrorIcon } from '../assets/error.svg' 
 import { ReactComponent as SuccessIcon } from '../assets/success.svg' 
 import { ReactComponent as CopyIcon } from '../assets/copy.svg' 
-import TopicBadge from './TopicBadge';
+
+import Topics from './Topics';
+import TopicsLayout from './Modal/TopicsLayout';
 
 
 import Spinner from '../components/Spinner';
 import api from '../api/api';
-import axios from 'axios';
 
 const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
 
@@ -19,42 +20,38 @@ const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
 function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, setDevices}) {
     const [stage, setStage] = useState(1);
     const [deviceName, setDeviceName] = useState('');
-    const [uniqueId, setUniqueId] = useState('');
+    const [serialNumber, setSerialNumber] = useState('');
     const [apiKey, setApiKey] = useState('');
-    const [selectedTopics, setSelectedTopics] = useState([]);
-    const [keyCopied, setApiKeyCopied] = useState(false);
+    // const [selectedTopics, setSelectedTopics] = useState([]);
+    // const [keyCopied, setApiKeyCopied] = useState(false);
     const [ loading, setLoading ] = useState(false);
     const [ failed, setFailed ] = useState(false);
     const [ success, setSuccess ] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
+    const [ topics, setTopics ] = useState([]);
 
 
-    const handleTopicSelection = (topic) => {
-        setSelectedTopics(prev =>
-            prev.includes(topic) ? prev.filter(t => t !== topic) : [...prev, topic]
-        );
+    const handleAddTopic = (newTopic) => {
+        setTopics((prevTopics) => [
+            ...prevTopics,
+            newTopic
+        ]);
     };
 
 
-    const tabContent = [
-        <TopicBadge 
-            topics={mqttTopics}
-            selectedTopics={selectedTopics}
-            onToggleTopic={handleTopicSelection}
-        />,
-        "",
-        "",
-        "",
-    ];
+    useEffect(() => {
+        console.log("Passed all the way up fron input text", topics)
+    }, [topics])
+
     
     const generateApiKey = () => `${Math.random().toString(36).substring(2, 15)}`;
 
     const handleNext = () => {
         // Validation check for required fields before moving to stage 3
-        if (stage === 1 && (!deviceName || !uniqueId)) {
+        if (stage === 1 && (!deviceName || !serialNumber)) {
             alert('Please enter both Device Name and Serial Number.');
             return;
-        } else if (stage === 2 && selectedTopics.length === 0) {
+        } else if (stage === 2 && topics.length === 0) {
             alert('Please select at least one MQTT topic.');
             return;
         }
@@ -73,57 +70,42 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
     const copyToClipboard = () => {
         navigator.clipboard.writeText(apiKey);
         alert("API key copied to clipboard!");
-        setApiKeyCopied(true);
+        // setApiKeyCopied(true);
     };
 
     const handleSubmit = () => {
-        if (!deviceName || !uniqueId || selectedTopics.length === 0) {
+        if (!deviceName || !serialNumber || topics.length === 0) {
             alert('Please ensure all fields are filled and at least one MQTT topic is selected.');
             return;
         }
+
+        const newDeviceData = {
+            deviceName: deviceName,
+            serialNumber: serialNumber,
+            topics: topics
+        };
+    
+        console.log("All Data",  newDeviceData)
         setFailed(false);
         setLoading(true);
         setSuccess(false)
 
-        const newDeviceData = {
-            deviceName,
-            uniqueId,
-            apiKey,
-            selectedTopics,
-        };
 
-
-        // api.post('url', newDeviceData)
-        // .then(response => {
-        //     setLoading(false);
-        //     console.log(response.data);
-        //     setAddStatus(true); // update status if needed
-        //     setSuccess(true);
-        //     onClose();
-            
-        // })
-        // .catch(error => {
-        //     console.log("Failed to delete")
-        //     console.error('Error fetching data:', error.message);
-        //     setLoading(false);
-        //     setFailed(true);
-        // });
-
-        axios.get('https://671165104eca2acdb5f4b7e2.mockapi.io/api/test/topics')
+        api.post('/device', {newDeviceData: newDeviceData})
         .then(response => {
             setLoading(false);
-            const rr = response.data;
-
+            console.log(response.data);
+            setAddStatus(true); // update status if needed
             setSuccess(true);
-            setDevices([...devices, newDeviceData.deviceName]);
-
+            setDevices([...devices, deviceName]);
             // onClose();
             
         })
         .catch(error => {
+            console.log("Failed to delete")
             console.error('Error fetching data:', error.message);
             setLoading(false);
-            setFailed(true); 
+            setFailed(true);
         });
 
         
@@ -154,26 +136,28 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
                 {stage === 1 && (
                     <div className={styles.formContainer}>
                         <div className={styles.stageBody}>
-                            <label>
+                            <div className={styles.inputTitle}>
                                 Device Name:
-                                <input
-                                    type="text"
-                                    value={deviceName}
-                                    onChange={(e) => setDeviceName(e.target.value)}
-                                    className={styles.input}
-                                    required
-                                />
-                            </label>
-                            <label>
+                            </div>
+                            <input
+                                type="text"
+                                value={deviceName}
+                                onChange={(e) => setDeviceName(e.target.value)}
+                                className={styles.input}
+                                required
+                            />
+                            
+                            <div className={styles.inputTitle}>
                                 Serial Number:
-                                <input
-                                    type="text"
-                                    value={uniqueId}
-                                    onChange={(e) => setUniqueId(e.target.value)}
-                                    className={styles.input}
-                                    required
-                                />
-                            </label>
+                            </div>
+                            <input
+                                type="text"
+                                value={serialNumber}
+                                onChange={(e) => setSerialNumber(e.target.value)}
+                                className={styles.input}
+                                required
+                            />
+                            
                         </div>
                         <div className={styles.singleButtonContainer}>
                             <button onClick={handleNext} className={styles.nextButton}>Next</button>
@@ -196,7 +180,8 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
                                 ))}
                             </div>
                             <div className={styles.topicList}>
-                                {tabContent[activeTab]}
+                                {/* {tabContent[activeTab]} */}
+                                { activeTab === 0 ? <TopicsLayout existingTopics={topics} handleAddTopic={handleAddTopic}/> : ''}
                             </div>
                         </div>
                         <div className={styles.buttonContainer}>

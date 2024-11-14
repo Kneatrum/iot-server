@@ -5,32 +5,34 @@ import { ReactComponent as ErrorIcon } from '../../assets/error.svg';
 import styles from '../styles/modal.module.css';
 import Spinner from '../Spinner.js';
 import api from '../../api/api.js';
-import axios from 'axios';
 
 
 
 const TextInput = ({ 
-        handleKeyDown, 
+        addNewInput,
         updateInputComponent,
+        topicDescription = '',
         topic = '', 
         readOnlyMode, 
         showButtonsState, 
         loading,
         failed, 
-        saved, 
-        onInputChange, 
-        onDelete 
+        saved,  
+        onDelete,
+        handleAddTopic
     }) => {
 
     const [ isReadOnly, setReadOnly ] = useState(readOnlyMode);
     const [ showButtons, setShowButtons ] = useState(showButtonsState);
     const [ isLoading, setLoading ] = useState(loading);
     const [ isSaved, setSavedStatus ] = useState(saved);
-    const [ inputValue, setInputValue ] = useState(topic);
+    const [ topicDescriptionString,  settopicDescriptionString ] = useState(topicDescription)
+    const [ topicString, setTopicString ] = useState(topic);
     const [ hasFailed, setFailedStatus ] = useState(failed);
     const [ isEditMode, setEditMode ] = useState(false);
     const [ isDeleteLoading, setDeleteLoading ] = useState(false);
     const [ apiTriggered, setApiTriggered ] = useState(false);
+    const [ deleteTriggered, setDeleteTriggered ] = useState(false);
 
 
      
@@ -42,30 +44,26 @@ const TextInput = ({
     }, [loading, saved, failed, readOnlyMode]);
 
 
-    const localHandleKeyDown = (event) => {
-        if (event.key === 'Enter' && inputValue.trim()) {
-            if ( handleKeyDown ) {
-                if(!isEditMode)handleKeyDown(event, inputValue); // Call the parent handler if passed
-                setApiTriggered(true);
-                console.log("Api triggered")
-            }
-        }
-    }
 
 
     // Trigger API call on state change using useEffect
     useEffect(() => {
         if (apiTriggered) {
-            axios.get('https://671165104eca2acdb5f4b7e2.mockapi.io/api/test/topics')
+            api.post('/topic', {description: topicDescriptionString, topic: topicString})
                 .then((response) => {
                     setLoading(false);
                     setFailedStatus(false);
                     setSavedStatus(true);
+
+                   
+            
+                    console.log("Topic name: ", topicDescriptionString);
+                    console.log("Topic String: ", topicString);
                     
                    
                     if (updateInputComponent) {
                         console.log("Calling updateInputComponent with:", {
-                            topic: inputValue,
+                            topic: topicString,
                             updates: {
                                 loading: false,
                                 readOnlyMode: true,
@@ -74,7 +72,7 @@ const TextInput = ({
                             }
                         });
                         
-                        updateInputComponent(inputValue, {
+                        updateInputComponent(topicString, {
                             loading: false,
                             readOnlyMode: true,
                             saved: true,
@@ -93,7 +91,7 @@ const TextInput = ({
                     setSavedStatus(false);
                     
                     if (updateInputComponent) {
-                        updateInputComponent(inputValue, {
+                        updateInputComponent(topicString, {
                             loading: false,
                             readOnlyMode: false,
                             saved: false,
@@ -103,18 +101,48 @@ const TextInput = ({
                 })
                 .finally(() => setApiTriggered(false));
         }
-    }, [apiTriggered, inputValue, updateInputComponent]); // Added missing dependencies
+    }, [apiTriggered, topicString, updateInputComponent]); 
 
+    // Trigger API call on state change using useEffect
+    useEffect(() => {
+        if (deleteTriggered) {
+            api.delete('/topic', { data: {topic: topicString }})
+            .then(response => {
+                console.log(response.data);
+                setDeleteLoading(false);
+                if (onDelete) {
+                    onDelete(); // Notify parent to delete the topic
+                }
+            })
+            .catch(error => {
+                console.log("Failed to delete");
+                console.error('Error fetching data:', error.message);
+            })
+            .finally(() => setDeleteTriggered(false));
+        }
+    }, [deleteTriggered, topicString, updateInputComponent]); 
 
-    const handleInputChange = (event) => {
+    const handleTopicDescriptionInputChange = (event) => {
         // const value = event.target.value;
-        // setInputValue(value); // Update local state
-        // if (onInputChange) {
-        //     onInputChange(value); // Optionally pass the value back to the parent
+        // setTopicString(value); // Update local state
+        // if (onTopicInputChange) {
+        //     onTopicInputChange(value); // Optionally pass the value back to the parent
         // }
         const value = event.target.value;
-        setInputValue(value);
-        onInputChange(value);
+        // onTopicDescriptionInputChange(value);
+        settopicDescriptionString(value);
+    };
+
+
+    const handleTopicStringInputChange = (event) => {
+        // const value = event.target.value;
+        // setTopicString(value); // Update local state
+        // if (onNameInputChange) {
+        //     onNameInputChange(value); // Optionally pass the value back to the parent
+        // }
+        const value = event.target.value;
+        setTopicString(value);
+        // onTopicStringInputChange(value);
     };
 
 
@@ -142,53 +170,79 @@ const TextInput = ({
 
 
     const handleDeleteButtonClick = () => {
-        
-        // setDeleteLoading(true);
+        setDeleteTriggered(true);
+        setDeleteLoading(true);
+    }
 
-        // api.post('url', inputValue)
-        // .then(response => {
-            
-        //     console.log(response.data);
-        //     setDeleteLoading(false);
-            
-        // })
-        // .catch(error => {
-        //     console.log("Failed to delete")
-        //     console.error('Error fetching data:', error.message);
-        // });
+    const handleSaveButtonClick = () => {
+        if(!topicDescriptionString || !topicString){
+            console.log("Mchezo utawacha")
+            return;
+        }
 
-        setTimeout(() => {
-            setDeleteLoading(true);
-            if (onDelete) {
-                onDelete(); // Notify parent to delete the topic
-            }
-        }, 1000);
+        addNewInput({
+            description: topicDescriptionString,
+            topic: topicString, 
+            readOnlyMode: true, 
+            showButtonsState: true,
+            loading: false, 
+            failed: false, 
+            saved: true
+        });
+
+        handleAddTopic({
+            description: topicDescriptionString, 
+            topic: topicString
+        })
+
+
+        settopicDescriptionString('');
+        setTopicString('');
 
     }
 
     
     return (
         <div className={styles.mqttEntryRow}>
-            <input 
-                className={`${styles.mqttInput} ${isReadOnly ? styles.mqttInputReadOnly : ''}`} 
-                type="text" 
-                readOnly={isReadOnly}
-                autoComplete="off" 
-                id="mqtt-topics" 
-                name="mqtt-topics" 
-                onKeyDown={localHandleKeyDown} 
-                onChange={handleInputChange}
-                placeholder="Add topic and press Enter"
-                value={inputValue || ''}> 
-            </input>
-            <div className={`${showButtons && !isEditMode ? styles.mqttIconContainer : styles.mqttIconContainerHide}`} onClick={handleEditButtonClick}> 
-                { isSaved ? (<EditIcon className={styles.mqttEditIcon} />) : ('')}
-                { isLoading && !hasFailed ? (<Spinner size={20} />) : ('')}
-                { hasFailed ? (<ErrorIcon className={styles.errorIcon} />) : ('') }
-            </div>
-            <div className={`${showButtons && isSaved ? styles.mqttIconContainer : styles.mqttIconContainerHide }`} onClick={handleDeleteButtonClick}> 
-                { isSaved ? (<DeleteIcon className={styles.mqttDeleteIcon} />) : ('') }
-                { isDeleteLoading ? (<Spinner size={20} />) : ('')}
+            <div style={{display: 'flex', backgroundColor: 'white', borderRadius: '10px', padding: '10px', width: '500px'}}>
+                <div style={{display: 'flex', flexDirection: 'column', gap: '10px'}}>
+                    <input 
+                        className={`${styles.mqttInput} ${isReadOnly ? styles.mqttInputReadOnly : ''}`}
+                        type="text" 
+                        readOnly={isReadOnly}
+                        autoComplete="off" 
+                        id='topic-name'
+                        name='topic-name'
+                        onChange={handleTopicDescriptionInputChange}
+                        placeholder="Description"
+                        value={topicDescriptionString || ''}>
+                    </input>
+                    <input 
+                        className={`${styles.mqttInput} ${isReadOnly ? styles.mqttInputReadOnly : ''}`} 
+                        type="text" 
+                        readOnly={isReadOnly}
+                        autoComplete="off" 
+                        id="mqtt-topics" 
+                        name="mqtt-topics" 
+                        onChange={handleTopicStringInputChange}
+                        placeholder="Add topic"
+                        value={topicString || ''}> 
+                    </input>
+                </div>
+                <div style={{display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}}>
+                    <div style={{display: 'flex'}}>
+                        <div className={`${true && !isEditMode ? styles.mqttIconContainer : styles.mqttIconContainerHide}`} onClick={handleEditButtonClick}> 
+                            { isSaved ? (<EditIcon className={styles.mqttEditIcon} />) : ('')}
+                            { isLoading && !hasFailed ? (<Spinner size={20} />) : ('')}
+                            { hasFailed ? (<ErrorIcon className={styles.errorIcon} />) : ('') }
+                        </div>
+                        <div className={`${true && isSaved ? styles.mqttIconContainer : styles.mqttIconContainerHide }`} onClick={handleDeleteButtonClick}> 
+                            { isSaved && !isDeleteLoading ? (<DeleteIcon className={styles.mqttDeleteIcon} />) : ('') }
+                            { isDeleteLoading ? (<Spinner size={20} />) : ('')}
+                        </div>
+                    </div>
+                    { !isSaved ? <button className={styles.saveButton} onClick={handleSaveButtonClick}>Save</button> : ''}
+                </div>
             </div>
         </div>
     );

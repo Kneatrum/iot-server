@@ -9,7 +9,7 @@ const Modal = ({ show, mqttTopics, onClose }) => {
   const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
 
   const tabContent = [
-    <TopicsLayout userTopics={mqttTopics} />,
+    <TopicsLayout mqttTopics={mqttTopics} />,
     "",
     "",
     ""
