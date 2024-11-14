@@ -4,9 +4,11 @@ import { ReactComponent as AddSVGIcon } from '../../assets/add.svg';
 import NewDeviceModal from '../NewDeviceModal';
 import api from '../../api/api';
 
+const TOOLBAR_DESCRIPTION = 'Devices';
+
 function DeviceToolbar({isCollapsed, mqttTopics}) {
   // State to manage the list of added devices
-  const [ devices, setDevices ] = useState(["Devices"]);
+  const [ devices, setDevices ] = useState([TOOLBAR_DESCRIPTION]);
   const [ activeTab, setActiveTab ] = useState(1);
   const [ addStatus, setAddStatus ] = useState(true);
   const [ isModalOpen, setIsModalOpen ] = useState(false);
@@ -15,7 +17,7 @@ function DeviceToolbar({isCollapsed, mqttTopics}) {
     if (devices.length === 1) {
       api.get('/device_names')
       .then(response => {
-        setDevices(["Devices", ...response.data]); // Keep "Devices" as first element
+        setDevices([TOOLBAR_DESCRIPTION, ...response.data]);
       })
       .catch(error => {
           console.log("Failed to delete")
