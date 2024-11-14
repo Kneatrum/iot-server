@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../styles/toolbar.module.css';
 import { ReactComponent as AddSVGIcon } from '../../assets/add.svg';
 import NewDeviceModal from '../NewDeviceModal';
+import api from '../../api/api';
 
 function DeviceToolbar({isCollapsed, mqttTopics}) {
   // State to manage the list of added devices
@@ -9,6 +10,26 @@ function DeviceToolbar({isCollapsed, mqttTopics}) {
   const [ activeTab, setActiveTab ] = useState(1);
   const [ addStatus, setAddStatus ] = useState(true);
   const [ isModalOpen, setIsModalOpen ] = useState(false);
+
+  useEffect(() => {
+    api.get('/device_names')
+    .then(response => {
+        // setLoading(false);
+        console.log(response.data);
+        // setAddStatus(true); // update status if needed
+        // setSuccess(true);
+        setDevices([...devices, response.data]);
+        // onClose();
+        
+    })
+    .catch(error => {
+        console.log("Failed to delete")
+        console.error('Error fetching data:', error.message);
+        // setLoading(false);
+        // setFailed(true);
+    });
+
+  }, [])
   
   
   // Function to add a new device
