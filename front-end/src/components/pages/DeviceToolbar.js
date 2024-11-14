@@ -12,23 +12,16 @@ function DeviceToolbar({isCollapsed, mqttTopics}) {
   const [ isModalOpen, setIsModalOpen ] = useState(false);
 
   useEffect(() => {
-    api.get('/device_names')
-    .then(response => {
-        // setLoading(false);
-        console.log(response.data);
-        // setAddStatus(true); // update status if needed
-        // setSuccess(true);
-        setDevices([...devices, response.data]);
-        // onClose();
-        
-    })
-    .catch(error => {
-        console.log("Failed to delete")
-        console.error('Error fetching data:', error.message);
-        // setLoading(false);
-        // setFailed(true);
-    });
-
+    if (devices.length === 1) {
+      api.get('/device_names')
+      .then(response => {
+        setDevices(["Devices", ...response.data]); // Keep "Devices" as first element
+      })
+      .catch(error => {
+          console.log("Failed to delete")
+          console.error('Error fetching data:', error.message);
+      });
+    }
   }, [])
   
   
