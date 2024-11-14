@@ -71,14 +71,14 @@ const chartOptions = {
 
 const chartTypes = {
     Line: {
-      type: "Line Chart",
+      type: "Line chart",
       icon: <LineIcon/>,
       minWidth: 300, //px
       minHeight: 150, // px
       data: {
         "datasets": [
             {
-                "label": "Line Chart",
+                "label": "Line chart",
                 "data": [
                     { "x": 1728172800000, "y": 65 },
                     { "x": 1728173400000, "y": 50 },
@@ -96,7 +96,7 @@ const chartTypes = {
       options: chartOptions.line
     },
     Bar: {
-      type:"Bar Chart",
+      type:"Bar chart",
       icon: <BarIcon/>,
       minWidth: 300, //px
       minHeight: 150, // px
@@ -129,7 +129,7 @@ const chartTypes = {
       options: chartOptions.bar
     },
     Pie: {
-      type: "Pie Chart",
+      type: "Pie chart",
       icon: <PieIcon/>,
       minWidth: 300, //px
       minHeight: 150, // px
@@ -156,7 +156,7 @@ const chartTypes = {
       options: chartOptions.pie
     },
     Doughnut: {
-      type: "Doughnut Chart",
+      type: "Doughnut chart",
       icon: <DoughnutIcon/>,
       minWidth: 300, //px
       minHeight: 150, // px
