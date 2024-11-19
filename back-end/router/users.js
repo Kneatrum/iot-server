@@ -108,33 +108,45 @@ user_routes.post('/device', isAuthenticated, async (req, res) => {
     const { newDeviceData } = req.body;
     const userID = req.session.user.uuid;
 
+    const transaction = await sequelize.transaction(); 
+
     try {
+        
         const user = await User.findOne({
-            where: { 
-                uuid: userID
-            }
+            where: { uuid: userID },
+            transaction 
         });
 
-        const device = await Device.create({ 
-            userId: user.id, 
-            deviceName: newDeviceData.deviceName, 
-            serialNumber: newDeviceData.serialNumber 
-        });
-
+        if (!user) {
+            throw new Error('User not found');
+        }
+        
+        const device = await Device.create(
+            {
+                userId: user.id,
+                deviceName: newDeviceData.deviceName,
+                serialNumber: newDeviceData.serialNumber
+            },
+            { transaction } 
+        );
+        
         const topicsData = newDeviceData.topics.map(({ description, topic }) => ({
             deviceId: device.id,
             description,
             topic
         }));
         
-        await Topic.bulkCreate(topicsData);
+        await Topic.bulkCreate(topicsData, { transaction });
+        
+        await transaction.commit();
 
         return res.status(201).json({ message: 'Device added successfully' });
-    } catch (err){
-        console.log("Error: ", err)
-        return res.status(500).json({ error : "Something went wrong"})
+    } catch (err) {
+        await transaction.rollback();
+        console.error("Error:", err);
+        return res.status(500).json({ error: "Something went wrong" });
     }
-})
+});
 
 
 
