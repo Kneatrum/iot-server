@@ -242,6 +242,23 @@
     cursor: pointer;
 }
 
+.downloadIconContainer{
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+    background-color: lightblue;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.downloadIconContainer:hover{
+    background-color: lightskyblue;
+}
+
+.downloadIcon {
+    fill: rgb(87, 87, 87);
+}
+
 .copyIcon:hover {
   transform: scale(1.05);
 }
