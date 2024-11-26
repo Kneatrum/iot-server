@@ -12,7 +12,7 @@ import TopicsLayout from './Modal/TopicsLayout';
 
 
 import Spinner from '../components/Spinner';
-import api from '../api/api';
+import { api, certsApi } from '../api/api';
 
 const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
 

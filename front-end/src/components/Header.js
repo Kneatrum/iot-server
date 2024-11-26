@@ -3,7 +3,7 @@ import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import styles from './styles/header.module.css';
 import { Link } from 'react-router-dom';
-import api from '../api/api';
+import { api } from '../api/api';
 import { useNavigate } from 'react-router-dom';
 
 function Header() {
