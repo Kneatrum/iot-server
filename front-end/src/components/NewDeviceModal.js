@@ -15,6 +15,9 @@ import Spinner from '../components/Spinner';
 import { api, certsApi } from '../api/api';
 
 const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
+const CERTIFICATE = "certificate.crt";
+const CLIENT_KEY = "clientKey.key";
+const ROOT_CA = "rootCA.crt";
 
 
 function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, setDevices}) {
