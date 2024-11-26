@@ -229,8 +229,9 @@
 
 .apiKeyBox {
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    margin-top: 100px;
+    background-color: aliceblue;
     gap: 10px;
     padding: 8px;
     border: 1px solid #ccc;
