@@ -6,7 +6,7 @@ back-end/mqtt/publisher.js
 back-end/mqtt/automated_mqtt.py
 back-end/doc/
 back-end/.env.development
-
+mqtt-auth.sh
 
 front-end/node_modules
 front-end/src/components/charts/FAKE_DATA.js
@@ -19,3 +19,4 @@ influxdb/api_token.txt
 
 mosquitto/log/mosquitto.log
 mosquitto/data/mosquitto.db
+mosquitto/certs
