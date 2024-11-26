@@ -227,8 +227,13 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
                                 { success ? (
                                     <>
                                         <div className={styles.apiKeyBox}>
-                                            <span>{apiKey}</span>
-                                            <CopyIcon onClick={copyToClipboard} className={styles.copyIcon}/>
+                                            <span style={{display: 'flex', justifyContent: 'left'}} >{CERTIFICATE}</span>
+                                            <span style={{display: 'flex', justifyContent: 'left'}} >{CLIENT_KEY}</span>
+                                            <span  style={{display: 'flex', justifyContent: 'left'}} >{ROOT_CA}</span>
+                                            <div className={styles.downloadIconContainer}
+                                                onClick={fetchCertificates}>
+                                                <DownloadIcon  className={styles.downloadIcon}/>
+                                            </div>
                                         </div> 
                                     </>
                                 ) : ''}
