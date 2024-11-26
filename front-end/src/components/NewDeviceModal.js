@@ -93,7 +93,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
         // Generate API key at stage 2
         if (stage === 2) {
             handleSubmit();
-            setApiKey(generateApiKey());
+            // setApiKey(generateApiKey());
         }
 
         setStage(stage + 1);
@@ -125,7 +125,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
         setSuccess(false)
 
 
-        api.post('/device', {newDeviceData: newDeviceData})
+        api.post('/add-device', {newDeviceData: newDeviceData})
         .then(response => {
             setLoading(false);
             console.log(response.data);
@@ -216,7 +216,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
                             
                         </div>
                         <div className={styles.singleButtonContainer}>
-                            <button onClick={handleNext} className={styles.nextButton}>Next</button>
+                            <button onClick={onStageOneNext} className={styles.nextButton}>Next</button>
                         </div>
                     </div>
                 )}
@@ -252,7 +252,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
                         <div className={styles.stageBody}>
                             
                             { loading ? <div> Loading </div> : ''}
-                            { success ? <div> Please copy your API Key </div> : ''}
+                            { success ? <div> Please download your certificates </div> : ''}
                             { failed ? <div> Failed </div> : ''}
 
                             <div className={styles.spinnerContaier}>
