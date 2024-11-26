@@ -41,8 +41,9 @@ module.exports = (sequelize, DataTypes) => {
     },
     serialNumber: {
       allowNull: false,
-      type: DataTypes.STRING
-    },
+      type: DataTypes.STRING,
+      unique: true
+    }
   }, {
     sequelize,
     tableName: "devices",
