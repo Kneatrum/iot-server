@@ -111,6 +111,28 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
         
     };
 
+    const onStageOneNext = () => {
+        api
+            .get('/check-serial-number', {
+                params: { serialNumber : serialNumber }, 
+            })
+            .then(response => {
+                const { exists, message } = response.data; 
+    
+                if (exists) {
+                    console.log('Serial number exists:', message);
+                    alert('A device with the same serial number exists !');
+                    return;
+                } else {
+                    setStage(stage + 1);
+                }
+            })
+            .catch(error => {
+                console.error('Error checking serial number:', error.message);
+                alert('Failed to check the serial number. Please try again later.');
+            });
+    };
+
     
 
     if (!isOpen) return null;
