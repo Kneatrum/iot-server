@@ -47,7 +47,38 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
     }, [topics])
 
     
-    const generateApiKey = () => `${Math.random().toString(36).substring(2, 15)}`;
+    async function fetchCertificates(){
+        certsApi.post('/generate-certs', {serialNumber: serialNumber})
+        .then(response => {
+            const { clientCert, clientKey, rootCA } =  response.data;
+            
+            createDownload(CERTIFICATE, atob(clientCert));
+            createDownload(CLIENT_KEY, atob(clientKey));
+            createDownload(ROOT_CA, atob(rootCA));
+
+            setLoading(false);
+            // console.log(response.data);
+            // setAddStatus(true); // update status if needed
+            setSuccess(true);
+            // setDevices([...devices, deviceName]);
+            // onClose();
+            
+        })
+        .catch(error => {
+            console.log("Failed to delete")
+            console.error('Error fetching data:', error.message);
+            setLoading(false);
+            setFailed(true);
+        });
+    }
+
+    function createDownload(fileName, content) {
+        const blob = new Blob([content], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+      }
 
     const handleNext = () => {
         // Validation check for required fields before moving to stage 3
