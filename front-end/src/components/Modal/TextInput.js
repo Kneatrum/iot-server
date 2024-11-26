@@ -4,7 +4,7 @@ import { ReactComponent as EditIcon } from '../../assets/edit.svg';
 import { ReactComponent as ErrorIcon } from '../../assets/error.svg';
 import styles from '../styles/modal.module.css';
 import Spinner from '../Spinner.js';
-import api from '../../api/api.js';
+import { api } from '../../api/api.js';
 
 
 

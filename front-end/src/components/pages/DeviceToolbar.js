@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styles from '../styles/toolbar.module.css';
 import { ReactComponent as AddSVGIcon } from '../../assets/add.svg';
 import NewDeviceModal from '../NewDeviceModal';
-import api from '../../api/api';
+import { api } from '../../api/api';
 
 const TOOLBAR_DESCRIPTION = 'Devices';
 

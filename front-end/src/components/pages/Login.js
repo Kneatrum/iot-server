@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import styles from '../styles/login.module.css';
-import api from '../../api/api';
+import { api } from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 import Toast from '../Toast.js';
 import Spinner from '../Spinner.js';
