@@ -5,7 +5,7 @@ import { ReactComponent as CancelIcon } from '../assets/cancel.svg';
 import { ReactComponent as SmallTick } from '../assets/smalltick.svg';
 import { ReactComponent as ErrorIcon } from '../assets/error.svg' 
 import { ReactComponent as SuccessIcon } from '../assets/success.svg' 
-import { ReactComponent as CopyIcon } from '../assets/copy.svg' 
+import { ReactComponent as DownloadIcon } from '../assets/download.svg' 
 
 import Topics from './Topics';
 import TopicsLayout from './Modal/TopicsLayout';
