@@ -264,6 +264,7 @@ mqttClient.on('message', (topic, message) => {
 
 const general_routes = require('./router/general.js').general;
 const user_routes = require('./router/users.js');
+const sslServicesRoutes = require('./router/ssl-services.js');
 
 app.use("/", general_routes);
 
@@ -286,6 +287,20 @@ app.use(
         }
     }),
     user_routes
+);
+
+app.use(
+    "/ssl-services",
+    session({
+        secret: sessionSecret, 
+        store: sessionStore, 
+        saveUninitialized: false,
+        resave: false,
+        cookie: {
+            maxAge: 60000 * 60, 
+        },
+    }),
+    sslServicesRoutes 
 );
 
 sessionStore.sync();
