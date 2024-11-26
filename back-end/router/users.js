@@ -87,6 +87,17 @@ user_routes.get('/', async (req, res) => {
 })
 
 
+// Get all device data
+user_routes.get('/get-devices', async (req, res) => {
+    try {
+        const devices = await Device.findAll();
+        return res.send(devices);
+    } catch (err){
+        console.log("Error: ", err);
+        return res.status(500).json({ error : "Something went wrong"});
+    }
+})
+
 // Get available devices
 user_routes.get('/device_names', isAuthenticated, async (req, res) => { 
     try { 
@@ -104,17 +115,17 @@ user_routes.get('/device_names', isAuthenticated, async (req, res) => {
 
 
 // Add new device
-user_routes.post('/device', isAuthenticated, async (req, res) => {
+user_routes.post('/add-device', isAuthenticated, async (req, res) => {
     const { newDeviceData } = req.body;
     const userID = req.session.user.uuid;
 
-    const transaction = await sequelize.transaction(); 
+    // const transaction = await sequelize.transaction(); 
 
     try {
         
         const user = await User.findOne({
-            where: { uuid: userID },
-            transaction 
+            where: { uuid: userID } /*,*/
+            // transaction 
         });
 
         if (!user) {
@@ -127,7 +138,7 @@ user_routes.post('/device', isAuthenticated, async (req, res) => {
                 deviceName: newDeviceData.deviceName,
                 serialNumber: newDeviceData.serialNumber
             },
-            { transaction } 
+            /*{ transaction }*/ 
         );
         
         const topicsData = newDeviceData.topics.map(({ description, topic }) => ({
@@ -136,19 +147,92 @@ user_routes.post('/device', isAuthenticated, async (req, res) => {
             topic
         }));
         
-        await Topic.bulkCreate(topicsData, { transaction });
+        await Topic.bulkCreate(topicsData /*, { transaction }*/);
         
-        await transaction.commit();
+        // await transaction.commit();
 
         return res.status(201).json({ message: 'Device added successfully' });
     } catch (err) {
-        await transaction.rollback();
+        // await transaction.rollback();
         console.error("Error:", err);
         return res.status(500).json({ error: "Something went wrong" });
     }
 });
 
 
+// Delete device by serial number
+user_routes.delete('/delete-device/:serialNumber', /*isAuthenticated,*/ async (req, res) => {
+    const { serialNumber } = req.params; // Get serial number from URL parameters
+    // const userID = req.session.user.uuid; // Retrieve user ID from session
+
+    try {
+        // Find the user
+        // const user = await User.findOne({
+        //     where: { uuid: userID }
+        // });
+
+        // if (!user) {
+        //     return res.status(404).json({ error: 'User not found' });
+        // }
+
+        // Find the device by serial number and associated user
+        const device = await Device.findOne({
+            where: {
+                serialNumber,
+                //userId: user.id // Ensure the device belongs to the current user
+            }
+        });
+
+        if (!device) {
+            return res.status(404).json({ error: 'Device not found' });
+        }
+
+        // Delete the device and associated topics
+        await Topic.destroy({ where: { deviceId: device.id } }); // Delete associated topics
+        await device.destroy(); // Delete the device itself
+
+        return res.status(200).json({ message: 'Device deleted successfully' });
+    } catch (err) {
+        console.error("Error:", err);
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+});
+
+user_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
+    const { serialNumber } = req.query; 
+    const userID = req.session.user.uuid; 
+    console.log("#############3", serialNumber);
+    console.log("**************", userID);
+
+    try {
+        
+        if (!serialNumber) {
+            return res.status(400).json({ error: 'Serial number is required' });
+        }
+
+        const user = await User.findOne({
+            where: { uuid: userID }
+        });
+
+        // Find the device with the given serial number (and optionally user association)
+        const device = await Device.findOne({
+            where: {
+                serialNumber,
+                userId: user.id, 
+            },
+        });
+
+        
+        if (device) {
+            return res.status(200).json({ exists: true, message: 'Serial number exists' });
+        } else {
+            return res.status(200).json({ exists: false, message: 'Serial number does not exist' });
+        }
+    } catch (err) {
+        console.error('Error:', err);
+        return res.status(500).json({ error: 'Something went wrong' });
+    }
+});
 
 
 // Add Topic
