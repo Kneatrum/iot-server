@@ -266,13 +266,15 @@ const general_routes = require('./router/general.js').general;
 const user_routes = require('./router/users.js');
 const sslServicesRoutes = require('./router/ssl-services.js');
 
-app.use("/", general_routes);
 
 const sessionStore = new SequelizeStore({
     db: sequelize,
     checkExpirationInterval: 15 * 60 * 1000, // 15 Minutes interval at which to cleanup expired sessions in milliseconds.
     expiration: 24 * 60 * 60 * 1000  // One day maximum age (in milliseconds) of a valid session.
 });
+
+
+app.use("/", general_routes);
 
 // Apply session middleware only for the /users routes
 app.use(
