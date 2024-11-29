@@ -131,7 +131,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
             console.log(response.data);
             setAddStatus(true); // update status if needed
             setSuccess(true);
-            setDevices([...devices, deviceName]);
+            setDevices([...devices, {'name': deviceName, 'serial': serialNumber}]);
             // onClose();
             
         })

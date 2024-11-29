@@ -28,7 +28,9 @@
 }
 
 .toolbarItem {
-  padding: 10px 20px;
+  display: flex;
+  padding: 10px 2px;
+  padding-left: 20px;
   cursor: pointer;
   border-top-left-radius: 8px;
   border-top-right-radius: 8px;
