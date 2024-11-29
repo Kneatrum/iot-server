@@ -58,6 +58,7 @@ const OptionsModal = ({ deviceSerialNumber, tabRef, onClose, options, actions })
     } else if (option === "Delete") {
         if(deleteDevice(deviceSerialNumber)){
             actions(option, deviceSerialNumber)
+            onClose();
         }
         console.log("Delete action triggered!");
     } else {
