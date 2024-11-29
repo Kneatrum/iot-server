@@ -98,19 +98,27 @@ user_routes.get('/get-devices', async (req, res) => {
     }
 })
 
-// Get available devices
-user_routes.get('/device_names', isAuthenticated, async (req, res) => { 
+// Get devices by their names and serial numbers
+user_routes.get('/names-and-serials', isAuthenticated, async (req, res) => { 
     try { 
         const devices = await Device.findAll({
-            attributes: ['deviceName']
+            attributes: ['deviceName', 'serialNumber'] // Select only deviceName and serialNumber
         }); 
-        const deviceNames = devices.map(device => device.deviceName);
-        return res.send(deviceNames); 
-    } catch (err){ 
-        console.log("Error: ", err); 
-        return res.status(500).json({ error : "Something went wrong"}); 
+        
+        // Map the devices to return an array of objects with deviceName and serialNumber
+        const deviceInfo = devices.map(device => ({
+            name: device.deviceName,
+            serial: device.serialNumber
+        }));
+        
+        // Return the mapped array
+        return res.json(deviceInfo); 
+    } catch (err) { 
+        console.error("Error: ", err); 
+        return res.status(500).json({ error: "Something went wrong" }); 
     } 
 });
+
 
 
 
