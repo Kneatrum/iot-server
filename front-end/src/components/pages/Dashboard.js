@@ -6,7 +6,6 @@ import Header from '../Header';
 import Sidebar from '../Sidebar';
 import DeviceToolbar from './DeviceToolbar.js';
 import styles from '../styles/dashboard.module.css';
-import axios from 'axios';
 import gridcss from '../styles/grid.module.css'; 
 import  chartTypes  from '../ChartTypes.js';
 import { Line, Bar, Pie, Doughnut } from 'react-chartjs-2'
@@ -14,6 +13,7 @@ import 'chartjs-adapter-date-fns';
 import { v4 as uuidv4 } from 'uuid';
 import  Modal  from '../Modal/Modal.js'
 import { ApiContext } from '../../context/ApiContext';
+import { api } from '../../api/api';
 
 import {
   Chart as ChartJS, 
