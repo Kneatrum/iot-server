@@ -69,18 +69,42 @@ ChartJS.register(
 const Dashboard = () => {
   const [compactType, setCompactType] = useState('vertical');
   const [margin, setMargin] = useState([20, 20]);
-
-  const [charts, setCharts] = useState([]);
-  const [layout, setLayout] = useState([]);
-
   // const [apiData, setApiData] = useState([]);
   const [chartData, setChartData] = useState({});
   const [realTimeData, setRealTimeData] = useState([]);
-
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [modalState, setModalState] = useState(false);
   const { apiData } = useContext(ApiContext);
   const [ topics, setTopics ] = useState([]);
+  const [ devices, setDevices ] = useState(TOOLBAR_DESCRIPTION);
+  
+
+  useEffect(() => {
+    if (devices.length === 1) {
+      api
+        .get('/names-and-serials')
+        .then((response) => {
+
+          const fetchedDevices = response.data.map((device, idx) => ({
+            name: device.name,
+            serial: device.serial,
+            active: idx === 0 ? true : false, // THIS IS HARD CODED. SHOULD BE ADDED TO THE DATABASE INSTEAD
+            layouts: null,
+            charts: null
+          }));
+   
+          // Append the fetched devices to the default TOOLBAR_DESCRIPTION
+          setDevices([TOOLBAR_DESCRIPTION[0], ...fetchedDevices]);
+  
+          // console.log("#Devices: ", [TOOLBAR_DESCRIPTION[0], ...fetchedDevices]);
+          // console.log("#Devices: ", devices);
+          // setFirstTime(1)
+        })
+        .catch((error) => {
+          console.error('Error fetching data:', error.message);
+        });
+    }
+  }, [devices.length, devices]);
 
 
   useEffect(() => {
@@ -112,14 +136,14 @@ const Dashboard = () => {
       event.preventDefault();
     }
     
-    try {
-      const response = await axios.post(url, {
-        userLayout: layout,
-      });
-      console.log('Response:', response.data);
-    } catch (err) {
-      console.error('Error:', err);
-    }
+    // try {
+    //   const response = await axios.post(url, {
+    //     userLayout: layout,
+    //   });
+    //   console.log('Response:', response.data);
+    // } catch (err) {
+    //   console.error('Error:', err);
+    // }
   };
 
   const showModal = () => {
