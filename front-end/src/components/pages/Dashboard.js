@@ -154,42 +154,76 @@ const Dashboard = () => {
     return devices.findIndex(device => device.active === true);
   }
 
-  const addWidget = (type, minWidth, minHeight) => {
-    
-    let layoutLength = layout.length;
+  const addWidget = (type, minWidth, minHeight, existingDevices) => {
+    const activeDeviceIndex = findActiveDeviceIndex(existingDevices);
+  
+    // Find largest X and Y coordinates
+    const activeDeviceLayouts = existingDevices[activeDeviceIndex]?.layouts || [];
+    const layoutLength = activeDeviceLayouts.length;
     let largestX = 0;
     let largestY = 0;
-    
-    for(let k = 0; k < layoutLength; k++){
-      if(layout[k].x > largestX){
-        largestX = layout[k].x
+  
+    for (let k = 0; k < layoutLength; k++) {
+      if (activeDeviceLayouts[k].x > largestX) {
+        largestX = activeDeviceLayouts[k].x;
       }
-      if(layout[k].y > largestY){
-        largestY = layout[k].y
+      if (activeDeviceLayouts[k].y > largestY) {
+        largestY = activeDeviceLayouts[k].y;
       }
-    }  
-
-    let defaultXOnNewY = 0;
-    let LineChartMinWidth = minWidth / (windowWidth/maxNumCols);
-    let LineChartMinHeight = (minHeight/rowHeight);
-    let newXCoordinate = largestX === 0 ? largestX : largestX + LineChartMinWidth;
-    let newYCoordinate = largestY + 1;
-    let availableSpace = maxNumCols - LineChartMinWidth;
-    let newLayout = null;
-    let componentID =  uuidv4();
-    
-
-    if(newXCoordinate <= (availableSpace)){
-      newLayout = { i: `${componentID}`, x: newXCoordinate, y: largestY, w: LineChartMinWidth, h: LineChartMinHeight };
-      newXCoordinate = newXCoordinate + 1;
-    } else {
-      newLayout = { i: `${componentID}`, x: defaultXOnNewY, y: newYCoordinate, w: LineChartMinWidth, h: LineChartMinHeight };
     }
-    
-    const newChart = { id: `${componentID}`, type, data: chartTypes[type].data, options: chartTypes[type].options };
-    setLayout([...layout, newLayout]);
-    setCharts([...charts, newChart]);   
-    console.log("Layout: ", layout);
+  
+    const LineChartMinWidth = minWidth / (windowWidth / maxNumCols);
+    const LineChartMinHeight = minHeight / rowHeight;
+    const newXCoordinate = largestX === 0 ? largestX : largestX + LineChartMinWidth;
+    const newYCoordinate = largestY + 1;
+    const availableSpace = maxNumCols - LineChartMinWidth;
+    const componentID = uuidv4();
+  
+    let newLayout;
+    if (newXCoordinate <= availableSpace) {
+      newLayout = { 
+        i: `${componentID}`, 
+        x: newXCoordinate, 
+        y: largestY, 
+        w: LineChartMinWidth, 
+        h: LineChartMinHeight 
+      };
+    } else {
+      newLayout = { 
+        i: `${componentID}`, 
+        x: 0, 
+        y: newYCoordinate, 
+        w: LineChartMinWidth, 
+        h: LineChartMinHeight 
+      };
+    }
+  
+    const newChart = {
+      id: `${componentID}`,
+      type,
+      data: chartTypes[type].data,
+      options: chartTypes[type].options,
+    };
+  
+    // Update layouts and charts for the active device
+    setDevices(prevDevices =>
+      prevDevices.map((device, index) =>
+        index === activeDeviceIndex
+          ? {
+              ...device,
+              layouts: [...(device.layouts || []), newLayout],
+              charts: [...(device.charts || []), newChart],
+            }
+          : device
+      )
+    );
+  
+    console.log("Device summary:", {
+      activeDevice: activeDeviceIndex,
+      updatedLayouts: activeDeviceLayouts,
+      updatedCharts: newChart,
+    });
+  
   };
 
 
