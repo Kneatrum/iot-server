@@ -284,8 +284,8 @@ const Dashboard = () => {
     
     <>
       <Header/>
-      <Sidebar showModal = {showModal} saveLayout = {saveLayout} addWidget={addWidget} isCollapsed={isCollapsed} onToggle={toggleSidebar} />
-      <DeviceToolbar isCollapsed={isCollapsed} mqttTopics={topics}/>
+      <Sidebar showModal = {showModal} saveLayout = {saveLayout} addWidget={addWidget} devices={devices} isCollapsed={isCollapsed} onToggle={toggleSidebar} />
+      <DeviceToolbar isCollapsed={isCollapsed} mqttTopics={topics} devices={devices} setDevices={setDevices} />
       <div className={`${styles.dashboard} ${isCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
         <GridLayout
           className="complex-interface-layout"
