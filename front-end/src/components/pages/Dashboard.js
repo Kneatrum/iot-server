@@ -150,6 +150,9 @@ const Dashboard = () => {
     setModalState(true);
   }
 
+  function findActiveDeviceIndex(devices) {
+    return devices.findIndex(device => device.active === true);
+  }
 
   const addWidget = (type, minWidth, minHeight) => {
     
