@@ -37,6 +37,13 @@ const chartComponents = {
 };
 
 // import  HeartChart  from '../charts/HeartChart.js';
+const TOOLBAR_DESCRIPTION = [{ 
+  "name": "Device", 
+  "serial": "firstDevice001",
+  "active": false,
+  "layouts": null,
+  "charts": null
+}];
 
 const backEndHost = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
 const url = `${backEndHost}/user/layout`
