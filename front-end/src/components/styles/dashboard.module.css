@@ -2,7 +2,6 @@
 
 /* Dashboard.css */
 .dashboard {
-    padding-top: var(--header-height);
     transition: var(--dashboard-transition);
     overflow-y: auto; 
     background-color: var(--grid-layout-background-color);
