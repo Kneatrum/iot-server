@@ -5,7 +5,7 @@ import {ReactComponent as PanelClose}  from '../assets/panel-close.svg';
 import {ReactComponent as PanelOpen} from '../assets/panel-open.svg';
 import { ReactComponent as AddMqtt } from '../assets/mqtt-topics.svg'
 
-const Sidebar = ({ showModal, saveLayout, addWidget, isCollapsed, onToggle }) => {
+const Sidebar = ({ showModal, saveLayout, addWidget, devices, isCollapsed, onToggle }) => {
 
   
   return (
@@ -29,7 +29,7 @@ const Sidebar = ({ showModal, saveLayout, addWidget, isCollapsed, onToggle }) =>
       <div className={ isCollapsed ? styles.linkContainer : styles.linkContainerBig}>
         {
           Object.entries(chartTypes).map(([key, element]) => (
-            <div className={styles.link} onClick={() => addWidget(key, element.minWidth, element.minHeight)} key={key}>
+            <div className={styles.link} onClick={() => addWidget(key, element.minWidth, element.minHeight, devices)} key={key}>
               <span className={styles.icon}>{element.icon}</span>
               <span className={isCollapsed ? styles.hidden : styles.visible}>{element.type}</span>
             </div>
