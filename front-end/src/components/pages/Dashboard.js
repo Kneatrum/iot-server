@@ -289,7 +289,7 @@ const Dashboard = () => {
       <div className={`${styles.dashboard} ${isCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
         <GridLayout
           className="complex-interface-layout"
-          layout={layout}
+          layout={devices.find(device => device.active === true)?.layouts || []}
           cols={maxNumCols}
           rowHeight={rowHeight}
           width={windowWidth}
@@ -299,7 +299,7 @@ const Dashboard = () => {
           margin={margin}
         >
           {
-            charts.map((chart) => {
+            devices.find(device => device.active === true)?.charts?.map((chart) => {
               const ChartComponent =  chartComponents[chart.type];
               return (
                 <div key={chart.id}  className={gridcss.gridItem}>
