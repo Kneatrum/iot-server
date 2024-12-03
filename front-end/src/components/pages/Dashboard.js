@@ -264,14 +264,15 @@ const Dashboard = () => {
 
   
   const handleLayoutChange = (newLayout) => {
-    // newLayout.forEach((layout) => {
-    //   console.log(`${layout.i} : [w = ${layout.w}, h = ${layout.h}, x = ${layout.x}, y = ${layout.y}]`);
-    // })
-    
-    console.log("Layout: ", newLayout)
-    console.log("Last element: ", newLayout[newLayout.length - 1])
-    
-    setLayout(newLayout)
+    // Update the layout for the active device
+    const updatedDevices = devices.map(device =>
+      device.active
+        ? { ...device, layouts: newLayout } 
+        : device
+    );
+
+    setDevices(updatedDevices);
+    console.log("Updated Layout:", newLayout);
   }
 
   const handleDrop = (layout, item, e) => {
