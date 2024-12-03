@@ -4,47 +4,20 @@ import { ReactComponent as AddSVGIcon } from '../../assets/add.svg';
 import { ReactComponent as MoreSVGIcon } from '../../assets/more.svg';
 import OptionsModal from '../OptionsModal';
 import NewDeviceModal from '../NewDeviceModal';
-import { api } from '../../api/api';
 
-const TOOLBAR_DESCRIPTION = [{ 
-    "name": "Device", 
-    "serial": "firstDevice001"
-  }];
 
 const deviceOptions = ['Settings', 'Delete', 'Edit'];
 
-function DeviceToolbar({ isCollapsed, mqttTopics }) {
-  const [devices, setDevices] = useState([TOOLBAR_DESCRIPTION]);
-  const [activeTab, setActiveTab] = useState(1);
+function DeviceToolbar({ isCollapsed, mqttTopics, devices, setDevices}) {
   const [addStatus, setAddStatus] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
   const [activeButtonIndex, setActiveButtonIndex] = useState(null); // Track which button is active
+  const [ activeTab, setActiveTab ] = useState(1);
 
   // Create an array of refs for all devices
   const buttonRefs = useRef([]);
 
-  useEffect(() => {
-    if (devices.length === 1) {
-      api
-        .get('/names-and-serials')
-        .then((response) => {
-
-          const fetchedDevices = response.data.map((device) => ({
-            name: device.name,
-            serial: device.serial,
-          }));
-  
-          // Append the fetched devices to the default TOOLBAR_DESCRIPTION
-          setDevices([TOOLBAR_DESCRIPTION[0], ...fetchedDevices]);
-  
-          console.log("Devices: ", [TOOLBAR_DESCRIPTION[0], ...fetchedDevices]);
-        })
-        .catch((error) => {
-          console.error('Error fetching data:', error.message);
-        });
-    }
-  }, [devices.length, devices]);
 
   const addDevice = () => {
     setIsModalOpen(true);
@@ -86,7 +59,15 @@ function DeviceToolbar({ isCollapsed, mqttTopics }) {
                 index === 0 ? styles.toolbarItemDescription : ''
               }`}
               onClick={() => {
-                setActiveTab(index === 0 ? 1 : index);
+                
+                if (index === 0) return;
+
+                const updatedDevices = devices.map((device, idx) => ({
+                  ...device,
+                  active: idx === index, // Set active to true for the clicked tab, false for others
+                }));
+                setActiveTab(index)
+                setDevices(updatedDevices);
               }}
             >
               <div>{device.name}</div>
