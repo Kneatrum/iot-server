@@ -2,7 +2,7 @@
     position: fixed;
     top: var(--dynamic-top, -9999px); /* Default to an offscreen position */
     left: var(--dynamic-left, -9999px);
-    z-index: 9999;
+    z-index: 20;
     opacity: 1;
     transition: opacity 0.2s ease-in-out;
   }
