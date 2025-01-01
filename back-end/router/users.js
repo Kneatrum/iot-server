@@ -99,16 +99,17 @@ user_routes.get('/get-devices', async (req, res) => {
 })
 
 // Get devices by their names and serial numbers
-user_routes.get('/names-and-serials', isAuthenticated, async (req, res) => { 
+user_routes.get('/device-details',  async (req, res) => { 
     try { 
         const devices = await Device.findAll({
-            attributes: ['deviceName', 'serialNumber'] // Select only deviceName and serialNumber
+            attributes: ['deviceName', 'serialNumber', 'activeStatus'] // Select only deviceName and serialNumber
         }); 
         
         // Map the devices to return an array of objects with deviceName and serialNumber
         const deviceInfo = devices.map(device => ({
             name: device.deviceName,
-            serial: device.serialNumber
+            serial: device.serialNumber,
+            activeStatus: device.activeStatus
         }));
         
         // Return the mapped array
