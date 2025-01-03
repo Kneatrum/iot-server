@@ -82,13 +82,13 @@ const Dashboard = () => {
   useEffect(() => {
     if (devices.length === 1) {
       api
-        .get('/names-and-serials')
+        .get('/device-details')
         .then((response) => {
 
           const fetchedDevices = response.data.map((device, idx) => ({
             name: device.name,
             serial: device.serial,
-            active: idx === 0 ? true : false, // THIS IS HARD CODED. SHOULD BE ADDED TO THE DATABASE INSTEAD
+            activeStatus: device.activeStatus,
             layouts: null,
             charts: null
           }));
