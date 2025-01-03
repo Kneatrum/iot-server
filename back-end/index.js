@@ -274,36 +274,22 @@ const sessionStore = new SequelizeStore({
 });
 
 
-app.use("/", general_routes);
-
-// Apply session middleware only for the /users routes
 app.use(
-    "/users",
     session({
         secret: sessionSecret,
         store: sessionStore,
         saveUninitialized: false,
         resave: false,
         cookie: {
-            maxAge: 60000 * 60,  // 1 hour
-        }
-    }),
-    user_routes
+            maxAge: 60000 * 60, // 1 hour
+        },
+    })
 );
 
-app.use(
-    "/ssl-services",
-    session({
-        secret: sessionSecret, 
-        store: sessionStore, 
-        saveUninitialized: false,
-        resave: false,
-        cookie: {
-            maxAge: 60000 * 60, 
-        },
-    }),
-    sslServicesRoutes 
-);
+// Route-specific middlewares
+app.use("/", general_routes);
+app.use("/users", user_routes);
+app.use("/ssl-services", sslServicesRoutes);
 
 sessionStore.sync();
 
