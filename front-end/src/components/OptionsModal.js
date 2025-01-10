@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from "react";
 import styles from "./styles/optionsmodal.module.css";
 import { api } from "../api/api";
 
-const OptionsModal = ({ deviceSerialNumber, tabRef, onClose, options, actions }) => {
+const OptionsModal = ({ deviceSerialNumber, tabRef, onClose, options, devices, actions }) => {
   const [ position, setPosition ] = useState(null); // Start as `null` instead of { top: 0, left: 0 }
   const modalRef = useRef(null); // Ref for the modal container
 
@@ -57,7 +57,7 @@ const OptionsModal = ({ deviceSerialNumber, tabRef, onClose, options, actions })
       console.log("Edit action triggered!");
     } else if (option === "Delete") {
         if(deleteDevice(deviceSerialNumber)){
-            actions(option, deviceSerialNumber)
+            actions(option, devices, deviceSerialNumber)
             onClose();
         }
         console.log("Delete action triggered!");
