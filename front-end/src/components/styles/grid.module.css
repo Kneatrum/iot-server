@@ -1,13 +1,29 @@
 .gridItem {
-    background: rgb(255, 255, 255); /* Background color */
-    border: 1px solid #ccc; /* Border color */
-    padding: 10px; /* Padding inside the grid item */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Box shadow */
-    transition: box-shadow 0.7s ease; /* Smooth transition on hover */
+    background: rgb(255, 255, 255);
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.7s ease;
     height: auto;
+    position: relative; /* Important for z-index to work */
+    z-index: 1; /* Default low z-index */
+}
+
+.gridItem.activeChart {
+    z-index: 20; /* Higher z-index when chart is selected */
 }
 
 /* Optional: Add a hover effect */
 .gridItem:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
+}
+
+.kebabMenu{
+    align-content: right;
+    position: absolute;
+    top: 2px;
+    right: 5px;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 5;
 }

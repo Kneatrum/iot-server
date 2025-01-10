@@ -15,3 +15,14 @@
 .dashboard.sidebarCollapsed {
     margin-left: var(--collapsed-sidebar-width); /* When the sidebar is collapsed */
 }
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+    z-index: 15; /* Ensure it's above other content but below modals */
+    pointer-events: none; /* Allow clicks to pass through to underlying elements */
+  }
