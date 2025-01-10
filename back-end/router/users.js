@@ -2,6 +2,7 @@ const express = require('express');
 const { User, Device, Topic, Chart, Layout } = require('../databases/postgres/models');
 const bcrypt = require('bcryptjs');
 const user_routes = express.Router();
+const { sequelize } = require('../databases/postgres/models/index');
 
 
 function isAuthenticated(req, res, next) {
@@ -121,11 +122,35 @@ user_routes.get('/device-details',  async (req, res) => {
 });
 
 
+user_routes.post('/disable-previous-device', isAuthenticated, async (req, res) => {
+    const transaction = await sequelize.transaction();
+
+    try {
+        await Device.update(
+            { activeStatus: false }, // Update activeStatus
+            {
+                where: {
+                    activeStatus: true, // Only update devices that are currently active
+                },
+            },
+            { transaction }
+        );
+
+        await transaction.commit();
+        return res.status(200).json({ message: 'Device disabled successfully' });
+
+    } catch (err) {
+        await transaction.rollback();
+        console.error("Error:", err);
+        return res.status(500).json({ error: "Something went wrong" }); 
+    }
+});
 
 
 // Add new device
 user_routes.post('/add-device', isAuthenticated, async (req, res) => {
-    const { newDeviceData } = req.body;
+    const transaction = await sequelize.transaction();
+    const { newDevice, topics } = req.body;
     const userID = req.session.user.uuid;
 
     // const transaction = await sequelize.transaction(); 
@@ -133,36 +158,47 @@ user_routes.post('/add-device', isAuthenticated, async (req, res) => {
     try {
         
         const user = await User.findOne({
-            where: { uuid: userID } /*,*/
-            // transaction 
+            where: { uuid: userID } ,
+            transaction 
         });
 
         if (!user) {
             throw new Error('User not found');
         }
+
+        await Device.update(
+            { activeStatus: false }, // Update activeStatus
+            {
+                where: {
+                    activeStatus: true, // Only update devices that are currently active
+                },
+            },
+            { transaction }
+        );
         
         const device = await Device.create(
             {
                 userId: user.id,
-                deviceName: newDeviceData.deviceName,
-                serialNumber: newDeviceData.serialNumber
+                deviceName: newDevice.deviceName,
+                serialNumber: newDevice.serialNumber,
+                activeStatus: newDevice.activeStatus
             },
-            /*{ transaction }*/ 
+            { transaction }
         );
         
-        const topicsData = newDeviceData.topics.map(({ description, topic }) => ({
+        const topicsData = topics.map(({ description, topic }) => ({
             deviceId: device.id,
             description,
             topic
         }));
         
-        await Topic.bulkCreate(topicsData /*, { transaction }*/);
+        await Topic.bulkCreate(topicsData , { transaction });
         
-        // await transaction.commit();
+        await transaction.commit();
 
         return res.status(201).json({ message: 'Device added successfully' });
     } catch (err) {
-        // await transaction.rollback();
+        await transaction.rollback();
         console.error("Error:", err);
         return res.status(500).json({ error: "Something went wrong" });
     }
