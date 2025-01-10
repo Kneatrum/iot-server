@@ -6,6 +6,9 @@ import { ReactComponent as SmallTick } from '../assets/smalltick.svg';
 import { ReactComponent as ErrorIcon } from '../assets/error.svg' 
 import { ReactComponent as SuccessIcon } from '../assets/success.svg' 
 import { ReactComponent as DownloadIcon } from '../assets/download.svg' 
+import { useDispatch } from "react-redux";
+import { addDevice } from './devicesSlice';
+import { DEVICE_TEMPLATE } from './pages/Dashboard';
 
 import Topics from './Topics';
 import TopicsLayout from './Modal/TopicsLayout';
@@ -13,6 +16,7 @@ import TopicsLayout from './Modal/TopicsLayout';
 
 import Spinner from '../components/Spinner';
 import { api, certsApi } from '../api/api';
+import { set } from 'date-fns';
 
 const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
 const CERTIFICATE = "certificate.crt";
@@ -20,7 +24,7 @@ const CLIENT_KEY = "clientKey.key";
 const ROOT_CA = "rootCA.crt";
 
 
-function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, setDevices}) {
+function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveDevice, setDeviceCount }) {
     const [stage, setStage] = useState(1);
     const [deviceName, setDeviceName] = useState('');
     const [serialNumber, setSerialNumber] = useState('');
@@ -32,6 +36,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
     const [ success, setSuccess ] = useState(false);
     const [activeTab, setActiveTab] = useState(0);
     const [ topics, setTopics ] = useState([]);
+    const dispatch = useDispatch();
 
 
     const handleAddTopic = (newTopic) => {
@@ -113,36 +118,53 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics, devices, se
             return;
         }
 
-        const newDeviceData = {
+        // const newDevice = {
+        //     deviceName: deviceName,
+        //     serialNumber: serialNumber, // New serial number 
+        //     topics: topics,
+        //     activeStatus: true,
+        // };
+        
+        DEVICE_TEMPLATE.deviceName = deviceName;
+        DEVICE_TEMPLATE.serialNumber = serialNumber;
+        DEVICE_TEMPLATE.activeStatus = true;
+        
+
+        setActiveDevice((prevDevice) => ({ 
+            ...prevDevice,
+            index: prevDevice.index + 1,
             deviceName: deviceName,
             serialNumber: serialNumber,
-            topics: topics
-        };
-    
-        console.log("All Data",  newDeviceData)
+            activeStatus: DEVICE_TEMPLATE.activeStatus
+        }));
+ 
+        console.log("All Data",  DEVICE_TEMPLATE)
         setFailed(false);
         setLoading(true);
         setSuccess(false)
 
-
-        api.post('/add-device', {newDeviceData: newDeviceData})
-        .then(response => {
-            setLoading(false);
+        api.post('/add-device', { newDevice: DEVICE_TEMPLATE, topics: topics })
+        .then((response) => {
             console.log(response.data);
-            setAddStatus(true); // update status if needed
+            setAddStatus(true); // Update status if needed
             setSuccess(true);
-            setDevices([...devices, {'name': deviceName, 'serial': serialNumber}]);
-            // onClose();
-            
-        })
-        .catch(error => {
-            console.log("Failed to delete")
-            console.error('Error fetching data:', error.message);
-            setLoading(false);
-            setFailed(true);
-        });
+            dispatch(addDevice(DEVICE_TEMPLATE));
 
-        
+            setDeviceCount((prevCount) => ({
+                    prevCount: prevCount + 1
+                    // dispatch(setActiveDeviceIndex({prevIndex: prevIndex, activeIndex: index}));
+                })
+            );
+            // setDevices([...devices, { name: deviceName, serial: serialNumber }]);
+        })
+        .catch((error) => {
+            console.error('Error occurred:', error.message);
+            setFailed(true);
+        })
+        .finally(() => {
+            setLoading(false);
+        });
+    
     };
 
     const onStageOneNext = () => {
