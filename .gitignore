@@ -10,6 +10,8 @@ mqtt-auth.sh
 
 front-end/node_modules
 front-end/src/components/charts/FAKE_DATA.js
+front-end/src/components/ChartCustomization/handlers.js
+front-end/src/components/ChartCustomization/LineCustomizer copy.js
 front-end/.env.production
 front-end/build
 
