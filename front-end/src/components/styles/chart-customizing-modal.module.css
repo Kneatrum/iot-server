@@ -1,0 +1,84 @@
+
+/* Toolbar items */
+
+.modalOverlay {
+    display: flex; 
+    flex-direction: column; 
+    padding: 10px; 
+    height: 100%;
+
+    overflow: hidden;
+}
+
+.toolBarContainer {
+    display: flex;
+    /* flex-grow: 1; */
+    position: relative;
+    border-bottom: 10px solid var(--grid-layout-background-color);
+}
+
+
+.toolBarItem {
+    padding: 10px;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    cursor: pointer;
+    color: #555;
+    font-weight: bold;
+    background-color: #ffffff;
+    flex-shrink: 0;
+}
+
+
+.toolbarItemActive {
+    background-color: rgb(50, 150, 300, 0.2);
+    color: black;
+    flex-shrink: 0;
+}
+
+
+.secondToolbarItemActive {
+    /* flex: 1; */
+    background-color: rgb(50, 150, 300, 0.2);
+}
+
+
+/* Body */
+
+.toolBarBody {
+    display: flex;
+    flex-grow: 1;
+    flex-direction: column;
+    background-color: var(--grid-layout-background-color);
+    /* border-radius: 0 0 8px 8px; */
+    min-height: 0;
+    padding: 10px;
+    margin-top: 0;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.buttonContainer {
+    position: absolute; 
+    bottom: 20px; 
+    right: 30px; 
+}
+
+.closeButton {
+    color: rgb(0, 0, 0);
+    height: 30px;
+    width: 70px;
+    border: 0.2px solid #ddd;
+    border-radius: 25px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    background-color: white;
+}
+
+
+/* Checkboxes */
+
+.checkboxContainer {
+    width: 20px;
+    height: 20px; 
+}
