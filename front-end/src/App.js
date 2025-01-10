@@ -9,12 +9,16 @@ import Login from './components/pages/Login';
 import Register from './components/pages/Register.js';
 import Reset from './components/pages/Reset';
 import Demo from './components/pages/Demo';
-import Dashboard from './components/pages/Dashboard';
+import { Dashboard } from './components/pages/Dashboard';
 import ProtectedRoute from './components/protectedRoutes/ProtectedRoutes.js';
+import { Provider } from "react-redux";
+import store from './components/store';
+
 
 const App = () => {
 
   return (
+    <Provider store={store}>
     <ApiProvider>
       <Router>
         <Routes>
@@ -28,6 +32,7 @@ const App = () => {
         </Routes>
       </Router>
     </ApiProvider>
+    </Provider>
   );
 }
 
