@@ -3,7 +3,22 @@ import { Line } from "react-chartjs-2";
 import styles from '../styles/chart-customizing-modal.module.css';
 import { ReactComponent as Check } from '../../assets/check.svg';
 import { useDispatch, useSelector } from "react-redux";
-import { updateLineBorderColor } from "../devicesSlice";
+import { 
+  updateLineBorderColor, 
+  updateLineTension, 
+  updateLinePointRadius, 
+  updateLineBoderWidth,
+  updateChartTitle,
+  toggleLegend,
+  toggleYAxisGrid,
+  toggleXAxisGrid,
+  toggleYAxisTextDisplay,
+  toggleXAxisTextDisplay,
+  updateXAxisTitle,
+  updateYAxisTitle,
+  updateYAxisStepSize,
+  updateXAxisTimeUnit
+} from "../devicesSlice";
 
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, PointElement, LinearScale, CategoryScale } from "chart.js";
 
@@ -13,17 +28,27 @@ const chartConfigMenuTabItems = ['Select Data Sources', 'Configure Chart']
 const dataSourcesIndex = 0;
 const chartConfigIndex = 1;
 
+const datasetPosition = 0; // Temporary value. Will change when a line chart has multiple lines
+
 const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, onClose }) => {
 
   const dispatch = useDispatch();
   const devices = useSelector((state) => state.devices.devices);
+  const basePath = devices[activeDevice.index].charts[activeDevice.chartIDPosition];
 
 
   // Initial chart data
   const [activeTab, setActiveTab] = useState(dataSourcesIndex);
-  const [timeUnit, setTimeUnit] = useState("minute"); // Default to minutes
   const [isChecked, setIsChecked] = useState(false);
   const [ showLegend, setShowLegend ] = useState(true);
+  const [ lineColor, setLineColor ] = useState(basePath.data.datasets[0].borderColor);
+  const [ xAxisTitle, setXAxisTile ] = useState(basePath.options.scales.x.title.text);
+  const [ yAxisTitle, setYAxisTile ] = useState(basePath.options.scales.y.title.text);
+  const [ yAxisStepSize, setYAxisStepSize ] = useState(basePath.options.scales.y.ticks.stepSize);
+  const [ xAxisTimeUnit, setXAxisTimeUnit ] = useState(basePath.options.scales.x.time.unit || "minute");
+  const [ lineTension, setLineTension ] = useState(basePath.data.datasets[datasetPosition].tension || 0);
+  const [ pointRadius, setPointRadius ] = useState(basePath.data.datasets[datasetPosition].pointRadius || 0);
+  const [ borderWidth, setBorderWidth ] = useState(basePath.data.datasets[datasetPosition].borderWidth || 2)
  
 
   // setSelectedChartData(selectedChartData)
@@ -61,9 +86,8 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   const handleLineColorChange = (e) => {
 
     const newValue = e.target.value;
-    const datasetPosition = 0; // Hardcoded
     const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ]
-
+    setLineColor(newValue);
     dispatch(updateLineBorderColor({path, newValue}));
 
   };
@@ -72,528 +96,267 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
 
   const handleLineTensionChange = (e) => {
     const lineTension = e.target.value;
-
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
-      
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
-
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            data: {
-              ...chart.data,
-              datasets: chart.data.datasets.map(dataset => ({
-                ...dataset,
-                tension: lineTension
-              }))
-            }
-          };
-        }
-        return chart;
-      });
-
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ];
+    setLineTension(lineTension);
+    dispatch(updateLineTension({path, lineTension}));
   };
 
 
   const handleLinePointRadiusChange = (e) => {
     const linePointRadius = e.target.value;
-
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
-      
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
-
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            data: {
-              ...chart.data,
-              datasets: chart.data.datasets.map(dataset => ({
-                ...dataset,
-                pointRadius: linePointRadius
-              }))
-            }
-          };
-        }
-        return chart;
-      });
-
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ];
+    setPointRadius(linePointRadius)
+    dispatch(updateLinePointRadius({path, linePointRadius}));
   };
 
 
   const handleBorderWidthChange = (e) => {
-
-    const width = e.target.value;
-
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
-      
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
-
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            data: {
-              ...chart.data,
-              datasets: chart.data.datasets.map(dataset => ({
-                ...dataset,
-                borderWidth: width
-              }))
-            }
-          };
-        }
-        return chart;
-      });
-
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    const borderWidth = e.target.value;
+    const datasetPosition = 0;
+    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ];
+    setBorderWidth(borderWidth);
+    dispatch(updateLineBoderWidth({path, borderWidth}));
   };
 
 
   const handleTitleChange = (e) => {
-    const title = e.target.value;
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
-      
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
-
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            data: {
-              ...chart.data,
-              datasets: chart.data.datasets.map(dataset => ({
-                ...dataset,
-                label: title
-              }))
-            }
-          };
-        }
-        return chart;
-      });
-
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    const chartTitle = e.target.value;
+    const datasetPosition = 0;
+    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ];
+    dispatch(updateChartTitle({path, chartTitle}));
   };
 
 
 
   const handleToggleLegend = () => {
-
-    setShowLegend(!showLegend);
-    
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
-      console.log("Prev Devices: ", prevDevices)
-      
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
-
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
-  
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            options: {
-              ...chart.options,
-              plugins: {
-                ...chart.options.plugins,
-                legend: {
-                  ...chart.options.plugins.legend,
-                  display: !chart.options.plugins.legend.display
-                }
-              }
-            }
-          };
-        }
-        return chart;
-      });
-
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    // setShowLegend(!showLegend);
+    let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.plugins.legend.display; 
+    let newState = !previousState;
+    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
+    dispatch(toggleLegend({path, newState}));
   };
 
 
 
   const handleToggleYGrid = () => {
+
+    let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.scales.y.grid.display; 
+    let newState = !previousState;
+    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
+    dispatch(toggleYAxisGrid({path, newState}));
  
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
+    // setDevices((prevDevices) => {
+    //   // Find the active device
+    //   const activeDevice = prevDevices.find(device => device.active);
       
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
+    //   if (!activeDevice || !activeDevice.charts) return prevDevices;
 
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
+    //   // Create a deep copy of the charts
+    //   const updatedCharts = activeDevice.charts.map(chart => {
+    //     // If this is the chart we want to modify
+    //     if (chart.id === activeChartId) {
   
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            options: {
-              ...chart.options,
-              scales: {
-                ...chart.options.scales,
-                y: {
-                  ...chart.options.scales.y,
-                  grid: {
-                    ...chart.options.scales.y.grid,
-                    display: !chart.options.scales.y.grid.display
-                  }
-                }
-              }
-            }
-          };
-        }
-        return chart;
-      });
+    //       // Create a new chart object with updated datasets
+    //       return {
+    //         ...chart,
+    //         options: {
+    //           ...chart.options,
+    //           scales: {
+    //             ...chart.options.scales,
+    //             y: {
+    //               ...chart.options.scales.y,
+    //               grid: {
+    //                 ...chart.options.scales.y.grid,
+    //                 display: !chart.options.scales.y.grid.display
+    //               }
+    //             }
+    //           }
+    //         }
+    //       };
+    //     }
+    //     return chart;
+    //   });
 
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    //   // Return updated devices array
+    //   return prevDevices.map(device => 
+    //     device.active ? { ...device, charts: updatedCharts }: device
+    //   );
+    // });
   };
 
 
 
   const handleToggleXGrid = () => {
  
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
+    let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.scales.x.grid.display; 
+    let newState = !previousState;
+    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
+    dispatch(toggleXAxisGrid({path, newState}));
+ 
+    // setDevices((prevDevices) => {
+    //   // Find the active device
+    //   const activeDevice = prevDevices.find(device => device.active);
       
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
+    //   if (!activeDevice || !activeDevice.charts) return prevDevices;
 
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
+    //   // Create a deep copy of the charts
+    //   const updatedCharts = activeDevice.charts.map(chart => {
+    //     // If this is the chart we want to modify
+    //     if (chart.id === activeChartId) {
   
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            options: {
-              ...chart.options,
-              scales: {
-                ...chart.options.scales,
-                x: {
-                  ...chart.options.scales.x,
-                  grid: {
-                    ...chart.options.scales.x.grid,
-                    display: !chart.options.scales.x.grid.display
-                  }
-                }
-              }
-            }
-          };
-        }
-        return chart;
-      });
+    //       // Create a new chart object with updated datasets
+    //       return {
+    //         ...chart,
+    //         options: {
+    //           ...chart.options,
+    //           scales: {
+    //             ...chart.options.scales,
+    //             x: {
+    //               ...chart.options.scales.x,
+    //               grid: {
+    //                 ...chart.options.scales.x.grid,
+    //                 display: !chart.options.scales.x.grid.display
+    //               }
+    //             }
+    //           }
+    //         }
+    //       };
+    //     }
+    //     return chart;
+    //   });
 
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    //   // Return updated devices array
+    //   return prevDevices.map(device => 
+    //     device.active ? { ...device, charts: updatedCharts }: device
+    //   );
+    // });
   };
 
 
   const handleDisplayYTitleText = () => {
- 
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
-      
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
-
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
-  
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            options: {
-              ...chart.options,
-              scales: {
-                ...chart.options.scales,
-                y: {
-                  ...chart.options.scales.y,
-                  title: {
-                    ...chart.options.scales.y.title,
-                    display: !chart.options.scales.y.title.display
-                  }
-                }
-              }
-            }
-          };
-        }
-        return chart;
-      });
-
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.scales.y.title.display; 
+    let newState = !previousState;
+    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
+    dispatch(toggleYAxisTextDisplay({path, newState}));
   };
 
 
 
   const handleDisplayXTitleText = () => {
- 
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
-      
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
-
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
-  
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            options: {
-              ...chart.options,
-              scales: {
-                ...chart.options.scales,
-                x: {
-                  ...chart.options.scales.x,
-                  title: {
-                    ...chart.options.scales.x.title,
-                    display: !chart.options.scales.x.title.display
-                  }
-                }
-              }
-            }
-          };
-        }
-        return chart;
-      });
-
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.scales.x.title.display; 
+    let newState = !previousState;
+    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
+    dispatch(toggleXAxisTextDisplay({path, newState}));
   };
 
   const handleXTitleChange = (e) => {
-    const title = e.target.value;
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
-      
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
-
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
-  
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            options: {
-              ...chart.options,
-              scales: {
-                ...chart.options.scales,
-                x: {
-                  ...chart.options.scales.x,
-                  title: {
-                    ...chart.options.scales.x.title,
-                    text: title
-                  }
-                }
-              }
-            }
-          };
-        }
-        return chart;
-      });
-
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    const newTitle = e.target.value;
+    const path = [ activeDevice.index, "charts", activeDevice.chartIDPosition ]
+    setXAxisTile(newTitle);
+    dispatch(updateXAxisTitle({path, newTitle}));
   };
 
 
   const handleYTitleChange = (e) => {
-    const title = e.target.value;
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
-      
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
-
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
-  
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            options: {
-              ...chart.options,
-              scales: {
-                ...chart.options.scales,
-                y: {
-                  ...chart.options.scales.y,
-                  title: {
-                    ...chart.options.scales.y.title,
-                    text: title
-                  }
-                }
-              }
-            }
-          };
-        }
-        return chart;
-      });
-
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    const newTitle = e.target.value;
+    const path = [ activeDevice.index, "charts", activeDevice.chartIDPosition ]
+    setYAxisTile(newTitle);
+    dispatch(updateYAxisTitle({path, newTitle}));
   };
 
 
   const handleYStepSizeChange = (e) => {
-    const step = e.target.value;
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
+    const newStepSize = e.target.value;
+    const path = [ activeDevice.index, "charts", activeDevice.chartIDPosition ];
+    setYAxisStepSize(newStepSize);
+    dispatch(updateYAxisStepSize({path, newStepSize}));
+
+
+    // setDevices((prevDevices) => {
+    //   // Find the active device
+    //   const activeDevice = prevDevices.find(device => device.active);
       
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
+    //   if (!activeDevice || !activeDevice.charts) return prevDevices;
 
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
+    //   // Create a deep copy of the charts
+    //   const updatedCharts = activeDevice.charts.map(chart => {
+    //     // If this is the chart we want to modify
+    //     if (chart.id === activeChartId) {
   
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            options: {
-              ...chart.options,
-              scales: {
-                ...chart.options.scales,
-                y: {
-                  ...chart.options.scales.y,
-                  ticks: {
-                    ...chart.options.scales.y.ticks,
-                    stepSize: step
-                  }
-                }
-              }
-            }
-          };
-        }
-        return chart;
-      });
+    //       // Create a new chart object with updated datasets
+    //       return {
+    //         ...chart,
+    //         options: {
+    //           ...chart.options,
+    //           scales: {
+    //             ...chart.options.scales,
+    //             y: {
+    //               ...chart.options.scales.y,
+    //               ticks: {
+    //                 ...chart.options.scales.y.ticks,
+    //                 stepSize: step
+    //               }
+    //             }
+    //           }
+    //         }
+    //       };
+    //     }
+    //     return chart;
+    //   });
 
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    //   // Return updated devices array
+    //   return prevDevices.map(device => 
+    //     device.active ? { ...device, charts: updatedCharts }: device
+    //   );
+    // });
   };
 
 
   
   const handleXTimeFormatChange = (e) => {
-    const timeFormat = e.target.value;
-    setTimeUnit(timeFormat);
-    setDevices((prevDevices) => {
-      // Find the active device
-      const activeDevice = prevDevices.find(device => device.active);
+    const newTimeUnit = e.target.value;
+    setXAxisTimeUnit(newTimeUnit);
+    const path = [ activeDevice.index, "charts", activeDevice.chartIDPosition ];
+    dispatch(updateXAxisTimeUnit({path, newTimeUnit}))
+
+
+    // setDevices((prevDevices) => {
+    //   // Find the active device
+    //   const activeDevice = prevDevices.find(device => device.active);
       
-      if (!activeDevice || !activeDevice.charts) return prevDevices;
+    //   if (!activeDevice || !activeDevice.charts) return prevDevices;
 
-      // Create a deep copy of the charts
-      const updatedCharts = activeDevice.charts.map(chart => {
-        // If this is the chart we want to modify
-        if (chart.id === activeChartId) {
+    //   // Create a deep copy of the charts
+    //   const updatedCharts = activeDevice.charts.map(chart => {
+    //     // If this is the chart we want to modify
+    //     if (chart.id === activeChartId) {
   
-          // Create a new chart object with updated datasets
-          return {
-            ...chart,
-            options: {
-              ...chart.options,
-              scales: {
-                ...chart.options.scales,
-                x: {
-                  ...chart.options.scales.x,
-                  time: {
-                    ...chart.options.scales.x.time,
-                    unit: timeFormat
-                  }
-                }
-              }
-            }
-          };
-        }
-        return chart;
-      });
+    //       // Create a new chart object with updated datasets
+    //       return {
+    //         ...chart,
+    //         options: {
+    //           ...chart.options,
+    //           scales: {
+    //             ...chart.options.scales,
+    //             x: {
+    //               ...chart.options.scales.x,
+    //               time: {
+    //                 ...chart.options.scales.x.time,
+    //                 unit: timeFormat
+    //               }
+    //             }
+    //           }
+    //         }
+    //       };
+    //     }
+    //     return chart;
+    //   });
 
-      // Return updated devices array
-      return prevDevices.map(device => 
-        device.active ? { ...device, charts: updatedCharts }: device
-      );
-    });
+    //   // Return updated devices array
+    //   return prevDevices.map(device => 
+    //     device.active ? { ...device, charts: updatedCharts }: device
+    //   );
+    // });
     
   };
 
@@ -703,7 +466,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
                 <label style={{marginBottom: "10px", fontSize: '0.8em', color: 'GrayText'}}> X Axis </label>
                 <div style={{ display: "flex", alignItems: "center"}}>
                   <label style={{paddingRight: '10px', width: '120px'}}>Title: </label>
-                  <input type="text" onChange={handleXTitleChange} placeholder="Enter X axis title" />  
+                  <input type="text" onChange={handleXTitleChange} placeholder="Enter X axis title" value={xAxisTitle} />  
                   <input type="checkbox" onChange={handleDisplayXTitleText} style={{width: "20px", height: "20px", marginLeft: '50px'}}/>
                   <label style={{paddingLeft: '10px'}}> Hide </label>
                 </div>
@@ -714,7 +477,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
               <label style={{marginBottom: "10px", fontSize: '0.8em', color: 'GrayText'}}> Y Axis </label>
                 <div style={{ display: "flex", alignItems: "center"}}>
                   <label style={{paddingRight: '10px', width: '120px'}}>Title: </label>
-                  <input type="text" onChange={handleYTitleChange} placeholder="Enter Y axis title" />  
+                  <input type="text" onChange={handleYTitleChange} placeholder="Enter Y axis title" value={yAxisTitle} />  
                   <input type="checkbox" onChange={handleDisplayYTitleText} style={{width: "20px", height: "20px", marginLeft: '50px'}}/>
                   <label style={{paddingLeft: '10px'}}> Hide </label>
                 </div>
@@ -724,19 +487,19 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
             <div style={{ display: 'flex', flexDirection: 'column', marginTop: "10px", border: '1px solid #fff', padding: '10px', borderRadius: '5px', backgroundColor: 'white' }}>
               <div>
                 <label style={{paddingRight: '10px', marginTop: '20px', width: '120px'}}>Line Color </label> 
-                <input type="color" onChange={handleLineColorChange} />
+                <input type="color" onChange={handleLineColorChange} value={lineColor} />
               </div>
               <div>
                 <label style={{paddingRight: '10px', marginTop: '20px', width: '120px'}}>Line Tension </label>
-                <input type="range" min="0" step="0.02" max="0.4" onChange={handleLineTensionChange} />
+                <input type="range" min="0" step="0.02" max="0.4" onChange={handleLineTensionChange} value={lineTension}/>
               </div>
               <div>
                 <label style={{paddingRight: '10px', marginTop: '20px', width: '120px'}}>Point Radius </label>
-                <input type="range" min="0" step="0.1" max="3" onChange={handleLinePointRadiusChange} />
+                <input type="range" min="0" step="0.1" max="3" onChange={handleLinePointRadiusChange} value={pointRadius}/>
               </div>
               <div>
                 <label style={{paddingRight: '10px', marginTop: '20px', width: '120px'}}>Border Width </label>
-                <input type="range" min="1" step="0.1" max="5" onChange={handleBorderWidthChange} />
+                <input type="range" min="1" step="0.1" max="5" onChange={handleBorderWidthChange} value={borderWidth}/>
               </div>       
             </div>
 
