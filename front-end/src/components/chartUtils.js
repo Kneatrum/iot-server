@@ -20,7 +20,7 @@ export const serializeChartData = (chart) => {
       }))
     },
     // Store serializable options
-    basicOptions: {
+    options: {
       maintainAspectRatio: chart.options.maintainAspectRatio,
       plugins: {
         legend: {
@@ -75,48 +75,48 @@ export const deserializeChartData = (serializedChart) => {
     ...serializedChart,
     options: {
       ...baseChartConfig.options,
-      maintainAspectRatio: serializedChart.basicOptions.maintainAspectRatio,
+      maintainAspectRatio: serializedChart.options.maintainAspectRatio,
       plugins: {
         legend: {
           ...baseChartConfig.options.plugins?.legend,
-          ...serializedChart.basicOptions.plugins?.legend
+          ...serializedChart.options.plugins?.legend
         }
       },
       scales: {
         y: {
           ...baseChartConfig.options.scales?.y,
-          ...serializedChart.basicOptions.scales?.y,
+          ...serializedChart.options.scales?.y,
           grid: {
             ...baseChartConfig.options.scales?.y?.grid,
-            ...serializedChart.basicOptions.scales?.y?.grid
+            ...serializedChart.options.scales?.y?.grid
           },
           title: {
             ...baseChartConfig.options.scales?.y?.title,
-            ...serializedChart.basicOptions.scales?.y?.title
+            ...serializedChart.options.scales?.y?.title
           },
           ticks: {
             ...baseChartConfig.options.scales?.y?.ticks,
-            ...serializedChart.basicOptions.scales?.y?.ticks
+            ...serializedChart.options.scales?.y?.ticks
           }
         },
         x: {
           ...baseChartConfig.options.scales?.x,
-          ...serializedChart.basicOptions.scales?.x,
+          ...serializedChart.options.scales?.x,
           grid: {
             ...baseChartConfig.options.scales?.x?.grid,
-            ...serializedChart.basicOptions.scales?.x?.grid
+            ...serializedChart.options.scales?.x?.grid
           },
-          time: serializedChart.basicOptions.scales?.x?.time ? {
+          time: serializedChart.options.scales?.x?.time ? {
             ...baseChartConfig.options.scales?.x?.time,
-            ...serializedChart.basicOptions.scales?.x?.time,
+            ...serializedChart.options.scales?.x?.time,
           } : undefined,
           title: {
             ...baseChartConfig.options.scales?.x?.title,
-            ...serializedChart.basicOptions.scales?.x?.title
+            ...serializedChart.options.scales?.x?.title
           },
           ticks: {
             ...baseChartConfig.options.scales?.x?.ticks,
-            source: serializedChart.basicOptions.scales?.x?.ticks?.source,
+            source: serializedChart.options.scales?.x?.ticks?.source,
             // Restore the callback function for time formatting
             callback: baseChartConfig.options.scales?.x?.ticks?.callback
           }
