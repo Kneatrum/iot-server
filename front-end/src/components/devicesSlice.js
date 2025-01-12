@@ -105,6 +105,325 @@ const devicesSlice = createSlice({
                 targetDataset.borderColor = newValue;
             }
         },
+        updateLineTension: (state, action) => {
+            const { path, lineTension } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex, datasetIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex] &&
+                state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex]
+            ) {
+                const targetDataset = state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex];
+
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+
+                // Update the line tension
+                console.log("Updating line tension with: ", lineTension)
+                targetDataset.tension = lineTension;
+            }
+        },
+        updateLinePointRadius: (state, action) => {
+            const { path, linePointRadius } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex, datasetIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex] &&
+                state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex]
+            ) {
+                const targetDataset = state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex];
+
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+
+                // Update the line tension
+                console.log("Updating line point radius with: ", linePointRadius)
+                targetDataset.pointRadius = linePointRadius;
+            }
+        },
+        updateLineBoderWidth: (state, action) => {
+            const { path, borderWidth } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex, datasetIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex] &&
+                state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex]
+            ) {
+                const targetDataset = state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex];
+
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+
+                // Update the line tension
+                console.log("Updating line border width with: ", borderWidth)
+                targetDataset.borderWidth = borderWidth;
+            }
+        },
+        updateChartTitle: (state, action) => {
+            const { path, chartTitle } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex, datasetIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex] &&
+                state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex]
+            ) {
+                const targetDataset = state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex];
+
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+
+                // Update the line tension
+                console.log("Updating line chart title: ", chartTitle)
+                targetDataset.label = chartTitle;
+            }
+        },
+        toggleLegend: (state, action) => {
+            const { path, newState } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex]
+                
+            ) {
+                state.devices[deviceIndex][chartsKey][chartIndex].options.plugins.legend.display = newState;
+                console.log("New state: ", newState)
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+
+                
+                
+                
+            }
+        },
+        toggleYAxisGrid: (state, action) => {
+            const { path, newState } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex]
+                
+            ) {
+                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.grid.display = newState;
+                console.log("New state: ", newState)
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+            }
+        },
+        toggleXAxisGrid: (state, action) => {
+            const { path, newState } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex]
+                
+            ) {
+                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.grid.display = newState;
+                console.log("New state: ", newState)
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+            }
+        },
+        toggleYAxisTextDisplay: (state, action) => {
+            const { path, newState } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex]
+                
+            ) {
+                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.title.display = newState;
+                console.log("New state: ", newState)
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+            }
+        },
+        toggleXAxisTextDisplay: (state, action) => {
+            const { path, newState } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex]
+                
+            ) {
+                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.x.title.display = newState;
+                console.log("New state: ", newState)
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+            }
+        },
+        updateXAxisTitle: (state, action) => {
+            const { path, newTitle } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex]
+                
+            ) {
+                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.x.title.text = newTitle;
+                console.log("New state: ", newTitle)
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+            }
+        },
+        updateYAxisTitle: (state, action) => {
+            const { path, newTitle } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex]
+                
+            ) {
+                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.title.text = newTitle;
+                console.log("New state: ", newTitle)
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+            }
+        },
+        updateYAxisStepSize: (state, action) => {
+            const { path, newStepSize } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex]
+                
+            ) {
+                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.ticks.stepSize = newStepSize;
+                console.log("New StepSize: ", newStepSize)
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+            }
+        },
+        updateXAxisTimeUnit: (state, action) => {
+            const { path, newTimeUnit } = action.payload;
+
+            // Directly mutate the state as Immer is built into Redux Toolkit
+            const [deviceIndex, chartsKey, chartIndex] = path;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex][chartsKey] &&
+                state.devices[deviceIndex][chartsKey][chartIndex]
+                
+            ) {
+                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.x.time.unit = newTimeUnit;
+                console.log("New StepSize: ", newTimeUnit)
+                // Track changes
+                // state.devices[deviceIndex].changes.push({
+                //     path,
+                //     oldValue: targetDataset.borderColor,
+                //     newValue,
+                // });
+            }
+        },
         clearChanges: (state) => {
             state.changes = [];
         }
@@ -122,5 +441,18 @@ export const {
     updateLayoutProperties, 
     appendChart,
     updateLineBorderColor, 
+    updateLineTension,
+    updateLinePointRadius,
+    updateLineBoderWidth,
+    updateChartTitle,
+    toggleLegend,
+    toggleYAxisGrid,
+    toggleXAxisGrid,
+    toggleYAxisTextDisplay,
+    toggleXAxisTextDisplay,
+    updateXAxisTitle,
+    updateYAxisTitle,
+    updateYAxisStepSize,
+    updateXAxisTimeUnit,
     clearChanges 
 } = devicesSlice.actions;
