@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
           as: 'user' 
         });
       
-        Device.hasOne(models.Layout, {
+        Device.hasMany(models.Layout, {
           foreignKey: 'deviceId', 
           as: 'layout'
         });
