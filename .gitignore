@@ -22,3 +22,4 @@ influxdb/api_token.txt
 mosquitto/log/mosquitto.log
 mosquitto/data/mosquitto.db
 mosquitto/certs
+back-end/postgres_backup.dump
