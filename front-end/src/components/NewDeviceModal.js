@@ -8,7 +8,7 @@ import { ReactComponent as SuccessIcon } from '../assets/success.svg'
 import { ReactComponent as DownloadIcon } from '../assets/download.svg' 
 import { useDispatch } from "react-redux";
 import { addDevice } from './devicesSlice';
-import { DEVICE_TEMPLATE } from './pages/Dashboard';
+
 
 import Topics from './Topics';
 import TopicsLayout from './Modal/TopicsLayout';
@@ -23,6 +23,15 @@ const CERTIFICATE = "certificate.crt";
 const CLIENT_KEY = "clientKey.key";
 const ROOT_CA = "rootCA.crt";
 
+let DEVICE_TEMPLATE = { 
+    deviceName: "", 
+    serialNumber: "",
+    activeStatus: false,
+    layouts: [],
+    // charts: [],
+    topics: [],
+    changes: [], // To track changes made to the device
+  };
 
 function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveDevice, setDeviceCount }) {
     const [stage, setStage] = useState(1);
@@ -118,16 +127,19 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
             return;
         }
 
-        // const newDevice = {
-        //     deviceName: deviceName,
-        //     serialNumber: serialNumber, // New serial number 
-        //     topics: topics,
-        //     activeStatus: true,
-        // };
+        const newDevice = {
+            deviceName: "", 
+            serialNumber: "",
+            activeStatus: false,
+            layouts: [],
+            charts: [],
+            topics: [],
+            changes: [], // To track changes made to the device
+        };
         
-        DEVICE_TEMPLATE.deviceName = deviceName;
-        DEVICE_TEMPLATE.serialNumber = serialNumber;
-        DEVICE_TEMPLATE.activeStatus = true;
+        newDevice.deviceName = deviceName;
+        newDevice.serialNumber = serialNumber;
+        newDevice.activeStatus = true;
         
 
         setActiveDevice((prevDevice) => ({ 
@@ -135,20 +147,20 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
             index: prevDevice.index + 1,
             deviceName: deviceName,
             serialNumber: serialNumber,
-            activeStatus: DEVICE_TEMPLATE.activeStatus
+            activeStatus: true
         }));
  
-        console.log("All Data",  DEVICE_TEMPLATE)
+        console.log("All Data",  newDevice)
         setFailed(false);
         setLoading(true);
         setSuccess(false)
 
-        api.post('/add-device', { newDevice: DEVICE_TEMPLATE, topics: topics })
+        api.post('/add-device', { newDevice, topics })
         .then((response) => {
             console.log(response.data);
             setAddStatus(true); // Update status if needed
             setSuccess(true);
-            dispatch(addDevice(DEVICE_TEMPLATE));
+            dispatch(addDevice(newDevice));
 
             setDeviceCount((prevCount) => ({
                     prevCount: prevCount + 1
