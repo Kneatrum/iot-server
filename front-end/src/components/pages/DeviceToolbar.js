@@ -93,27 +93,26 @@ function removeBySerial(list, serialNumber) {
               className={`${styles.toolbarItem} ${activeTab === index ? styles.toolbarItemActive : ''} `}
 
               onClick={() => {
-                console.log("Act Tab:",index)
                 setActiveTab(index);
-                // setActiveTab((prevIndex) => {
-                //   // dispatch(setActiveDeviceIndex({prevIndex: prevIndex, activeIndex: index}));
-                //   return index;
-                // });
+                // console.log("Act Tab:",activeTab)
+                setActiveTab((prevIndex) => {
+                  dispatch(setActiveDeviceIndex({prevIndex: prevIndex, activeIndex: index}));
+                  return index;
+                });
 
                 setActiveDevice((prevDevice) => ({
                   ...prevDevice,
                   index: index,
-                  deviceName: device.name,
-                  serialNumber: device.serial
+                  deviceName: device.deviceName,
+                  serialNumber: device.serialNumber
                 }));
 
-                console.log("Active Tab: ", activeTab)
-                console.log("Devices: ", devices)
-                // console.log("Updated devices: ", updatedDevices)
+                // console.log("Active Tab: ", activeTab)
+                // console.log("Devices: ", devices)
               }}
             >
 
-              <div>{device.name}</div>
+              <div>{device.deviceName}</div>
 
               <div
                 style={{
