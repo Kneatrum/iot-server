@@ -322,6 +322,19 @@ user_routes.get('/topic', /*isAuthenticated,*/ async (req, res) => { /**/
     }
 })
 
+// Get all layouts
+user_routes.get('/layouts', /*isAuthenticated,*/ async (req, res) => { /**/
+    // const userID = req.session.user.uuid;
+
+    try {
+        const layouts = await Layout.findAll();
+        return res.send(layouts);
+    } catch (err){
+        console.log("Error: ", err);
+        return res.status(500).json({ error : "Something went wrong"});
+    }
+})
+
 
 user_routes.delete('/topic/', async (req, res) => {
     const { topic } = req.body;
