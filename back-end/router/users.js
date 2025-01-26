@@ -124,7 +124,7 @@ user_routes.get('/device-details',  async (req, res) => {
                 }
             ]
         }); 
-        
+                
         // Return the mapped array
         return res.json(devices); 
     } catch (err) { 
