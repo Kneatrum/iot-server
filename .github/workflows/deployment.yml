@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - deployment
+    paths:
+      - docker-compose.yml
+      - nginx.conf
+      - '**/Dockerfile'
+      - '**/src/**'
+      - '**/*.env'
 
 jobs:
   deploy:
@@ -42,6 +48,13 @@ jobs:
           docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
           docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
         fi
+
+    - name: Upload Files to EC2
+      run: |
+        scp -o StrictHostKeyChecking=no \
+          docker-compose.yml \
+          nginx.conf \
+          ec2-user@${{ secrets.EC2_HOST }}:/path/to/compose-files/
 
     - name: SSH into EC2 and Deploy Updates
       uses: appleboy/ssh-action@v0.1.6
