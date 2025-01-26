@@ -445,6 +445,125 @@ user_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
     }
 })
 
+user_routes.post('/batch-updates', async (req, res) => {
+    const transaction = await sequelize.transaction();
+    const userID = req.session.user.uuid;
+
+
+    try {
+        const { changes } = req.body;
+        
+        const user = await User.findOne({
+            where: { 
+                uuid: userID
+            }
+        });
+
+        if (!user) {
+            throw new Error('User not found');
+        }
+
+        
+
+        for(let i = 0; i < changes.length; i++){
+
+            const device = await Device.findOne({
+                where: {
+                    userId: user.id,
+                    serialNumber: changes[i].serialNumber
+                },
+                transaction
+            });
+
+            if (!device) {
+                throw new Error(`Device not found for  ${changes[i].dbAction} and ${changes[i].serialNumber}`);
+            }
+
+            if (changes[i].dbAction === "appendLayout") {
+
+                const layout = changes[i].dbPayload.newLayout;
+                const chart = changes[i].dbPayload.chart;
+
+                // Check for existing layout
+                const existingLayout = await Layout.findOne({
+                    where: sequelize.literal(`layout->>'i' = '${layout.i}'`),
+                    transaction
+                });
+
+                if (existingLayout) {
+                    console.log(`Layout with id ${layout.i} already exists`);
+                    continue; // Skip to next change
+                }
+
+
+                const layoutData = {
+                    deviceId: device.id,
+                    layout
+                };
+
+                console.log("Saving layout")
+                let createdLayout = await Layout.bulkCreate([layoutData], { transaction }); 
+                          
+                    
+                const chartData = {
+                    layoutId: createdLayout[0]?.dataValues?.id,
+                    config: chart.newChart,
+                    chartType: chart.newChart.type || "Line",
+                    dateSpan: chart.dateSpan
+                };
+
+                const createdChart = await Chart.bulkCreate([chartData], { transaction });
+                
+            } else if(changes[i].dbAction === "updateLayout") {
+                const data = changes[i].layoutChanges;
+
+                const layoutId = changes[i].layoutIndex; 
+            
+                // Find the existing layout first
+                const existingLayout = await Layout.findOne({
+                    where: sequelize.literal(`layout->>'i' = '${layoutId}'`),
+                    transaction
+                });
+            
+                if (!existingLayout) {
+                    console.log(`Layout with id ${layoutId} not found`);
+                    continue;
+                }
+            
+                // Create a new layout object with updated values
+                const updatedLayout = {
+                    ...existingLayout.layout,
+                    ...data
+                };
+            
+                // Update the layout
+                await Layout.update(
+                    { layout: updatedLayout },
+                    {
+                        where: sequelize.literal(`layout->>'i' = '${layoutId}'`),
+                        transaction
+                    }
+                );
+            }
+        }
+
+        await transaction.commit();
+        return res.json("Yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaay");
+
+
+    } catch (error) {
+        if (!transaction.finished) {
+            await transaction.rollback();
+        }
+        console.error("Batch operation failed:", error);
+        return res.status(500).json({
+            error: "Batch operation failed",
+            details: error.message
+        });
+    }
+});
+
+
 // Update a chart
 user_routes.put('/:chart', isAuthenticated, async (req, res) => {
     const { chart } = req.params;
