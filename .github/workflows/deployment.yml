@@ -1,0 +1,62 @@
+name: EC2 Deployment.
+
+on:
+  push:
+    branches:
+      - deployment
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Log in to Amazon ECR
+      id: ecr-login
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build and Push Updated Images
+      run: |
+        if [ -d "./back-end" ]; then
+          docker build -t backend ./back-end
+          docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+        fi
+
+        if [ -d "./front-end" ]; then
+          docker build -t frontend ./front-end
+          docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+        fi
+
+        if [ -d "./mosquitto" ]; then
+          docker build -t mosquitto ./mosquitto
+          docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+        fi
+
+         if [ -d "./nginx" ]; then
+          docker build -t nginx ./nginx
+          docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+        fi
+
+    - name: SSH into EC2 and Deploy Updates
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd /path/to/compose-files
+
+          # Pull only the updated images
+          docker-compose pull backend frontend mosquitto nginx
+
+          # Recreate only the updated containers without stopping others
+          docker-compose up -d --no-deps backend frontend mosquitto nginx
+
+          # Remove old images to save space
+          docker image prune -f
