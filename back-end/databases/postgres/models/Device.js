@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
       
         Device.hasMany(models.Layout, {
           foreignKey: 'deviceId', 
-          as: 'layout'
+          as: 'layouts'
         });
 
         Device.hasMany(models.Topic, {
