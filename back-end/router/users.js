@@ -103,18 +103,30 @@ user_routes.get('/get-devices', async (req, res) => {
 user_routes.get('/device-details',  async (req, res) => { 
     try { 
         const devices = await Device.findAll({
-            attributes: ['deviceName', 'serialNumber', 'activeStatus'] // Select only deviceName and serialNumber
+            attributes: ['deviceName', 'serialNumber', 'activeStatus'], // Select only deviceName and serialNumber
+            include: [
+                {
+                    model: Layout,
+                    as: 'layouts',
+                    attributes: ['layout'],
+                    include:[
+                        {
+                            model: Chart,
+                            as: 'chart',
+                            attributes: ['config', 'chartType', 'dateSpan']
+                        }
+                    ]
+                },
+                {
+                    model: Topic,
+                    as: 'topics',
+                    attributes: ['uuid', 'description', 'topic']
+                }
+            ]
         }); 
         
-        // Map the devices to return an array of objects with deviceName and serialNumber
-        const deviceInfo = devices.map(device => ({
-            name: device.deviceName,
-            serial: device.serialNumber,
-            activeStatus: device.activeStatus
-        }));
-        
         // Return the mapped array
-        return res.json(deviceInfo); 
+        return res.json(devices); 
     } catch (err) { 
         console.error("Error: ", err); 
         return res.status(500).json({ error: "Something went wrong" }); 
