@@ -17,7 +17,7 @@ import { ReactComponent as MoreSVGIcon } from '../../assets/more.svg';
 import { api } from '../../api/api';
 import ChartCustomizingModal from '../ChartCustomizingModal.js';
 import { useDispatch, useSelector } from "react-redux";
-import { addDevice, appendLayout, appendChart, updateLayout } from "../devicesSlice";
+import { addDevice, appendLayout, updateLayout } from "../devicesSlice";
 
 
 import {
@@ -44,14 +44,7 @@ const chartComponents = {
 };
 
 // import  HeartChart  from '../charts/HeartChart.js';
-const DEVICE_TEMPLATE = { 
-  deviceName: "", 
-  serialNumber: "",
-  activeStatus: false,
-  layouts: [],
-  charts: [],
-  changes: [], // To track changes made to the device
-};
+
 
 const ACTIVE_DEVICE = {
   index: 0,
@@ -67,7 +60,7 @@ const url = `${backEndHost}/user/layout`
 const maxNumCols = 12;
 const windowWidth = 1800;
 const rowHeight = 30;
-const layoutSaveCounterPeriod = 20; // 10 seconds
+const layoutSaveCounterPeriod = 3; // 10 seconds
 
 ChartJS.register(
   TimeScale, 
@@ -102,10 +95,22 @@ const Dashboard = () => {
   const [ newModalPosition, setNewModalPosition ] = useState({x: 100, y: 100});
   const [layoutSaveCounter, setlayoutSaveCounter] = useState(layoutSaveCounterPeriod); // Countdown from 10 seconds
   const [layoutChanged, setLayoutChanged] = useState(false); // Tracks if the layout was changed
-  
+  const [syncronizeChanges, setSynchronizeChanges ] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(true);
+  const sync = useRef(false);
+
   const dispatch = useDispatch();
   const devices = useSelector((state) => state.devices.devices);
   // console.log("Layout: ", layout)
+
+  // useEffect(() => {
+  //   console.log("(UseEffect) New device count: ", deviceCount);
+  // }, [deviceCount]);
+
+  // useEffect(() => {
+  //   console.log("(UseEffect) Active device: ", activeDevice);
+  //   console.log("Devices: ", devices)
+  // }, [activeDevice])
 
   useEffect(() => {
     api
@@ -124,48 +129,77 @@ const Dashboard = () => {
         );
   
         // Only add devices if there are new ones
+        console.log("New Devices: ", newDevices);
         if (newDevices.length > 0) {
           const formattedDevices = newDevices.map((device) => ({
-            name: device.name,
-            serial: device.serial,
+            deviceName: device.deviceName,
+            serialNumber: device.serialNumber,
             activeStatus: device.activeStatus,
-            layouts: [],  // Get the layout from the backend
-            charts: []   // Get the charts from the backend
+            layouts: device.layouts.map(layoutItem => layoutItem.layout) || [],  // Get the layout from the backend
+            charts: device.layouts
+            .filter(layoutItem => layoutItem.chart && layoutItem.chart[0]?.config) // Ensure chart and config exist
+            .map(layoutItem => layoutItem.chart[0].config) || [], // Extract chart config// Get the charts from the backend
+            topics: device.topics,
+            changes: []   // For tracking changes.
           }));
-  
+          console.log("Formated Devices: ", formattedDevices)
           dispatch(addDevice(formattedDevices));
         }
+
+        setIsLoading(false);
   
         // Update device count based on total devices (existing + new)
         setDeviceCount(currentDevices.length + newDevices.length);
         console.log("Device count: ", currentDevices.length + newDevices.length);
   
         // Set active device if none is currently active
-        if (currentDevices.length + newDevices.length > 0) {
-          let activeDeviceIndex = currentDevices.findIndex(device => device.activeStatus === true);
+        // if (currentDevices.length + newDevices.length > 0) {
+        //   let activeDeviceIndex = currentDevices.findIndex(device => device.activeStatus === true);
           
-          // If no active device found in current devices, check new devices
-          if (activeDeviceIndex === -1 && newDevices.length > 0) {
-            activeDeviceIndex = currentDevices.length; // Index will be after existing devices
-          }
+        //   // If no active device found in current devices, check new devices
+        //   if (activeDeviceIndex === -1 && newDevices.length > 0) {
+        //     activeDeviceIndex = currentDevices.length; // Index will be after existing devices
+        //   }
           
-          if (activeDeviceIndex !== -1) {
-            const targetDevice = activeDeviceIndex >= currentDevices.length 
-              ? newDevices[activeDeviceIndex - currentDevices.length] 
-              : currentDevices[activeDeviceIndex];
+        //   if (activeDeviceIndex !== -1) {
+        //     const targetDevice = activeDeviceIndex >= currentDevices.length 
+        //       ? newDevices[activeDeviceIndex - currentDevices.length] 
+        //       : currentDevices[activeDeviceIndex];
   
-            setActiveDevice({
-              index: activeDeviceIndex,
-              deviceName: targetDevice.name,
-              serialNumber: targetDevice.serial,
-            });
-          }
-        }
+        //     setActiveDevice({
+        //       index: activeDeviceIndex,
+        //       deviceName: targetDevice.name,
+        //       serialNumber: targetDevice.serial,
+        //     });
+        //   }
+        // }
       })
       .catch((error) => {
         console.error('Error fetching data:', error.message);
       });
   }, []); 
+
+
+  useEffect(() => {
+    if(!isLoading){
+      const index = devices.findIndex(device => device.activeStatus);
+      const result = index !== -1 ? { index, device: devices[index] } : null;
+
+      if(result){
+       
+        const activeDevice = {
+          index: result.index,
+          deviceName: result.device.deviceName,
+          serialNumber: result.device.serialNumber,
+          chartID: null,
+          chartIDPosition: -1
+        }
+  
+        setActiveDevice(activeDevice);
+        console.log("AAAIIII", activeDevice)
+      }
+    }
+  }, [ isLoading ])
 
 
   useEffect(() => {
@@ -182,9 +216,9 @@ const Dashboard = () => {
 
 
   // useEffect to log `topics` whenever it changes
-  useEffect(() => {
-    console.log("Welcome: ", topics);
-  }, [topics]);
+  // useEffect(() => {
+  //   console.log("Welcome: ", topics);
+  // }, [topics]);
 
 
 useEffect(() => {
@@ -199,7 +233,7 @@ useEffect(() => {
           setLayoutChanged(false); // Reset layoutChanged after saving
           return 0;
         }
-        console.log("Countdown: ", prevCounter); 
+        // console.log("Countdown: ", prevCounter); 
         return prevCounter - 1;
       });
     }, 1000);
@@ -208,6 +242,23 @@ useEffect(() => {
     clearInterval(timer); // Clear the timer on component unmount or before restarting
   };
 }, [layoutChanged]);
+
+
+useEffect(() => {
+  if(sync.current === true && !isLoading && (devices[activeDevice.index].changes.length > 0 )){
+    sync.current = false;
+    console.log("@@@@@@@@Changes: ", devices[activeDevice.index].changes);
+    api
+      .post('/batch-updates', {changes:  devices[activeDevice.index].changes})
+      .then((response) => {
+        // console.log('$$$$$$$$$$$$$$$Data fetched:', response.data);
+        devices[activeDevice.index].changes = [];
+      })
+      .catch((error) => {
+        console.error('Error fetching data:', error.message);
+      });
+  }
+}, [syncronizeChanges]); 
 
 
   const toggleSidebar = () => {
@@ -229,10 +280,8 @@ useEffect(() => {
     // } catch (error) {
     //   console.error("Error saving layout:", error.message);
     // }
-
-    console.log("Layout saved successfully");
-    
-    
+    // setSynchronizeChanges(true);
+    // console.log("Layout saved successfully", devices[activeDevice.index].changes);
   };
 
 
@@ -242,6 +291,7 @@ useEffect(() => {
     // console.log("Active chart ID", activeChartId)
     
     let tempActiveChardIdIndex = ddevices[activeDevice.index].charts.findIndex((chart) => chart.id === chartId)
+    // let tempActiveChardIdIndex = ddevices[activeDevice.index].layouts.id;
     // console.log("Index of chart id: ", tempActiveChardIdIndex)
     // if(tempActiveChardIdIndex !== -1){
     //   setIndexOfSelectedChartId(tempActiveChardIdIndex);
@@ -250,7 +300,8 @@ useEffect(() => {
     setActiveDevice((prevDevice) => ({
       ...prevDevice,
       chartID: chartId,
-      chartIDPosition: tempActiveChardIdIndex
+      chartIDPosition: tempActiveChardIdIndex,
+      
     }));
 
     // console.log("Active device: ", activeDevice)
@@ -405,11 +456,42 @@ useEffect(() => {
   
     const newChart = createNewChart(type, componentID);
 
+    const now = new Date();
+    now.setMinutes(0, 0, 0); // Set the default time to the last top of the hour.
+    const formattedDateTime = now.toISOString().slice(0, 16);
+    
+
     if(devices.length > 0){
       // console.log("Devices :", devices);
       // console.log("\nActive Index: ", activeDevice.index, "\nNew Layout: ", newLayout, "\nNew chart :", newChart)
-      dispatch(appendLayout({index: activeDevice.index, newLayout}));
-      dispatch(appendChart({index: activeDevice.index, newChart}));
+      
+      // let layoutData = {
+      //   deviceID: activeDevice.index,
+      //   newLayout
+      // }
+
+      // let chartData = {
+      //   chartType: type,
+      //   newChart,
+      //   dateSpan: formattedDateTime
+      // }
+
+      
+      console.log("Appending: ", existingDevices[activeDeviceIndex].serialNumber)
+      dispatch(appendLayout({
+        dbAction: "appendLayout", 
+        deviceID: activeDevice.index,
+        serialNumber: existingDevices[activeDeviceIndex].serialNumber,
+        newLayout,
+        newChart,
+        formattedDateTime
+      }));
+
+
+      setSynchronizeChanges((prevState) => !prevState);
+      sync.current = true;
+      
+
     } else {
       console.log("You have no devices")
     }
@@ -468,17 +550,76 @@ useEffect(() => {
 
 
   const handleLayoutChange = (newLayout) => {
-    // Update the layout for the active device
+
+    let previousLayouts = devices[activeDevice.index].layouts;
+
+    const changedLayout = getChangedLayoutWithChanges(previousLayouts, newLayout);
+    
+    if(!changedLayout) return;
+    if(!activeDevice.serialNumber) return; // This line prevents proceeding without the active device parameters being set.
+    
+    let lengthOfChanges = changedLayout.length;
+      
+    for(let i = 0; i < lengthOfChanges; i++){
+      dispatch(updateLayout({
+        dbAction: "updateLayout",
+        serialNumber: activeDevice.serialNumber, 
+        deviceIndex: activeDevice.index, 
+        layoutIndex: changedLayout[i].i, 
+        layoutChanges: changedLayout[i].changes
+      }));
+    }
+    
     setlayoutSaveCounter(layoutSaveCounter);
     notifyChangeInLayout();
-
-    dispatch(updateLayout({
-      index: activeDevice.index,
-      newLayout: newLayout
-    }));
-
-    console.log("Updated Layout:", newLayout, "\n\nDevices:", devices[0].layouts);
+    setSynchronizeChanges((prevState) => !prevState);
+    sync.current = true;
   }
+
+
+
+
+function getChangedLayoutWithChanges(prevLayouts, newLayouts) {
+  if (!Array.isArray(prevLayouts) || !Array.isArray(newLayouts)) {
+      console.error("Invalid input: Both arguments must be arrays.");
+      return null;
+  }
+
+  const changes = [];
+
+  // Create a map of previous layouts for efficient lookup
+  const prevLayoutsMap = new Map(
+      prevLayouts.map(layout => [layout.i, layout])
+  );
+
+  // Check each new layout against its previous state
+  newLayouts.forEach(newLayout => {
+      const prevLayout = prevLayoutsMap.get(newLayout.i);
+      if (!prevLayout) return; // Skip if it's a new layout
+
+      // Compare properties
+      const changedProperties = {};
+      let hasChanges = false;
+
+      ['x', 'y', 'w', 'h'].forEach(prop => {
+          if (newLayout[prop] !== prevLayout[prop]) {
+              changedProperties[prop] = newLayout[prop];
+              hasChanges = true;
+          }
+      });
+
+      if (hasChanges) {
+          changes.push({
+              i: newLayout.i,
+              changes: changedProperties,
+              type: 'modified'
+          });
+      }
+  });
+
+  return changes.length > 0 ? changes : null;
+}
+  
 
   const handleDrop = (layout, item, e) => {
     // alert(`Element parameters: ${JSON.stringify(item)}`);
@@ -499,7 +640,7 @@ useEffect(() => {
       <DeviceToolbar isCollapsed={isCollapsed} mqttTopics={topics} devices={devices}  activeDevice={activeDevice} setActiveDevice={setActiveDevice}  setDeviceCount={setDeviceCount}/>
       {overlayActive && <div className={styles.overlay}></div>}
 
-      { (activeDevice.index !== null && activeDevice.index !== undefined) && devices[activeDevice.index]  && 
+      { (!isLoading) && (activeDevice.index !== null && activeDevice.index !== undefined) && devices[activeDevice.index]  && 
         <div className={`${styles.dashboard} ${isCollapsed ? styles.sidebarCollapsed : styles.sidebarExpanded}`}>
 
           <GridLayout
@@ -551,4 +692,4 @@ useEffect(() => {
   );
 };
 
-export { DEVICE_TEMPLATE, Dashboard };
+export { Dashboard };
