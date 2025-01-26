@@ -39,27 +39,55 @@ const devicesSlice = createSlice({
         removeDevice: (state, action) => {
             state.devices = state.devices.filter((device) => device.serial !== action.payload);
         },
-        appendLayout: (state, action) => {
-            const { index, newLayout } = action.payload;
-            if (state.devices[index] && Array.isArray(state.devices[index].layouts)) {
-                state.devices[index].layouts.push(newLayout);
-            } else {
-                console.error("Invalid device index or layouts is not an array");
-            }
-        },
         updateLayout: (state, action) => {
-            const { index, newLayout } = action.payload;
-            if (state.devices[index] && Array.isArray(state.devices[index].layouts)) {
-                state.devices[index].layouts = newLayout;
+            const { dbAction, serialNumber, deviceIndex, layoutIndex, layoutChanges } = action.payload;
+                        
+            if (state.devices[deviceIndex] && Array.isArray(state.devices[deviceIndex].layouts)) {
+                let layouts = state.devices[deviceIndex].layouts
+
+                const index = layouts.findIndex((layout) => layout.i === layoutIndex);            
+
+                if(layouts[index]){
+                    // Merge the existing layout with the updated layout
+                        layouts[index] = {
+                            ...layouts[index],
+                            ...layoutChanges,
+                        };
+                } else {
+                    console.error("Invalid layout index");
+                }
+
+                state.devices[deviceIndex].changes.push({
+                    dbAction,
+                    serialNumber,
+                    layoutIndex,
+                    layoutChanges
+                });
+
+                console.log("Update layout changes: ", state.devices[deviceIndex].changes)
+
             } else {
                 console.error("Invalid device index or layouts is not an array");
             }
         },
-        appendChart: (state, action) => {
-            const { index, newChart } = action.payload;
-            console.log("appendChart called with:", action.payload);
-            if (state.devices[index] && Array.isArray(state.devices[index].charts)) {
-                state.devices[index].charts.push(newChart);
+        appendLayout: (state, action) => {
+            const { dbAction, deviceID, serialNumber, newLayout, newChart, formattedDateTime } = action.payload;
+            if (state.devices[deviceID] && Array.isArray(state.devices[deviceID].layouts)) {
+                state.devices[deviceID].layouts.push(newLayout);
+                state.devices[deviceID].charts.push(newChart);
+
+                state.devices[deviceID].changes.push({
+                    dbAction,
+                    serialNumber: serialNumber,
+                    dbPayload: { 
+                       newLayout, 
+                        chart: { 
+                            newChart, 
+                            dateSpan: formattedDateTime
+                        } 
+                    }
+                });
+
             } else {
                 console.error("Invalid device index or layouts is not an array");
             }
@@ -100,6 +128,32 @@ const devicesSlice = createSlice({
                 //     oldValue: targetDataset.borderColor,
                 //     newValue,
                 // });
+
+                // Ensure the "changes" array exists
+                if (!state.devices[deviceIndex].changes) {
+                    state.devices[deviceIndex].changes = [];
+                }
+
+                // Check if a change for this path already exists
+                const existingChangeIndex = state.devices[deviceIndex].changes.findIndex(
+                    (change) => JSON.stringify(change.path) === JSON.stringify(path)
+                );
+
+                if (existingChangeIndex !== -1) {
+                    // Overwrite the existing change
+                    state.devices[deviceIndex].changes[existingChangeIndex] = {
+                        path,
+                        oldValue: targetDataset.borderColor,
+                        newValue,
+                    };
+                } else {
+                    // Push a new change
+                    state.devices[deviceIndex].changes.push({
+                        path,
+                        oldValue: targetDataset.borderColor,
+                        newValue,
+                    });
+                }
 
                 // Update the borderColor
                 targetDataset.borderColor = newValue;
@@ -439,7 +493,6 @@ export const {
     appendLayout, 
     updateLayout,
     updateLayoutProperties, 
-    appendChart,
     updateLineBorderColor, 
     updateLineTension,
     updateLinePointRadius,
