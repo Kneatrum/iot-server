@@ -35,6 +35,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   const dispatch = useDispatch();
   const devices = useSelector((state) => state.devices.devices);
   const basePath = devices[activeDevice.index].charts[activeDevice.chartIDPosition];
+  console.log("#######Active Device:", activeDevice);
 
 
   // Initial chart data
@@ -49,7 +50,17 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   const [ lineTension, setLineTension ] = useState(basePath.data.datasets[datasetPosition].tension || 0);
   const [ pointRadius, setPointRadius ] = useState(basePath.data.datasets[datasetPosition].pointRadius || 0);
   const [ borderWidth, setBorderWidth ] = useState(basePath.data.datasets[datasetPosition].borderWidth || 2)
- 
+  const [ dateTime, setDateTime ] = useState(null); // Get the datetime from the chart data or set the default to the last top of the hour inside the useEffect
+
+
+  useEffect(() => {
+    if(dateTime === null){
+      const now = new Date();
+      now.setMinutes(0, 0, 0); // Set the default time to the last top of the hour.
+      const formattedDateTime = now.toISOString().slice(0, 16);
+      setDateTime(formattedDateTime);
+    }
+  }, []);
 
   // setSelectedChartData(selectedChartData)
 
@@ -399,7 +410,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
             Query Date 
           </div>
           <div style={{paddingTop: '5px', paddingRight: '5px'} }>
-            <input type="datetime-local" style={{ height: '28px', border: '1px solid #fff', borderRadius: '5px', paddingLeft: '15px'}}/>
+            <input type="datetime-local" style={{ height: '28px', border: '1px solid #fff', borderRadius: '5px', paddingLeft: '15px'}} value={dateTime} />
           </div>
         </div>
 
