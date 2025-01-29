@@ -11,13 +11,13 @@ COPY package*.json ./
 RUN npm install --production
 
 # Copy the rest of the application code
-COPY ./database ./database
+COPY ./databases ./databases
 COPY ./mqtt ./mqtt
 COPY ./router ./router
 COPY ./constants.js ./constants.js
 COPY ./index.js ./index.js
 COPY ./.env ./.env
-COPY ./.env.development ./.env.development
+# COPY ./.env.development ./.env.development
 COPY ./secrets ./secrets
 
 
