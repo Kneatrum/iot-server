@@ -54,7 +54,7 @@ jobs:
         scp -o StrictHostKeyChecking=no \
           docker-compose.yml \
           nginx.conf \
-          ec2-user@${{ secrets.EC2_HOST }}:/path/to/compose-files/
+          ec2-user@${{ secrets.EC2_HOST }}:/home/ubuntu/iot-server/
 
     - name: SSH into EC2 and Deploy Updates
       uses: appleboy/ssh-action@v0.1.6
@@ -63,7 +63,7 @@ jobs:
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
         script: |
-          cd /path/to/compose-files
+          cd /home/ubuntu/iot-server/
 
           # Pull only the updated images
           docker-compose pull backend frontend mosquitto nginx
