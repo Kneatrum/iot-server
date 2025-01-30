@@ -56,12 +56,19 @@ jobs:
           docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
         fi
 
+    - name: Setup SSH Key
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts    
+
     - name: Upload Files to EC2
       run: |
         scp -o StrictHostKeyChecking=no \
           docker-compose.yml \
           nginx.conf \
-          ec2-user@${{ secrets.EC2_HOST }}:/home/ubuntu/iot-server/
+          ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/iot-server/
 
     - name: SSH into EC2 and Deploy Updates
       uses: appleboy/ssh-action@v0.1.6
