@@ -57,12 +57,21 @@ jobs:
           docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
         fi
 
+    # - name: Setup SSH Key
+    #   run: |
+    #     mkdir -p ~/.ssh
+    #     echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+    #     chmod 600 ~/.ssh/id_rsa
+    #     ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts    
+    
     - name: Setup SSH Key
       run: |
         mkdir -p ~/.ssh
         echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts    
+        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+        chmod 644 ~/.ssh/known_hosts  
+
 
     - name: Upload Files to EC2
       run: |
