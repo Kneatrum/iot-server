@@ -38,7 +38,7 @@ jobs:
       #     ls -la ~
       #   EOF
 
-    - name: Debug Private Key Formatting
+    # - name: Debug Private Key Formatting
         run: |
           echo "$PRIVATE_KEY" | cat -A
 
