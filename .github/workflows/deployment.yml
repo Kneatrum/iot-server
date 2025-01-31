@@ -23,24 +23,24 @@ jobs:
         PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
-      run: |
-        # Convert GitHub secret to a proper private key file
-        printf "%s" "$PRIVATE_KEY" > github-ec2.pem
-        chmod 600 github-ec2.pem
+      # run: |
+      #   # Convert GitHub secret to a proper private key file
+      #   printf "%s" "$PRIVATE_KEY" > github-ec2.pem
+      #   chmod 600 github-ec2.pem
 
-        # Verify if the key is correctly formatted
-        ssh-keygen -y -f github-ec2.pem > /dev/null || { echo "Invalid private key!"; exit 1; }
+      #   # Verify if the key is correctly formatted
+      #   ssh-keygen -y -f github-ec2.pem > /dev/null || { echo "Invalid private key!"; exit 1; }
 
-        # SSH into EC2
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
-          echo "Current directory: $(pwd)"
-          echo "Listing home directory:"
-          ls -la ~
-        EOF
+      #   # SSH into EC2
+      #   ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
+      #     echo "Current directory: $(pwd)"
+      #     echo "Listing home directory:"
+      #     ls -la ~
+      #   EOF
 
-  # - name: Debug Private Key Formatting
-  # run: |
-  #   echo "$PRIVATE_KEY" | cat -A
+    - name: Debug Private Key Formatting
+        run: |
+          echo "$PRIVATE_KEY" | cat -A
 
 
 
