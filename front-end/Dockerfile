@@ -1,6 +1,9 @@
 # Use a multi-stage build to reduce the final image size
 FROM node:20.13.0-alpine AS builder
 
+# Set the NODE_ENV environment variable to production
+ENV NODE_ENV=production
+
 # Set the working directory
 WORKDIR /front-end
 

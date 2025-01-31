@@ -1,6 +1,9 @@
 # Base image with a specific Node.js version
 FROM node:20.13.0-alpine
 
+# Set the NODE_ENV environment variable to production
+ENV NODE_ENV=production
+
 # Set the working directory
 WORKDIR /back-end
 
