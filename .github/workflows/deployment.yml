@@ -24,11 +24,17 @@ jobs:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        echo "$PRIVATE_KEY" > github-ec2.pem && chmod 600 github-ec2.pem
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} '
-        echo "Current directory: $(pwd)"
-        echo "Listing home directory:"
-        ls -la ~
+        # Properly save the private key with multi-line handling
+        echo "$PRIVATE_KEY" | tr -d '\r' > github-ec2.pem
+        chmod 600 github-ec2.pem
+
+        # SSH into EC2 and execute commands safely
+        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
+          echo "Current directory: $(pwd)"
+          echo "Listing home directory:"
+          ls -la ~
+        EOF
+
 
 
     # - name: Configure AWS Credentials
