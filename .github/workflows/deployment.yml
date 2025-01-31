@@ -66,11 +66,14 @@ jobs:
         # Decode the Base64 private key
         echo "$PRIVATE_KEY" | base64 --decode > github-ec2.pem
         chmod 600 github-ec2.pem
+
         # # Verify if the key is correctly formatted
-        # ssh-keygen -y -f github-ec2.pem > /dev/null || { echo "Invalid private key!"; exit 1; }
+        ssh-keygen -y -f github-ec2.pem > /dev/null || { echo "Invalid private key!"; exit 1; }
+
         # Upload docker-compose.yml and nginx.conf using SCP
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
+
         # SSH into EC2
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
           echo "Current directory: $(pwd)"
@@ -78,6 +81,8 @@ jobs:
           cd /home/ubuntu/iot-server/
           ls -la ~
         EOF
+
+        
     # - name: Upload Files to EC2
     #   run: |
     #     scp -o StrictHostKeyChecking=no \
