@@ -80,16 +80,10 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-ssh-
 
-    - name: Setup SSH Key
-      run: |
-        if [ ! -f ~/.ssh/id_rsa ]; then
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keygen -p -m PEM -f ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-        fi
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.0
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
 
     - name: Upload Files to EC2
