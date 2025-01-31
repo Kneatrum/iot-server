@@ -23,6 +23,8 @@ jobs:
         PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
+        run: |
+        echo "$PRIVATE_KEY" | cat -A
       # run: |
       #   # Convert GitHub secret to a proper private key file
       #   printf "%s" "$PRIVATE_KEY" > github-ec2.pem
@@ -39,8 +41,7 @@ jobs:
       #   EOF
 
     # - name: Debug Private Key Formatting
-        run: |
-          echo "$PRIVATE_KEY" | cat -A
+
 
 
 
