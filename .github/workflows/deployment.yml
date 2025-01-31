@@ -74,22 +74,13 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
 
-        # SSH into EC2
-        # ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
-        #   echo "Current directory: $(pwd)"
-        #   echo "Listing home directory:"
-        #   cd /home/ubuntu/iot-server/
-        #   ls -la ~
-        # EOF
-
-
 
     - name: Deploy Updates
       uses: appleboy/ssh-action@v0.1.6
       with:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
+        key: github-ec2.pem
         script: |
           cd /home/ubuntu/iot-server/
 
