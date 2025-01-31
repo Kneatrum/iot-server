@@ -27,35 +27,35 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}
 
-    # - name: Log in to Amazon ECR
-    #   id: ecr-login
-    #   uses: aws-actions/amazon-ecr-login@v1
+    - name: Log in to Amazon ECR
+      id: ecr-login
+      uses: aws-actions/amazon-ecr-login@v1
 
-    # - name: Build and Push Updated Images
-    #   run: |
-    #     if [ -d "./back-end" ]; then
-    #       docker build -t backend ./back-end
-    #       docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-    #     fi
+    - name: Build and Push Updated Images
+      run: |
+        if [ -d "./back-end" ]; then
+          docker build -t backend ./back-end
+          docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+        fi
 
-    #     if [ -d "./front-end" ]; then
-    #       docker build -t frontend ./front-end
-    #       docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-    #     fi
+        if [ -d "./front-end" ]; then
+          docker build -t frontend ./front-end
+          docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+        fi
 
-    #     if [ -d "./mosquitto" ]; then
-    #       docker build -t mosquitto ./mosquitto
-    #       docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-    #     fi
+        if [ -d "./mosquitto" ]; then
+          docker build -t mosquitto ./mosquitto
+          docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+        fi
 
-    #      if [ -d "./nginx" ]; then
-    #       docker build -t nginx ./nginx
-    #       docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
-    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
-    #     fi
+         if [ -d "./nginx" ]; then
+          docker build -t nginx ./nginx
+          docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+        fi
 
     - name: Sign in to EC2
       env:
@@ -78,6 +78,6 @@ jobs:
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
           cd /home/ubuntu/iot-server/
           docker-compose pull backend frontend mosquitto nginx
-          docker-compose up -d --no-deps backend frontend mosquitto nginx
-          docker image prune -f
+          # docker-compose up -d --no-deps backend frontend mosquitto nginx
+          # docker image prune -f
         EOF
