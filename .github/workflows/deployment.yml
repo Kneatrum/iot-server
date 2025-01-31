@@ -57,48 +57,22 @@ jobs:
     #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
     #     fi
 
-    - name: Sign in to EC2
-      env:
-        PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        HOST: ${{ secrets.EC2_HOST }}
-        USER: ${{ secrets.EC2_USER }}
-      run: |
-        # Decode the Base64 private key
-        echo "$PRIVATE_KEY" | base64 --decode > github-ec2.pem
-        chmod 600 github-ec2.pem
-        # # Verify if the key is correctly formatted
-        # ssh-keygen -y -f github-ec2.pem > /dev/null || { echo "Invalid private key!"; exit 1; }
-        # Upload docker-compose.yml and nginx.conf using SCP
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
-        # SSH into EC2
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
-          echo "Current directory: $(pwd)"
-          echo "Listing home directory:"
-          cd /home/ubuntu/iot-server/
-          ls -la ~
-        EOF
-    # - name: Upload Files to EC2
-    #   run: |
-    #     scp -o StrictHostKeyChecking=no \
-    #       docker-compose.yml \
-    #       nginx.conf \
-    #       ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/iot-server/
-
-    # - name: SSH into EC2 and Deploy Updates
-    #   uses: appleboy/ssh-action@v0.1.6
-    #   with:
-    #     host: ${{ secrets.EC2_HOST }}
-    #     username: ${{ secrets.EC2_USER }}
-    #     key: ${{ secrets.EC2_SSH_KEY }}
-    #     script: |
-    #       cd /home/ubuntu/iot-server/
-
-    #       # Pull only the updated images
-    #       docker-compose pull backend frontend mosquitto nginx
-
-    #       # Recreate only the updated containers without stopping others
-    #       docker-compose up -d --no-deps backend frontend mosquitto nginx
-
-    #       # Remove old images to save space
-    #       docker image prune -f
+    - name: Deploy to EC2
+    uses: appleboy/ssh-action@v0.1.6
+    with:
+      host: ${{ secrets.EC2_HOST }}
+      username: ${{ secrets.EC2_USER }}
+      key: ${{ secrets.EC2_SSH_KEY }}
+      source: "docker-compose.yml,nginx.conf"
+      target: "/home/ubuntu/iot-server"
+      script: |
+        cd /home/ubuntu/iot-server/
+        
+        # Pull only the updated images
+        # docker-compose pull backend frontend mosquitto nginx
+        
+        # Recreate only the updated containers without stopping others
+        # docker-compose up -d --no-deps backend frontend mosquitto nginx
+        
+        # Remove old images to save space
+        # docker image prune -f
