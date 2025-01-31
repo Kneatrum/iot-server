@@ -27,35 +27,35 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ secrets.AWS_REGION }}  # Change this to your AWS region
 
-    - name: Log in to Amazon ECR
-      id: ecr-login
-      uses: aws-actions/amazon-ecr-login@v1
+    # - name: Log in to Amazon ECR
+    #   id: ecr-login
+    #   uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build and Push Updated Images
-      run: |
-        if [ -d "./back-end" ]; then
-          docker build -t backend ./back-end
-          docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-        fi
+    # - name: Build and Push Updated Images
+    #   run: |
+    #     if [ -d "./back-end" ]; then
+    #       docker build -t backend ./back-end
+    #       docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+    #     fi
 
-        if [ -d "./front-end" ]; then
-          docker build -t frontend ./front-end
-          docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-        fi
+    #     if [ -d "./front-end" ]; then
+    #       docker build -t frontend ./front-end
+    #       docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    #     fi
 
-        if [ -d "./mosquitto" ]; then
-          docker build -t mosquitto ./mosquitto
-          docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-        fi
+    #     if [ -d "./mosquitto" ]; then
+    #       docker build -t mosquitto ./mosquitto
+    #       docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+    #     fi
 
-         if [ -d "./nginx" ]; then
-          docker build -t nginx ./nginx
-          docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
-        fi
+    #      if [ -d "./nginx" ]; then
+    #       docker build -t nginx ./nginx
+    #       docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+    #     fi
 
     # - name: Setup SSH Key
     #   run: |
@@ -64,13 +64,31 @@ jobs:
     #     chmod 600 ~/.ssh/id_rsa
     #     ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts    
     
+    # - name: Setup SSH Key
+    #   run: |
+    #     mkdir -p ~/.ssh
+    #     echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+    #     chmod 600 ~/.ssh/id_rsa
+    #     ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+    #     chmod 644 ~/.ssh/known_hosts  
+
+    - name: Cache SSH Folder
+      uses: actions/cache@v3
+      with:
+        path: ~/.ssh
+        key: ${{ runner.os }}-ssh-${{ hashFiles('**/ssh-setup') }}
+        restore-keys: |
+          ${{ runner.os }}-ssh-
+
     - name: Setup SSH Key
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-        chmod 644 ~/.ssh/known_hosts  
+        if [ ! -f ~/.ssh/id_rsa ]; then
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+        fi
 
 
     - name: Upload Files to EC2
