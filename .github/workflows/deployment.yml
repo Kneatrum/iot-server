@@ -15,10 +15,49 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Deploy to EC2
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}  # Change this to your AWS region
+
+    # - name: Log in to Amazon ECR
+    #   id: ecr-login
+    #   uses: aws-actions/amazon-ecr-login@v1
+
+    # - name: Build and Push Updated Images
+    #   run: |
+    #     if [ -d "./back-end" ]; then
+    #       docker build -t backend ./back-end
+    #       docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+    #     fi
+
+    #     if [ -d "./front-end" ]; then
+    #       docker build -t frontend ./front-end
+    #       docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    #     fi
+
+    #     if [ -d "./mosquitto" ]; then
+    #       docker build -t mosquitto ./mosquitto
+    #       docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+    #     fi
+
+    #      if [ -d "./nginx" ]; then
+    #       docker build -t nginx ./nginx
+    #       docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+    #     fi
+
+    - name: Sign in to EC2
       env:
         PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
         HOST: ${{ secrets.EC2_HOST }}
@@ -37,7 +76,125 @@ jobs:
           echo "Listing home directory:"
           ls -la ~
         EOF
-        
+
+    - name: Upload Files to EC2
+      run: |
+        scp -o StrictHostKeyChecking=no \
+          docker-compose.yml \
+          nginx.conf \
+          ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/iot-server/
+
+    # - name: SSH into EC2 and Deploy Updates
+    #   uses: appleboy/ssh-action@v0.1.6
+    #   with:
+    #     host: ${{ secrets.EC2_HOST }}
+    #     username: ${{ secrets.EC2_USER }}
+    #     key: ${{ secrets.EC2_SSH_KEY }}
+    #     script: |
+    #       cd /home/ubuntu/iot-server/
+
+    #       # Pull only the updated images
+    #       docker-compose pull backend frontend mosquitto nginx
+
+    #       # Recreate only the updated containers without stopping others
+    #       docker-compose up -d --no-deps backend frontend mosquitto nginx
+
+    #       # Remove old images to save space
+    #       docker image prune -f
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# name: EC2 Deployment.
+
+# on:
+#   push:
+#     branches:
+#       - deployment
+#     paths:
+#       - docker-compose.yml
+#       - nginx.conf
+#       - '**/Dockerfile'
+#       - '**/src/**'
+#       - '**/*.env'
+#       - '.github/workflows/deployment.yml' 
+
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     steps:
+#     - uses: actions/checkout@v3
+    
+#     - name: Deploy to EC2
+#       env:
+#         PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+#         HOST: ${{ secrets.EC2_HOST }}
+#         USER: ${{ secrets.EC2_USER }}
+#       run: |
+#         # Decode the Base64 private key
+#         echo "$PRIVATE_KEY" | base64 --decode > github-ec2.pem
+#         chmod 600 github-ec2.pem
+
+#         # Verify if the key is correctly formatted
+#         ssh-keygen -y -f github-ec2.pem > /dev/null || { echo "Invalid private key!"; exit 1; }
+
+#         # SSH into EC2
+#         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
+#           echo "Current directory: $(pwd)"
+#           echo "Listing home directory:"
+#           ls -la ~
+#         EOF
+
 
   # - name: Debug Private Key Formatting
   # run: |
