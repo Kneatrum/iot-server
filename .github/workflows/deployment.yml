@@ -25,7 +25,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}  # Change this to your AWS region
+        aws-region: ${{ secrets.AWS_REGION }}
 
     - name: Log in to Amazon ECR
       id: ecr-login
@@ -51,28 +51,28 @@ jobs:
           docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
         fi
 
-         if [ -d "./nginx" ]; then
+        if [ -d "./nginx" ]; then
           docker build -t nginx ./nginx
           docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
           docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
         fi
 
     - name: Deploy to EC2
-    uses: appleboy/ssh-action@v0.1.6
-    with:
-      host: ${{ secrets.EC2_HOST }}
-      username: ${{ secrets.EC2_USER }}
-      key: ${{ secrets.EC2_SSH_KEY }}
-      source: "docker-compose.yml,nginx.conf"
-      target: "/home/ubuntu/iot-server"
-      script: |
-        cd /home/ubuntu/iot-server/
-        
-        # Pull only the updated images
-        # docker-compose pull backend frontend mosquitto nginx
-        
-        # Recreate only the updated containers without stopping others
-        # docker-compose up -d --no-deps backend frontend mosquitto nginx
-        
-        # Remove old images to save space
-        # docker image prune -f
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        source: "docker-compose.yml,nginx.conf"
+        target: "/home/ubuntu/iot-server"
+        script: |
+          cd /home/ubuntu/iot-server/
+          
+          # Pull only the updated images
+          docker-compose pull backend frontend mosquitto nginx
+          
+          # Recreate only the updated containers without stopping others
+          docker-compose up -d --no-deps backend frontend mosquitto nginx
+          
+          # Remove old images to save space
+          docker image prune -f
