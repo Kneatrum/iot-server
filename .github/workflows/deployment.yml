@@ -31,31 +31,31 @@ jobs:
       id: ecr-login
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Build and Push Updated Images
-      run: |
-        if [ -d "./back-end" ]; then
-          docker build -t backend ./back-end
-          docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-        fi
+    # - name: Build and Push Updated Images
+    #   run: |
+    #     if [ -d "./back-end" ]; then
+    #       docker build -t backend ./back-end
+    #       docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+    #     fi
 
-        if [ -d "./front-end" ]; then
-          docker build -t frontend ./front-end
-          docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-        fi
+    #     if [ -d "./front-end" ]; then
+    #       docker build -t frontend ./front-end
+    #       docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    #     fi
 
-        if [ -d "./mosquitto" ]; then
-          docker build -t mosquitto ./mosquitto
-          docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-        fi
+    #     if [ -d "./mosquitto" ]; then
+    #       docker build -t mosquitto ./mosquitto
+    #       docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+    #     fi
 
-        if [ -d "./nginx" ]; then
-          docker build -t nginx ./nginx
-          docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
-        fi
+    #     if [ -d "./nginx" ]; then
+    #       docker build -t nginx ./nginx
+    #       docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+    #     fi
 
     - name: Deploy to EC2
       uses: appleboy/ssh-action@v0.1.6
@@ -63,10 +63,16 @@ jobs:
         host: ${{ secrets.EC2_HOST }}
         username: ${{ secrets.EC2_USER }}
         key: ${{ secrets.EC2_SSH_KEY }}
-        source: "docker-compose.yml,nginx.conf"
-        target: "/home/ubuntu/iot-server"
         script: |
+          # First, copy the files
           cd /home/ubuntu/iot-server/
+          echo "Copying configuration files..."
+          scp -o StrictHostKeyChecking=no \
+            docker-compose.yml \
+            nginx.conf \
+            /home/ubuntu/iot-server/
+          
+          
           
           # Pull only the updated images
           # docker-compose pull backend frontend mosquitto nginx
@@ -76,4 +82,3 @@ jobs:
           
           # Remove old images to save space
           # docker image prune -f
-          
