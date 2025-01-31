@@ -69,10 +69,10 @@ jobs:
           cd /home/ubuntu/iot-server/
           
           # Pull only the updated images
-          docker-compose pull backend frontend mosquitto nginx
+          # docker-compose pull backend frontend mosquitto nginx
           
           # Recreate only the updated containers without stopping others
-          docker-compose up -d --no-deps backend frontend mosquitto nginx
+          # docker-compose up -d --no-deps backend frontend mosquitto nginx
           
           # Remove old images to save space
-          docker image prune -f
+          # docker image prune -f
