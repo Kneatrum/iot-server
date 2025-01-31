@@ -25,7 +25,7 @@ jobs:
       with:
         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}  # Change this to your AWS region
+        aws-region: ${{ secrets.AWS_REGION }}
 
     # - name: Log in to Amazon ECR
     #   id: ecr-login
@@ -75,35 +75,29 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
 
         # SSH into EC2
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
-          echo "Current directory: $(pwd)"
-          echo "Listing home directory:"
+        # ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
+        #   echo "Current directory: $(pwd)"
+        #   echo "Listing home directory:"
+        #   cd /home/ubuntu/iot-server/
+        #   ls -la ~
+        # EOF
+
+
+
+    - name: Deploy Updates
+      uses: appleboy/ssh-action@v0.1.6
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
           cd /home/ubuntu/iot-server/
-          ls -la ~
-        EOF
 
-        
-    # - name: Upload Files to EC2
-    #   run: |
-    #     scp -o StrictHostKeyChecking=no \
-    #       docker-compose.yml \
-    #       nginx.conf \
-    #       ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/iot-server/
+          # Pull only the updated images
+          # docker-compose pull backend frontend mosquitto nginx
 
-    # - name: SSH into EC2 and Deploy Updates
-    #   uses: appleboy/ssh-action@v0.1.6
-    #   with:
-    #     host: ${{ secrets.EC2_HOST }}
-    #     username: ${{ secrets.EC2_USER }}
-    #     key: ${{ secrets.EC2_SSH_KEY }}
-    #     script: |
-    #       cd /home/ubuntu/iot-server/
+          # Recreate only the updated containers without stopping others
+          # docker-compose up -d --no-deps backend frontend mosquitto nginx
 
-    #       # Pull only the updated images
-    #       docker-compose pull backend frontend mosquitto nginx
-
-    #       # Recreate only the updated containers without stopping others
-    #       docker-compose up -d --no-deps backend frontend mosquitto nginx
-
-    #       # Remove old images to save space
-    #       docker image prune -f
+          # Remove old images to save space
+          # docker image prune -f
