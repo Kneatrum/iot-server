@@ -74,21 +74,10 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
 
-
-    - name: Deploy Updates
-      uses: appleboy/ssh-action@v0.1.6
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: github-ec2.pem
-        script: |
+        # Execute Docker commands on EC2 via SSH
+        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
           cd /home/ubuntu/iot-server/
-
-          # Pull only the updated images
-          # docker-compose pull backend frontend mosquitto nginx
-
-          # Recreate only the updated containers without stopping others
-          # docker-compose up -d --no-deps backend frontend mosquitto nginx
-
-          # Remove old images to save space
-          # docker image prune -f
+          docker-compose pull backend frontend mosquitto nginx
+          docker-compose up -d --no-deps backend frontend mosquitto nginx
+          docker image prune -f
+        EOF
