@@ -1,17 +1,3 @@
-name: EC2 Deployment.
-
-on:
-  push:
-    branches:
-      - deployment
-    paths:
-      - docker-compose.yml
-      - nginx.conf
-      - '**/Dockerfile'
-      - '**/src/**'
-      - '**/*.env'
-      - '.github/workflows/deployment.yml' 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -24,108 +10,16 @@ jobs:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        # Properly save the private key with multi-line handling
-        echo "$PRIVATE_KEY" | tr -d '\r' > github-ec2.pem
+        # Convert GitHub secret to a proper private key file
+        echo -e "$PRIVATE_KEY" > github-ec2.pem
         chmod 600 github-ec2.pem
 
-        # SSH into EC2 and execute commands safely
+        # Test if SSH key is correctly formatted
+        ssh-keygen -y -f github-ec2.pem > /dev/null || { echo "Invalid private key!"; exit 1; }
+
+        # SSH into EC2
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
           echo "Current directory: $(pwd)"
           echo "Listing home directory:"
           ls -la ~
         EOF
-
-
-
-    # - name: Configure AWS Credentials
-    #   uses: aws-actions/configure-aws-credentials@v2
-    #   with:
-    #     aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-    #     aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    #     aws-region: ${{ secrets.AWS_REGION }}  # Change this to your AWS region
-
-    # - name: Log in to Amazon ECR
-    #   id: ecr-login
-    #   uses: aws-actions/amazon-ecr-login@v1
-
-    # - name: Build and Push Updated Images
-    #   run: |
-    #     if [ -d "./back-end" ]; then
-    #       docker build -t backend ./back-end
-    #       docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-    #     fi
-
-    #     if [ -d "./front-end" ]; then
-    #       docker build -t frontend ./front-end
-    #       docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-    #     fi
-
-    #     if [ -d "./mosquitto" ]; then
-    #       docker build -t mosquitto ./mosquitto
-    #       docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-    #     fi
-
-    #      if [ -d "./nginx" ]; then
-    #       docker build -t nginx ./nginx
-    #       docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
-    #       docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
-    #     fi
-
-    # - name: Setup SSH Key
-    #   run: |
-    #     mkdir -p ~/.ssh
-    #     echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-    #     chmod 600 ~/.ssh/id_rsa
-    #     ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts    
-    
-    # - name: Setup SSH Key
-    #   run: |
-    #     mkdir -p ~/.ssh
-    #     echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-    #     chmod 600 ~/.ssh/id_rsa
-    #     ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-    #     chmod 644 ~/.ssh/known_hosts  
-
-    
-    # - name: Cache SSH Folder
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: ~/.ssh
-    #     key: ${{ runner.os }}-ssh-${{ hashFiles('**/ssh-setup') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-ssh-
-
-    # - name: Setup SSH
-    #   uses: appleboy/ssh-action@v1.0.0
-    #   with:
-    #     host: ${{ secrets.EC2_HOST }}
-    #     username: ${{ secrets.EC2_USER }}
-    #     key: ${{ secrets.EC2_SSH_KEY }}
-
-    # - name: Upload Files to EC2
-    #   run: |
-    #     scp -o StrictHostKeyChecking=no \
-    #       docker-compose.yml \
-    #       nginx.conf \
-    #       ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/iot-server/
-
-    # - name: SSH into EC2 and Deploy Updates
-    #   uses: appleboy/ssh-action@v0.1.6
-    #   with:
-    #     host: ${{ secrets.EC2_HOST }}
-    #     username: ${{ secrets.EC2_USER }}
-    #     key: ${{ secrets.EC2_SSH_KEY }}
-    #     script: |
-    #       cd /home/ubuntu/iot-server/
-
-    #       # Pull only the updated images
-    #       docker-compose pull backend frontend mosquitto nginx
-
-    #       # Recreate only the updated containers without stopping others
-    #       docker-compose up -d --no-deps backend frontend mosquitto nginx
-
-    #       # Remove old images to save space
-    #       docker image prune -f
