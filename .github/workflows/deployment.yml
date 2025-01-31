@@ -24,9 +24,8 @@ jobs:
         HOST: ${{ secrets.EC2_HOST }}
         USER: ${{ secrets.EC2_USER }}
       run: |
-        # Convert GitHub secret to a proper private key file
-        printf "%s" "$PRIVATE_KEY" > github-ec2.pem
-        echo "$PRIVATE_KEY" | cat -A
+        # Decode the Base64 private key
+        echo "$PRIVATE_KEY" | base64 --decode > github-ec2.pem
         chmod 600 github-ec2.pem
 
         # Verify if the key is correctly formatted
