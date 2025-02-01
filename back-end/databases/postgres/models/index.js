@@ -7,16 +7,52 @@ const process = require('process');
 const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
+const { getSecret } = require('../../../secrets/aws_secrets.js');
 const db = {};
 
+const POSTGRESDB_SECRETS = process.env.POSTGRES_SECRETS;
+const POSTGRES_HOSTNAME = process.env.POSTGRES_HOST;
+const DIALECT = process.env.POSTGRES_DIALECT;
+const POSTGRES_LOGGING = process.env.POSTGRES_LOGGING;
+
 let sequelize;
-if (config.use_env_variable) {
-  sequelize = new Sequelize(process.env[config.use_env_variable], config);
-} else {
-  sequelize = new Sequelize(config.database, config.username, config.password, config);
+
+async function initializeSequelize() {
+  if (env === 'production') {
+    try {
+      const postgresDBConfig = await getSecret(POSTGRESDB_SECRETS);
+
+      if (postgresDBConfig.success) {
+        sequelize = new Sequelize(postgresDBConfig.data.databaseName, postgresDBConfig.data.username, postgresDBConfig.data.password, {
+          host: POSTGRES_HOSTNAME,
+          dialect: DIALECT,
+          logging: POSTGRES_LOGGING
+        });
+      } else {
+        console.error("Failed to get Postgres secrets in production:", postgresDBConfig.error);
+      }
+
+    } catch (error) {
+      console.error("Failed to initialize Sequelize in production:", error);
+    }
+
+  } else {
+    if (config.use_env_variable) {
+      sequelize = new Sequelize(process.env[config.use_env_variable], config);
+    } else {
+      sequelize = new Sequelize(config.database, config.username, config.password, config);
+    }
+  }
+
+ return sequelize;
+ 
 }
 
-fs
+
+(async () => {
+  sequelize = await initializeSequelize();
+
+  fs
   .readdirSync(__dirname)
   .filter(file => {
     return (
@@ -46,5 +82,6 @@ db.sequelize = sequelize;
 // }).catch((error) => {
 //   console.error("Failed to synchronize database:", error);
 // });
+})();
 
 module.exports = db;
