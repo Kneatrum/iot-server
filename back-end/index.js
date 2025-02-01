@@ -26,6 +26,8 @@ const PG_USERNAME = "postgress";
 const PG_PASSWORD = "1234";
 let sessionSecret = null;
 
+const INFLUXDB_SECRETS = process.env.INFLUX_SECRETS;
+
 const INFLUXDB_URL = process.env.INFLUXDB_HOST || 'http://localhost:8086';
 
 
@@ -36,16 +38,16 @@ function initializeDbClients(arg_url, arg_token, arg_org, arg_bucket){
 }
 
 
-async function useSecret() {
+async function backendInit() {
 
     if(env === 'production'){
-        const result = await getSecret();
-        const sessionQuery = await getSessionSecret();
+        const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
+       
         const r = await sequelize.authenticate();
         console.log('Connected to database', r);
 
-        if (result.success) {
-            initializeDbClients(INFLUXDB_URL, result.data.apiKey, result.data.organisation, result.data.bucket);
+        if (influxdbSecrets.success) {
+            initializeDbClients(INFLUXDB_URL, influxdbSecrets.data.apiKey, influxdbSecrets.data.organisation, influxdbSecrets.data.bucket);
         } else {
             let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
             if(response.success){
@@ -57,6 +59,7 @@ async function useSecret() {
             }
         }
 
+        const sessionQuery = await getSessionSecret();
         if(sessionQuery.success){
             // console.log(sessionQuery.data.sessionSecret);
             sessionSecret = sessionQuery.data.sessionSecret;
@@ -110,7 +113,7 @@ async function useSecret() {
   }
 
 
-useSecret();
+backendInit();
 
 
 
