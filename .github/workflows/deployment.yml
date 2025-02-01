@@ -34,15 +34,15 @@ jobs:
     - name: Build and Push Updated Images
       run: |
         if [ -d "./back-end" ]; then
-          docker build -t backend ./back-end
-          docker tag backend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
+          docker build -t back-end ./back-end
+          docker tag back-end:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest
         fi
 
         if [ -d "./front-end" ]; then
-          docker build -t frontend ./front-end
-          docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+          docker build -t front-end ./front-end
+          docker tag front-end:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
         fi
 
         if [ -d "./mosquitto" ]; then
