@@ -76,7 +76,7 @@ services:
     env_file:
       - ./back-end/.env
     environment:
-      - NODE_ENV: "production" 
+      NODE_ENV: "production" 
     command: >
       sh -c 'if [ "$NODE_ENV" = "development" ]; then npm run dev;
       elif [ "$NODE_ENV" = "production" ]; then npm run start;
