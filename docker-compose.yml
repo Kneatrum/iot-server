@@ -69,9 +69,9 @@ services:
         delay: 5s
     ports:
       - 3000:3000
-    build:
-      context: ./back-end
-      dockerfile: Dockerfile
+    # build:           # for local development
+    #   context: ./back-end      # for local development
+    #   dockerfile: Dockerfile   # for local development
     env_file:
       - ./back-end/.env
     environment:
