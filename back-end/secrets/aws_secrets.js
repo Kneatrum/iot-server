@@ -10,7 +10,6 @@ const { fromInstanceMetadata } = require("@aws-sdk/credential-providers");
 
 
 const AWS_REGION = process.env.AWS_REGION;
-const SECRETS = process.env.SECRETS;
 const SESSIONSECRETS = process.env.SESSION_SECRETS;
 const META_TIMEOUT = parseInt(process.env.META_TIMEOUT, 10) || 1000;
 const META_RETRIES = process.env.META_RETRIES;
@@ -28,16 +27,20 @@ const client = new SecretsManagerClient({
 
 
 // Function to create a new secret in AWS Secrets Manager
-async function createSecret(userName, password, apiKey, bucket, organisation) {
+async function createSecret(secretName,secretString) {
+
+        // `{
+        //   "username":"${userName}",
+        //   "password":"${password}", 
+        //   "apiKey":"${apiKey}", 
+        //   "bucket":"${bucket}", 
+        //   "organisation":"${organisation}"
+        // }`
+
+
     const input = {
-        Name: SECRETS,
-        SecretString: `{
-        "username":"${userName}",
-        "password":"${password}", 
-        "apiKey":"${apiKey}", 
-        "bucket":"${bucket}", 
-        "organisation":"${organisation}"
-        }`
+        Name: secretName,
+        SecretString: secretString
     };
     const command = new CreateSecretCommand(input);
     try {
@@ -48,10 +51,10 @@ async function createSecret(userName, password, apiKey, bucket, organisation) {
 }
 
 
-async function getSecret() {
+async function getSecret(secretName) {
 
   const secret = { 
-    SecretId: SECRETS
+    SecretId: secretName
   };
 
   const command = new GetSecretValueCommand(secret);
