@@ -57,7 +57,6 @@ services:
   back-end:
     image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest  
     depends_on:
-      - influxdb
       - mosquitto
     deploy:
       replicas: 2
