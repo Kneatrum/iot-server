@@ -73,10 +73,13 @@ jobs:
         # Upload docker-compose.yml and nginx.conf using SCP
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem iot-server/back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/.env
 
         # Execute Docker commands on EC2 via SSH
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
           cd /home/ubuntu/iot-server/
+          # Ensure the .env file has correct permissions
+          chmod 600 /home/ubuntu/iot-server/back-end/.env
           export NODE_ENV=production
           # docker-compose pull backend frontend mosquitto nginx
           # docker-compose up -d --no-deps backend frontend mosquitto nginx
