@@ -93,8 +93,6 @@ services:
   mosquitto:
     image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest  
     container_name: mosquitto
-    environment:
-      - SYS: "/#"
     deploy:
       replicas: 2
       update_config:
@@ -115,7 +113,7 @@ services:
       - ./mosquitto/data:/mosquitto/data
       - ./mosquitto/log:/mosquitto/log
     healthcheck:
-      test: ["CMD", "mosquitto_sub", "-t", "/#", "-C", "1", "-i", "healthcheck"]
+      test: ["CMD", "mosquitto_sub", "-t", '$$SYS/#', "-C", "1", "-i", "healthcheck"]
       interval: 30s
       timeout: 10s
       retries: 3
