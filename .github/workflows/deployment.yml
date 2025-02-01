@@ -39,17 +39,17 @@ jobs:
           docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest
         fi
 
-        # if [ -d "./front-end" ]; then
-        #   docker build -t frontend ./front-end
-        #   docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-        #   docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
-        # fi
+        if [ -d "./front-end" ]; then
+          docker build -t frontend ./front-end
+          docker tag frontend:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+        fi
 
-        # if [ -d "./mosquitto" ]; then
-        #   docker build -t mosquitto ./mosquitto
-        #   docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-        #   docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-        # fi
+        if [ -d "./mosquitto" ]; then
+          docker build -t mosquitto ./mosquitto
+          docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+        fi
 
         #  if [ -d "./nginx" ]; then
         #   docker build -t nginx ./nginx
