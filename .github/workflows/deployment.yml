@@ -74,7 +74,7 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
         # scp -o StrictHostKeyChecking=no -i github-ec2.pem /back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/.env
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/
 
 
         # Execute Docker commands on EC2 via SSH
