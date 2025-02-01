@@ -76,10 +76,10 @@ services:
       - ./back-end/.env
     environment:
       NODE_ENV: "production" 
-    command: >
-      sh -c 'if [ "$NODE_ENV" = "development" ]; then npm run dev;
-      elif [ "$NODE_ENV" = "production" ]; then npm run start;
-      else echo "Unknown NODE_ENV=$NODE_ENV"; exit 1; fi'
+    # command: >
+    #   sh -c 'if [ "$NODE_ENV" = "development" ]; then npm run dev;
+    #   elif [ "$NODE_ENV" = "production" ]; then npm run start;
+    #   else echo "Unknown NODE_ENV=$NODE_ENV"; exit 1; fi'
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 10s
