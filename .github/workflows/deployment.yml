@@ -74,18 +74,27 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
 
-        # Ensure the back-end directory exists on EC2 before copying the .env file
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
-          if [ ! -d "/home/ubuntu/iot-server/back-end" ]; then
-            mkdir -p /home/ubuntu/iot-server/back-end
-            echo "Created directory: /home/ubuntu/iot-server/back-end"
+        # Check if directory exists and capture creation status
+        DIR_STATUS=$(ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
+          DIR_PATH="/home/ubuntu/iot-server/back-end"
+          if [ ! -d "$DIR_PATH" ]; then
+            mkdir -p "$DIR_PATH"
+            echo "CREATED"  # Signal that the directory was newly created
+            echo "Created directory: $DIR_PATH" >&2  # Print to stderr (visible in console)
           else
-            echo "Directory already exists: /home/ubuntu/iot-server/back-end"
+            echo "EXISTS"   # Signal that the directory already existed
+            echo "Directory already exists: $DIR_PATH" >&2
           fi
         EOF
-        
+        )
 
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/
+        # Copy .env ONLY if the directory was newly created
+        if [ "$DIR_STATUS" = "CREATED" ]; then
+          echo "Copying .env to newly created directory..."
+          scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/
+        else
+          echo "Skipping .env copy (directory already exists)."
+        fi
 
 
         # Execute Docker commands on EC2 via SSH
