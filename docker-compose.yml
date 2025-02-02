@@ -17,10 +17,10 @@ services:
       update_config:
         order: start-first
         failure_action: rollback
-        # delay: 10s
+        delay: 10s
       restart_policy:
         condition: any
-        delay: 5s
+        # delay: 5s
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 30s
@@ -30,7 +30,7 @@ services:
       - iot-network
 
   front-end:
-    image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/frontend:latest
+    image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
     depends_on:
       - back-end
     deploy:
@@ -38,10 +38,10 @@ services:
       update_config:
         order: start-first
         failure_action: rollback
-        # delay: 10s
+        delay: 10s
       restart_policy:
         condition: any
-        delay: 5s
+        # delay: 5s
     build:
       context: ./front-end
       dockerfile: Dockerfile
@@ -63,10 +63,10 @@ services:
       update_config:
         order: start-first
         failure_action: rollback
-        # delay: 10s
+        delay: 10s
       restart_policy:
         condition: any
-        delay: 5s
+        # delay: 5s
     ports:
       - 3000:3000
     build:           # for local development
@@ -98,10 +98,10 @@ services:
       update_config:
         order: start-first
         failure_action: rollback
-        # delay: 10s
+        delay: 10s
       restart_policy:
         condition: any
-        delay: 5s
+        # delay: 5s
     build:
       context: ./mosquitto
       dockerfile: Dockerfile

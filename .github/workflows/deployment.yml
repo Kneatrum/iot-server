@@ -90,11 +90,22 @@ jobs:
 
         # Execute Docker commands on EC2 via SSH
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
+
           cd /home/ubuntu/iot-server/
+
           export NODE_ENV=production
+
+          # Configure AWS CLI with the region
+          export AWS_DEFAULT_REGION=us-east-1
+
+          # Get ECR login token and login to Docker
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
-          # docker-compose pull backend frontend mosquitto nginx
+          # aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
+          
+          # docker-compose pull back-end front-end mosquitto nginx
           docker-compose pull back-end
+          
           # docker-compose up -d --no-deps backend frontend mosquitto nginx
+          
           # docker image prune -f
         EOF
