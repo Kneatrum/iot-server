@@ -73,19 +73,9 @@ jobs:
         # Upload docker-compose.yml and nginx.conf using SCP
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
-
-        # Ensure the back-end directory exists on EC2 before copying the .env file
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
-          if [ ! -d "/home/ubuntu/iot-server/back-end" ]; then
-            mkdir -p /home/ubuntu/iot-server/back-end
-            echo "Created directory: /home/ubuntu/iot-server/back-end"
-          else
-            echo "Directory already exists: /home/ubuntu/iot-server/back-end"
-          fi
-        EOF
-        
-
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/
+        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem front-end ${USER}@${HOST}:/home/ubuntu/iot-server/
+        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem back-end ${USER}@${HOST}:/home/ubuntu/iot-server/ 
+        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto ${USER}@${HOST}:/home/ubuntu/iot-server/ 
 
 
         # Execute Docker commands on EC2 via SSH
@@ -100,12 +90,10 @@ jobs:
 
           # Get ECR login token and login to Docker
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
-          # aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
           
-          # docker-compose pull back-end front-end mosquitto nginx
-          docker-compose pull back-end
+          docker-compose pull back-end front-end mosquitto #nginx
           
-          # docker-compose up -d --no-deps backend frontend mosquitto nginx
+          # docker-compose up -d --no-deps back-end front-end mosquitto nginx
           
           # docker image prune -f
         EOF

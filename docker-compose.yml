@@ -14,10 +14,10 @@ services:
       - front-end
     deploy:
       replicas: 2
-      update_config:
-        order: start-first
-        failure_action: rollback
-        delay: 10s
+      # update_config:
+      #   order: start-first
+      #   failure_action: rollback
+      #   delay: 10s
       restart_policy:
         condition: any
         # delay: 5s
@@ -35,10 +35,10 @@ services:
       - back-end
     deploy:
       replicas: 2
-      update_config:
-        order: start-first
-        failure_action: rollback
-        delay: 10s
+      # update_config:
+      #   order: start-first
+      #   failure_action: rollback
+      #   delay: 10s
       restart_policy:
         condition: any
         # delay: 5s
@@ -60,10 +60,10 @@ services:
       - mosquitto
     deploy:
       replicas: 2
-      update_config:
-        order: start-first
-        failure_action: rollback
-        delay: 10s
+      # update_config:
+      #   order: start-first
+      #   failure_action: rollback
+      #   delay: 10s
       restart_policy:
         condition: any
         # delay: 5s
@@ -95,10 +95,10 @@ services:
     container_name: mosquitto
     deploy:
       replicas: 2
-      update_config:
-        order: start-first
-        failure_action: rollback
-        delay: 10s
+      # update_config:
+      #   order: start-first
+      #   failure_action: rollback
+      #   delay: 10s
       restart_policy:
         condition: any
         # delay: 5s
