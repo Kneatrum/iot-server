@@ -55,7 +55,7 @@ services:
       - iot-network
 
   back-end:
-    image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/backend:latest  
+    image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest  
     depends_on:
       - mosquitto
     deploy:
