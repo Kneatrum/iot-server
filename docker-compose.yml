@@ -4,7 +4,6 @@ services:
 
   nginx:
     image: nginx:stable-alpine
-    container_name: nginx
     ports:
       - 443:443
       - 80:80
@@ -92,7 +91,6 @@ services:
 
   mosquitto:
     image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest  
-    container_name: mosquitto
     deploy:
       replicas: 2
       # update_config:
