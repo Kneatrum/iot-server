@@ -17,7 +17,7 @@ services:
       update_config:
         order: start-first
         failure_action: rollback
-        delay: 10s
+        # delay: 10s
       restart_policy:
         condition: any
         delay: 5s
@@ -38,7 +38,7 @@ services:
       update_config:
         order: start-first
         failure_action: rollback
-        delay: 10s
+        # delay: 10s
       restart_policy:
         condition: any
         delay: 5s
@@ -63,7 +63,7 @@ services:
       update_config:
         order: start-first
         failure_action: rollback
-        delay: 10s
+        # delay: 10s
       restart_policy:
         condition: any
         delay: 5s
@@ -98,7 +98,7 @@ services:
       update_config:
         order: start-first
         failure_action: rollback
-        delay: 10s
+        # delay: 10s
       restart_policy:
         condition: any
         delay: 5s
