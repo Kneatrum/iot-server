@@ -75,32 +75,26 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
 
         # Create directory if needed and store the result
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
-          if [ ! -d "/home/ubuntu/iot-server/back-end" ]; then
-            mkdir -p /home/ubuntu/iot-server/back-end
-            echo "DIRECTORY_CREATED"
-          else
-            echo "DIRECTORY_EXISTS"
-          fi
-        EOF
-
-        # Capture the output from SSH command
+        # Check if directory exists and if .env file exists
         RESULT=$(ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
           if [ ! -d "/home/ubuntu/iot-server/back-end" ]; then
             mkdir -p /home/ubuntu/iot-server/back-end
             echo "DIRECTORY_CREATED"
+          elif [ ! -f "/home/ubuntu/iot-server/back-end/.env" ]; then
+            echo "ENV_MISSING"
           else
-            echo "DIRECTORY_EXISTS"
+            echo "ALL_EXISTS"
           fi
         EOF
         )
 
-        # Copy the .env file only if directory was just created
-        if [ "$RESULT" = "DIRECTORY_CREATED" ]; then
-          echo "Copying .env file to newly created directory..."
+        # Take action based on the check results
+        if [ "$RESULT" = "DIRECTORY_CREATED" ] || [ "$RESULT" = "ENV_MISSING" ]; then
+          echo "Copying .env file..."
           scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/
+          echo ".env file copied successfully"
         else
-          echo "Directory already exists, skipping .env file copy"
+          echo "Both directory and .env file already exist"
         fi
 
 
