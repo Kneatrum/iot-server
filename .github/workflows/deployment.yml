@@ -92,9 +92,9 @@ jobs:
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
           cd /home/ubuntu/iot-server/
           export NODE_ENV=production
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
           # docker-compose pull backend frontend mosquitto nginx
           docker-compose pull back-end
           # docker-compose up -d --no-deps backend frontend mosquitto nginx
           # docker image prune -f
         EOF
-        
