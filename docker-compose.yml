@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
 
   nginx:
@@ -13,13 +11,13 @@ services:
       - front-end
     deploy:
       replicas: 2
-      # update_config:
-      #   order: start-first
-      #   failure_action: rollback
-      #   delay: 10s
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
       restart_policy:
         condition: any
-        # delay: 5s
+        delay: 5s
     healthcheck:
       test: ["CMD", "nginx", "-t"]
       interval: 30s
@@ -34,13 +32,13 @@ services:
       - back-end
     deploy:
       replicas: 2
-      # update_config:
-      #   order: start-first
-      #   failure_action: rollback
-      #   delay: 10s
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
       restart_policy:
         condition: any
-        # delay: 5s
+        delay: 5s
     build:
       context: ./front-end
       dockerfile: Dockerfile
@@ -59,13 +57,13 @@ services:
       - mosquitto
     deploy:
       replicas: 2
-      # update_config:
-      #   order: start-first
-      #   failure_action: rollback
-      #   delay: 10s
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
       restart_policy:
         condition: any
-        # delay: 5s
+        delay: 5s
     ports:
       - 3000:3000
     build:           # for local development
@@ -93,13 +91,13 @@ services:
     image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest  
     deploy:
       replicas: 2
-      # update_config:
-      #   order: start-first
-      #   failure_action: rollback
-      #   delay: 10s
+      update_config:
+        order: start-first
+        failure_action: rollback
+        delay: 10s
       restart_policy:
         condition: any
-        # delay: 5s
+        delay: 5s
     build:
       context: ./mosquitto
       dockerfile: Dockerfile
@@ -121,4 +119,5 @@ services:
 
 networks:
   iot-network:
-    driver: bridge
+    driver: overlay
+    attachable: true
