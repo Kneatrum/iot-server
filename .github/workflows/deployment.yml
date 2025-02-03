@@ -1,4 +1,4 @@
-name: EC2 Deployment.
+name: EC2 Deployment
 
 on:
   push:
@@ -10,129 +10,106 @@ on:
       - '**/Dockerfile'
       - '**/src/**'
       - '**/*.env'
-      - '.github/workflows/deployment.yml' 
+      - '.github/workflows/deployment.yml'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v2
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-region: ${{ secrets.AWS_REGION }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
-    - name: Log in to Amazon ECR
-      id: ecr-login
-      uses: aws-actions/amazon-ecr-login@v1
+      - name: Log in to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Generate version
-      id: version
-      run: |
-        GIT_COMMIT=$(git rev-parse --short HEAD)
+      - name: Generate version from Git commit hash
+        id: version
+        run: |
+          GIT_COMMIT=$(git rev-parse --short HEAD)
           echo "VERSION=$GIT_COMMIT" >> $GITHUB_ENV
           echo "Generated version: $VERSION"
 
-    - name: Build and Push Updated Images
-      run: |
-        if [ -d "./back-end" ]; then
-          docker build -t back-end ./back-end
-          docker tag back-end:$VERSION 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:$VERSION
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:$VERSION
-        fi
+      - name: Build and Push Updated Images
+        run: |
+          if [ -d "./back-end" ]; then
+            docker build -t 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:$VERSION ./back-end
+            docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:$VERSION
+          fi
 
-        if [ -d "./front-end" ]; then
-          docker build -t front-end ./front-end
-          docker tag front-end:$VERSION 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:$VERSION
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:$VERSION
-        fi
+          if [ -d "./front-end" ]; then
+            docker build -t 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:$VERSION ./front-end
+            docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:$VERSION
+          fi
 
-        if [ -d "./mosquitto" ]; then
-          docker build -t mosquitto ./mosquitto
-          docker tag mosquitto:$VERSION 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:$VERSION
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:$VERSION
-        fi
+          if [ -d "./mosquitto" ]; then
+            docker build -t 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:$VERSION ./mosquitto
+            docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:$VERSION
+          fi
 
-        #  if [ -d "./nginx" ]; then
-        #   docker build -t nginx ./nginx
-        #   docker tag nginx:$VERSION 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:$VERSION
-        #   docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:$VERSION
-        # fi
+      - name: Update docker-compose.yml with new version
+        run: |
+          sed -i "s|182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:.*|182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:$VERSION|" docker-compose.yml
+          sed -i "s|182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:.*|182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:$VERSION|" docker-compose.yml
+          sed -i "s|182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:.*|182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:$VERSION|" docker-compose.yml
 
-    - name: Sign in to EC2
-      env:
-        PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
-        HOST: ${{ secrets.EC2_HOST }}
-        USER: ${{ secrets.EC2_USER }}
-      run: |
-        # Decode the Base64 private key
-        echo "$PRIVATE_KEY" | base64 --decode > github-ec2.pem
-        chmod 600 github-ec2.pem
+      - name: Sign in to EC2
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: |
+          # Decode the Base64 private key
+          echo "$PRIVATE_KEY" | base64 --decode > github-ec2.pem
+          chmod 600 github-ec2.pem
 
-        # # Verify if the key is correctly formatted
-        ssh-keygen -y -f github-ec2.pem > /dev/null || { echo "Invalid private key!"; exit 1; }
+          # Verify if the key is correctly formatted
+          ssh-keygen -y -f github-ec2.pem > /dev/null || { echo "Invalid private key!"; exit 1; }
 
-        # Ensure the back-end, front-end and mosquitto directories exists on EC2 before copying the required files.
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
-
-          if [ ! -d "/home/ubuntu/iot-server/back-end" ]; then
+          # Ensure the back-end, front-end, and mosquitto directories exist on EC2
+          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
             mkdir -p /home/ubuntu/iot-server/back-end
-            echo "Created directory: /home/ubuntu/iot-server/back-end"
-          else
-            echo "Directory already exists: /home/ubuntu/iot-server/back-end"
-          fi
-
-          if [ ! -d "/home/ubuntu/iot-server/front-end" ]; then
             mkdir -p /home/ubuntu/iot-server/front-end
-            echo "Created directory: /home/ubuntu/iot-server/front-end"
-          else
-            echo "Directory already exists: /home/ubuntu/iot-server/front-end"
-          fi
-
-          if [ ! -d "/home/ubuntu/iot-server/mosquitto" ]; then
             mkdir -p /home/ubuntu/iot-server/mosquitto
-            echo "Created directory: /home/ubuntu/iot-server/mosquitto"
-          else
-            echo "Directory already exists: /home/ubuntu/iot-server/mosquitto"
-          fi
+          EOF
 
-        EOF
+          # Upload docker-compose.yml and nginx.conf using SCP
+          scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
+          scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
 
-        # Upload docker-compose.yml and nginx.conf using SCP
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
+          # Upload other necessary files
+          scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/
+          scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/Dockerfile ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/
+          scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/
+          scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/Dockerfile ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/
+          scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto ${USER}@${HOST}:/home/ubuntu/iot-server/
 
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/ # Might not be necessary
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/Dockerfile ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/
+      - name: Deploy to Docker Swarm
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HOST: ${{ secrets.EC2_HOST }}
+          USER: ${{ secrets.EC2_USER }}
+        run: |
+          echo "$PRIVATE_KEY" | base64 --decode > github-ec2.pem
+          chmod 600 github-ec2.pem
 
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/Dockerfile  ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
+          ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
+            cd /home/ubuntu/iot-server/
 
-        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto ${USER}@${HOST}:/home/ubuntu/iot-server/ 
+            # Configure AWS CLI with the region
+            export AWS_DEFAULT_REGION=us-east-1
 
+            # Get ECR login token and login to Docker
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
 
-        # Execute Docker commands on EC2 via SSH
-        ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
-
-          cd /home/ubuntu/iot-server/
-
-          export NODE_ENV=production
-
-          # Configure AWS CLI with the region
-          export AWS_DEFAULT_REGION=us-east-1
-
-          # Get ECR login token and login to Docker
-          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
-          
-          # docker-compose pull back-end front-end mosquitto #nginx
-          # docker-compose up -d --no-deps back-end front-end mosquitto nginx
-
-          # docker stack deploy -c docker-compose.yml iot
-          
-          # docker image prune -f
-        EOF
+            # Deploy the stack with the updated docker-compose.yml
+            docker stack deploy -c docker-compose.yml iot
+          EOF
