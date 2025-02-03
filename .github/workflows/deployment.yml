@@ -34,9 +34,9 @@ jobs:
     - name: Generate version
       id: version
       run: |
-        GIT_TAG=$(git describe --tags --abbrev=0)
         GIT_COMMIT=$(git rev-parse --short HEAD)
-        echo "VERSION=${GIT_TAG}-${GIT_COMMIT}" >> $GITHUB_ENV
+          echo "VERSION=$GIT_COMMIT" >> $GITHUB_ENV
+          echo "Generated version: $VERSION"
 
     - name: Build and Push Updated Images
       run: |
