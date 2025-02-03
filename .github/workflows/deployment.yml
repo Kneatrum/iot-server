@@ -31,37 +31,30 @@ jobs:
       id: ecr-login
       uses: aws-actions/amazon-ecr-login@v1
 
-    - name: Generate version
-        id: version
-        run: |
-          GIT_TAG=$(git describe --tags --abbrev=0)
-          GIT_COMMIT=$(git rev-parse --short HEAD)
-          echo "VERSION=${GIT_TAG}-${GIT_COMMIT}" >> $GITHUB_ENV
-
     - name: Build and Push Updated Images
       run: |
         if [ -d "./back-end" ]; then
           docker build -t back-end ./back-end
-          docker tag back-end:$VERSION 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:$VERSION
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:$VERSION
+          docker tag back-end:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest
         fi
 
         if [ -d "./front-end" ]; then
           docker build -t front-end ./front-end
-          docker tag front-end:$VERSION 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:$VERSION
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:$VERSION
+          docker tag front-end:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
         fi
 
         if [ -d "./mosquitto" ]; then
           docker build -t mosquitto ./mosquitto
-          docker tag mosquitto:$VERSION 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:$VERSION
-          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:$VERSION
+          docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
         fi
 
         #  if [ -d "./nginx" ]; then
         #   docker build -t nginx ./nginx
-        #   docker tag nginx:$VERSION 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:$VERSION
-        #   docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:$VERSION
+        #   docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
+        #   docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
         # fi
 
     - name: Sign in to EC2
@@ -132,7 +125,7 @@ jobs:
           # docker-compose pull back-end front-end mosquitto #nginx
           # docker-compose up -d --no-deps back-end front-end mosquitto nginx
 
-          # docker stack deploy -c docker-compose.yml iot
+          docker stack deploy -c docker-compose.yml iot
           
           # docker image prune -f
         EOF
