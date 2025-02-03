@@ -123,9 +123,8 @@ jobs:
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
           
           # docker-compose pull back-end front-end mosquitto #nginx
+          
           # docker-compose up -d --no-deps back-end front-end mosquitto nginx
-
-          # docker stack deploy -c docker-compose.yml iot?
           
           # docker image prune -f
         EOF
