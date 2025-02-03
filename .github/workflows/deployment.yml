@@ -125,7 +125,7 @@ jobs:
           # docker-compose pull back-end front-end mosquitto #nginx
           # docker-compose up -d --no-deps back-end front-end mosquitto nginx
 
-          docker stack deploy -c docker-compose.yml iot
+          # docker stack deploy -c docker-compose.yml iot?
           
           # docker image prune -f
         EOF
