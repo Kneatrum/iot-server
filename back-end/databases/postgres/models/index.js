@@ -15,27 +15,27 @@ const POSTGRES_HOSTNAME = process.env.POSTGRES_HOST;
 const DIALECT = process.env.POSTGRES_DIALECT;
 const POSTGRES_LOGGING = process.env.POSTGRES_LOGGING;
 
-let sequelize;
+let sequelize = null;
 
-if (env === 'production') {
-  // Initialize with default values first
-  sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
-    host: POSTGRES_HOSTNAME || 'localhost',
-    dialect: DIALECT || 'postgres',
-    logging: POSTGRES_LOGGING === 'true'
-  });
-} else {
-  if (config.use_env_variable) {
-    sequelize = new Sequelize(process.env[config.use_env_variable], config);
-  } else {
-    sequelize = new Sequelize(
-      config.database,
-      config.username,
-      config.password,
-      config
-    );
-  }
-}
+// if (env === 'production') {
+//   // Initialize with default values first
+//   sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
+//     host: POSTGRES_HOSTNAME || 'localhost',
+//     dialect: DIALECT || 'postgres',
+//     logging: POSTGRES_LOGGING === 'true'
+//   });
+// } else {
+//   if (config.use_env_variable) {
+//     sequelize = new Sequelize(process.env[config.use_env_variable], config);
+//   } else {
+//     sequelize = new Sequelize(
+//       config.database,
+//       config.username,
+//       config.password,
+//       config
+//     );
+//   }
+// }
 
 // Load models
 fs.readdirSync(__dirname)
@@ -66,19 +66,60 @@ db.init = async function() {
   if (env === 'production') {
     try {
       const postgresDBConfig = await getSecret(POSTGRESDB_SECRETS);
-      if (postgresDBConfig.success) {
-        sequelize.config.database = postgresDBConfig.data.databaseName;
-        sequelize.config.username = postgresDBConfig.data.username;
-        sequelize.config.password = postgresDBConfig.data.password;
-      } else {
-        throw new Error("Failed to get Postgres secrets");
+
+      if (!postgresDBConfig.success) {
+        throw new Error('Failed to get database credentials from AWS Secrets Manager');
       }
+
+
+      // Only create Sequelize instance after we have the credentials
+      sequelize = new Sequelize(
+        postgresDBConfig.data.databaseName,
+        postgresDBConfig.data.username,
+        postgresDBConfig.data.password,
+        {
+          host: POSTGRES_HOSTNAME,
+          dialect: DIALECT,
+          logging: POSTGRES_LOGGING
+        }
+      );
     } catch (error) {
       console.error("Error initializing database:", error);
       throw error;
     }
+  } else {
+    if (config.use_env_variable) {
+      sequelize = new Sequelize(process.env[config.use_env_variable], config);
+    } else {
+      sequelize = new Sequelize(
+        config.database,
+        config.username,
+        config.password,
+        config
+      );
+    }
   }
   return db;
 };
+
+
+// db.init = async function() {
+//   if (env === 'production') {
+//     try {
+//       const postgresDBConfig = await getSecret(POSTGRESDB_SECRETS);
+//       if (postgresDBConfig.success) {
+//         sequelize.config.database = postgresDBConfig.data.databaseName;
+//         sequelize.config.username = postgresDBConfig.data.username;
+//         sequelize.config.password = postgresDBConfig.data.password;
+//       } else {
+//         throw new Error("Failed to get Postgres secrets");
+//       }
+//     } catch (error) {
+//       console.error("Error initializing database:", error);
+//       throw error;
+//     }
+//   }
+//   return db;
+// };
 
 module.exports = db;
