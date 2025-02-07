@@ -29,6 +29,45 @@ let sessionSecret = null;
 const INFLUXDB_SECRETS = process.env.INFLUX_SECRETS;
 
 const INFLUXDB_URL = process.env.INFLUXDB_HOST || 'http://localhost:8086';
+const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost';
+const HOST_URL =  process.env.HOST_URL || 'http://localhost'
+
+const backEndHost = process.env.BACKEND_HOST || 'http://localhost';
+const backEndPort = 3000;
+
+
+let previous_sleep_value = null;
+
+const { 
+    writeTemperature, 
+    writeHeartRate, 
+    writeSound, 
+    writeSleepData,
+    writeWalkingDuration,
+    writeJoggingDuration,
+    writeSteps,
+    writeBikingData,
+    writeIdlingDuration,
+    writeOxygenSaturation
+} = require('./databases/influxdb/db_write.js');
+
+const {     
+    ch_temperature,
+    ch_sound,
+    ch_heart,
+    ch_sleep,
+    ch_walking,
+    ch_jogging,
+    ch_biking,
+    ch_idle, 
+    ch_steps,
+    ch_oxygen_saturation
+} = require('./mqtt/channels');
+
+const allowedOrigins = [
+    frontEndHost,
+    HOST_URL,
+  ];
 
 
 function initializeDbClients(arg_url, arg_token, arg_org, arg_bucket){
@@ -43,8 +82,13 @@ async function backendInit() {
     if(env === 'production'){
         const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
        
-        const r = await sequelize.authenticate();
-        console.log('Connected to database', r);
+        try{
+            await sequelize.authenticate();
+            console.log('Connected to database');
+        } catch (error){
+            console.error('Unable to connect to the database:', error);
+            throw error;
+        }
 
         if (influxdbSecrets.success) {
             initializeDbClients(INFLUXDB_URL, influxdbSecrets.data.apiKey, influxdbSecrets.data.organisation, influxdbSecrets.data.bucket);
@@ -108,126 +152,127 @@ async function backendInit() {
             }
         }
 
+        try {
+            await sequelize.authenticate();
+            console.log('Connected to PostgreSQL database');
+        } catch (error) {
+            console.error('Error connecting to PostgreSQL database:', error);
+            throw error;
+        }
+
     }
     
   }
 
 
-backendInit();
+async function startServer() {
+    try {
+        await backendInit();
+
+        const sessionStore = new SequelizeStore({
+            db: sequelize,
+            checkExpirationInterval: 15 * 60 * 1000,
+            expiration: 24 * 60 * 60 * 1000
+        });
+
+        const app = express();
+
+        app.use(express.json());
+        app.use(cors({
+            origin: function (origin, callback) {
+                if (!origin) return callback(null, true);
+                if (allowedOrigins.indexOf(origin) !== -1) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by CORS'));
+                }
+            },
+            credentials: true,
+        }));
 
 
+        mqttClient.on('message', (topic, message) => {
+            latestMessage = `Received message: ${message.toString()} on topic: ${topic}`;
+        
+            if (topic === ch_temperature){
+                writeTemperature(message);
+                console.log(`Temperature: ${message}.`)
+            } else if (topic === ch_sound){
+                writeSound(message)
+                console.log(`Sound Type: ${message}.`)
+            } else if (topic === ch_heart){
+                writeHeartRate(message);
+                console.log(`Heart rate: ${message} beats per minute.`)
+            } else if (topic === ch_sleep){
+                if (previous_sleep_value !== null){
+                    writeSleepData(previous_sleep_value);
+                }
+                writeSleepData(message);
+                previous_sleep_value = message;
+                console.log(`Sleep level: ${message}.`)
+            } else if (topic === ch_walking){
+                writeWalkingDuration(message);
+                console.log(`Walking for ${message} minutes.`)
+            } else if (topic === ch_jogging){
+                writeJoggingDuration(message);
+                console.log(`Jogging for ${message} minutes.`)
+            } else if (topic === ch_steps){
+                writeSteps(message);
+                console.log(`${message} steps so far`);
+            } else if (topic === ch_biking){
+                writeBikingData(message);
+                console.log(`Biking data: ${message}.`)
+            } else if (topic === ch_idle){
+                writeIdlingDuration(message);
+                console.log(`Idling data: ${message}.`)
+            } else if( topic === ch_oxygen_saturation ){
+                writeOxygenSaturation(message);
+                console.log(`Oxygen saturation: ${message}`);
+            }
+        
+            // deleteMeasurement(bucket, 'sleep');
+            // deleteMeasurement(bucket, 'idling');
+            // deleteMeasurement(bucket, 'walking');
+            // deleteMeasurement(bucket, 'jogging');
+            // deleteMeasurement(bucket, 'biking');
+            // deleteMeasurement(bucket, 'heart');
+            // deleteMeasurement(bucket, 'steps');
+            // deleteMeasurement(bucket, 'temperature');
+            // deleteMeasurement(bucket, 'oxygen');
+        
+        });
 
-const frontEndHost = process.env.FRONTEND_HOST || 'http://localhost';
-const HOST_URL =  process.env.HOST_URL || 'http://localhost'
+        const general_routes = require('./router/general.js').general;
+        const user_routes = require('./router/users.js');
+        const sslServicesRoutes = require('./router/ssl-services.js');
 
-const backEndHost = process.env.BACKEND_HOST || 'http://localhost';
-const backEndPort = 3000;
+        app.use(
+            session({
+                secret: sessionSecret,
+                store: sessionStore,
+                saveUninitialized: false,
+                resave: false,
+                cookie: {
+                    maxAge: 60000 * 60,
+                },
+            })
+        );
 
+        app.use("/", general_routes);
+        app.use("/users", user_routes);
+        app.use("/ssl-services", sslServicesRoutes);
 
-let previous_sleep_value = null;
+        sessionStore.sync();
 
-const { 
-    writeTemperature, 
-    writeHeartRate, 
-    writeSound, 
-    writeSleepData,
-    writeWalkingDuration,
-    writeJoggingDuration,
-    writeSteps,
-    writeBikingData,
-    writeIdlingDuration,
-    writeOxygenSaturation
-} = require('./databases/influxdb/db_write.js');
+        app.listen(backEndPort, () => {
+            console.log(`Web server listening at ${backEndPort}`);
+        });
 
-const {     
-    ch_temperature,
-    ch_sound,
-    ch_heart,
-    ch_sleep,
-    ch_walking,
-    ch_jogging,
-    ch_biking,
-    ch_idle, 
-    ch_steps,
-    ch_oxygen_saturation
-} = require('./mqtt/channels');
-
-const allowedOrigins = [
-    frontEndHost,
-    HOST_URL,
-  ];
-
-const app = express();
-
-app.use(express.json());
-app.use(cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin, like mobile apps or curl requests
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) !== -1) {
-        // If the origin is in the allowedOrigins array, allow the request
-        callback(null, true);
-      } else {
-        // If the origin is not allowed, return an error
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
-    credentials: true,
-  }));
-
-
-
-mqttClient.on('message', (topic, message) => {
-    latestMessage = `Received message: ${message.toString()} on topic: ${topic}`;
-
-    if (topic === ch_temperature){
-        writeTemperature(message);
-        console.log(`Temperature: ${message}.`)
-    } else if (topic === ch_sound){
-        writeSound(message)
-        console.log(`Sound Type: ${message}.`)
-    } else if (topic === ch_heart){
-        writeHeartRate(message);
-        console.log(`Heart rate: ${message} beats per minute.`)
-    } else if (topic === ch_sleep){
-        if (previous_sleep_value !== null){
-            writeSleepData(previous_sleep_value);
-        }
-        writeSleepData(message);
-        previous_sleep_value = message;
-        console.log(`Sleep level: ${message}.`)
-    } else if (topic === ch_walking){
-        writeWalkingDuration(message);
-        console.log(`Walking for ${message} minutes.`)
-    } else if (topic === ch_jogging){
-        writeJoggingDuration(message);
-        console.log(`Jogging for ${message} minutes.`)
-    } else if (topic === ch_steps){
-        writeSteps(message);
-        console.log(`${message} steps so far`);
-    } else if (topic === ch_biking){
-        writeBikingData(message);
-        console.log(`Biking data: ${message}.`)
-    } else if (topic === ch_idle){
-        writeIdlingDuration(message);
-        console.log(`Idling data: ${message}.`)
-    } else if( topic === ch_oxygen_saturation ){
-        writeOxygenSaturation(message);
-        console.log(`Oxygen saturation: ${message}`);
+    } catch (error) {
+        console.error("Server startup failed:", error); // Log the overall error
+        // Optionally, you could process.exit(1) here to completely stop the process
     }
-
-    // deleteMeasurement(bucket, 'sleep');
-    // deleteMeasurement(bucket, 'idling');
-    // deleteMeasurement(bucket, 'walking');
-    // deleteMeasurement(bucket, 'jogging');
-    // deleteMeasurement(bucket, 'biking');
-    // deleteMeasurement(bucket, 'heart');
-    // deleteMeasurement(bucket, 'steps');
-    // deleteMeasurement(bucket, 'temperature');
-    // deleteMeasurement(bucket, 'oxygen');
-
-});
-
+}
 
 
 // async function stepsInitialisation(){
@@ -265,38 +310,7 @@ mqttClient.on('message', (topic, message) => {
 //         }
 //   });
 
-const general_routes = require('./router/general.js').general;
-const user_routes = require('./router/users.js');
-const sslServicesRoutes = require('./router/ssl-services.js');
 
-
-const sessionStore = new SequelizeStore({
-    db: sequelize,
-    checkExpirationInterval: 15 * 60 * 1000, // 15 Minutes interval at which to cleanup expired sessions in milliseconds.
-    expiration: 24 * 60 * 60 * 1000  // One day maximum age (in milliseconds) of a valid session.
-});
-
-
-app.use(
-    session({
-        secret: sessionSecret,
-        store: sessionStore,
-        saveUninitialized: false,
-        resave: false,
-        cookie: {
-            maxAge: 60000 * 60, // 1 hour
-        },
-    })
-);
-
-// Route-specific middlewares
-app.use("/", general_routes);
-app.use("/users", user_routes);
-app.use("/ssl-services", sslServicesRoutes);
-
-sessionStore.sync();
-
-app.listen(backEndPort, () => {
-    console.log(`Web server listening at ${backEndPort}`);
-});
-
+(async () => {  // Immediately Invoked Async Function Expression (IIFE)
+    await startServer();
+})(); // Call the IIFE immediately
