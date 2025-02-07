@@ -9,7 +9,8 @@ const { initializeWriteClient } = require('./databases/influxdb/db_write.js')
 const { initializeDeleteClient } = require('./databases/influxdb/db_delete.js')
 const cors = require('cors');
 const express = require('express');
-const { sequelize } = require('./databases/postgres/models/index.js')
+const { initializeDB } = require('./databases/postgres/models/index.js');
+
 const session = require('express-session');
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
 
@@ -37,6 +38,7 @@ const backEndPort = 3000;
 
 
 let previous_sleep_value = null;
+let db;
 
 const { 
     writeTemperature, 
@@ -83,7 +85,8 @@ async function backendInit() {
         const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
        
         try{
-            await sequelize.authenticate();
+            db = await initializeDB();
+            await db.sequelize.authenticate();
             console.log('Connected to database');
         } catch (error){
             console.error('Unable to connect to the database:', error);
@@ -170,7 +173,7 @@ async function startServer() {
         await backendInit();
 
         const sessionStore = new SequelizeStore({
-            db: sequelize,
+            db: db.sequelize,
             checkExpirationInterval: 15 * 60 * 1000,
             expiration: 24 * 60 * 60 * 1000
         });
