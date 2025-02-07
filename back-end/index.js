@@ -10,6 +10,7 @@ const { initializeDeleteClient } = require('./databases/influxdb/db_delete.js')
 const cors = require('cors');
 const express = require('express');
 const { sequelize, init } = require('./databases/postgres/models/index.js');
+const { init: initPostgres } = require('./databases/postgres/models/index.js');
 
 const session = require('express-session');
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
@@ -85,9 +86,10 @@ async function backendInit() {
         const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
        
         try{
-            await init();
-            await sequelize.authenticate();
-            console.log('Connected to database');
+            // Initialize PostgreSQL with AWS secrets
+            const db = await initPostgres();
+            await db.sequelize.authenticate();
+            console.log('Connected to PostgreSQL database');
         } catch (error){
             console.error('Unable to connect to the database:', error);
             throw error;
