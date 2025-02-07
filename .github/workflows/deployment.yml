@@ -127,6 +127,16 @@ jobs:
           # docker-compose up -d --no-deps back-end front-end mosquitto nginx
           
           # docker image prune -f
+          
+          #**********************************************************
+          # Check if swarm is initialized and initialize it if not.
+          # if ! docker node ls &> /dev/null; then
+          #   docker swarm init
+          # fi
+
+          # Deploy the stack.
+          # docker stack deploy -c docker-compose.yml iot
+
         EOF
-        
+
         
