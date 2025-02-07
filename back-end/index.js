@@ -9,7 +9,7 @@ const { initializeWriteClient } = require('./databases/influxdb/db_write.js')
 const { initializeDeleteClient } = require('./databases/influxdb/db_delete.js')
 const cors = require('cors');
 const express = require('express');
-const { initializeDB } = require('./databases/postgres/models/index.js');
+const { sequelize, init } = require('./databases/postgres/models/index.js');
 
 const session = require('express-session');
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
