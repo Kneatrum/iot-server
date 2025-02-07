@@ -38,7 +38,7 @@ const backEndPort = 3000;
 
 
 let previous_sleep_value = null;
-let db;
+
 
 const { 
     writeTemperature, 
@@ -85,8 +85,8 @@ async function backendInit() {
         const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
        
         try{
-            db = await initializeDB();
-            await db.sequelize.authenticate();
+            await init();
+            await sequelize.authenticate();
             console.log('Connected to database');
         } catch (error){
             console.error('Unable to connect to the database:', error);
@@ -173,7 +173,7 @@ async function startServer() {
         await backendInit();
 
         const sessionStore = new SequelizeStore({
-            db: db.sequelize,
+            db: sequelize,
             checkExpirationInterval: 15 * 60 * 1000,
             expiration: 24 * 60 * 60 * 1000
         });

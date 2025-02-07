@@ -15,64 +15,70 @@ const POSTGRES_HOSTNAME = process.env.POSTGRES_HOST;
 const DIALECT = process.env.POSTGRES_DIALECT;
 const POSTGRES_LOGGING = process.env.POSTGRES_LOGGING;
 
-async function initializeDB() {
-  let sequelize;
-  
+let sequelize;
+
+if (env === 'production') {
+  // Initialize with default values first
+  sequelize = new Sequelize('postgres', 'postgres', 'postgres', {
+    host: POSTGRES_HOSTNAME || 'localhost',
+    dialect: DIALECT || 'postgres',
+    logging: POSTGRES_LOGGING === 'true'
+  });
+} else {
+  if (config.use_env_variable) {
+    sequelize = new Sequelize(process.env[config.use_env_variable], config);
+  } else {
+    sequelize = new Sequelize(
+      config.database,
+      config.username,
+      config.password,
+      config
+    );
+  }
+}
+
+// Load models
+fs.readdirSync(__dirname)
+  .filter(file => {
+    return (
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file.slice(-3) === '.js' &&
+      file.indexOf('.test.js') === -1
+    );
+  })
+  .forEach(file => {
+    const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+    db[model.name] = model;
+  });
+
+Object.keys(db).forEach(modelName => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
+
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+// Add an async initialization function
+db.init = async function() {
   if (env === 'production') {
     try {
       const postgresDBConfig = await getSecret(POSTGRESDB_SECRETS);
-      
       if (postgresDBConfig.success) {
-        sequelize = new Sequelize(
-          postgresDBConfig.data.databaseName,
-          postgresDBConfig.data.username,
-          postgresDBConfig.data.password,
-          {
-            host: POSTGRES_HOSTNAME,
-            dialect: DIALECT,
-            logging: POSTGRES_LOGGING
-          }
-        );
+        sequelize.config.database = postgresDBConfig.data.databaseName;
+        sequelize.config.username = postgresDBConfig.data.username;
+        sequelize.config.password = postgresDBConfig.data.password;
       } else {
-        throw new Error("Failed to get Postgres secrets in production: " + postgresDBConfig.error);
+        throw new Error("Failed to get Postgres secrets");
       }
     } catch (error) {
-      throw new Error("Failed to initialize Sequelize in production: " + error);
-    }
-  } else {
-    if (config.use_env_variable) {
-      sequelize = new Sequelize(process.env[config.use_env_variable], config);
-    } else {
-      sequelize = new Sequelize(config.database, config.username, config.password, config);
+      console.error("Error initializing database:", error);
+      throw error;
     }
   }
-
-  // Load models
-  fs.readdirSync(__dirname)
-    .filter(file => {
-      return (
-        file.indexOf('.') !== 0 &&
-        file !== basename &&
-        file.slice(-3) === '.js' &&
-        file.indexOf('.test.js') === -1
-      );
-    })
-    .forEach(file => {
-      const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-      db[model.name] = model;
-    });
-
-  // Set up associations
-  Object.keys(db).forEach(modelName => {
-    if (db[modelName].associate) {
-      db[modelName].associate(db);
-    }
-  });
-
-  db.sequelize = sequelize;
-  db.Sequelize = Sequelize;
-
   return db;
-}
+};
 
-module.exports = { initializeDB };
+module.exports = db;
