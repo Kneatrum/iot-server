@@ -125,7 +125,6 @@ jobs:
           # docker-compose pull back-end front-end mosquitto #nginx
           
           # docker-compose up -d --no-deps back-end front-end mosquitto nginx
-          
           # docker image prune -f
           
           #**********************************************************
