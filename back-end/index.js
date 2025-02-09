@@ -95,6 +95,7 @@ async function backendInit() {
             global.sequelize = dbInstance.sequelize;
 
             if (influxdbSecrets.success) {
+                console.log('Retrieved InfluxDB secrets from AWS Secrets Manager', influxdbSecrets.data);
                 initializeDbClients(INFLUXDB_URL, influxdbSecrets.data.apiKey, influxdbSecrets.data.organisation, influxdbSecrets.data.bucket);
             } else {
                 let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);

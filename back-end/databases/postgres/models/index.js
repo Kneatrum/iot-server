@@ -27,14 +27,14 @@ async function init() {
       }
 
       console.log('Successfully retrieved database credentials');
-      console.log(
-        `Whole secret: ${JSON.stringify(postgresDBConfig.data)}\n` +
-        `Database: ${postgresDBConfig.data.databaseName}\n` +
-        `Username: ${postgresDBConfig.data.userName}\n` +
-        `Host: ${POSTGRES_HOSTNAME}\n` +
-        `Dialect: ${DIALECT}\n` +
-        `Logging: ${POSTGRES_LOGGING}\n`
-      )
+      // console.log(
+      //   `Whole secret: ${JSON.stringify(postgresDBConfig.data)}\n` +
+      //   `Database: ${postgresDBConfig.data.databaseName}\n` +
+      //   `Username: ${postgresDBConfig.data.userName}\n` +
+      //   `Host: ${POSTGRES_HOSTNAME}\n` +
+      //   `Dialect: ${DIALECT}\n` +
+      //   `Logging: ${POSTGRES_LOGGING}\n`
+      // )
       
       // Create Sequelize instance with AWS credentials
       sequelize = new Sequelize(
