@@ -10,7 +10,6 @@ const { initializeDeleteClient } = require('./databases/influxdb/db_delete.js')
 const cors = require('cors');
 const express = require('express');
 const { sequelize, init } = require('./databases/postgres/models/index.js');
-const { init: initPostgres } = require('./databases/postgres/models/index.js');
 
 const session = require('express-session');
 const SequelizeStore = require("connect-session-sequelize")(session.Store);
@@ -84,44 +83,44 @@ async function backendInit() {
 
     if(env === 'production'){
         const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
-       
-        try{
-            // Initialize PostgreSQL with AWS secrets
-            const db = await initPostgres();
-            await db.sequelize.authenticate();
-            console.log('Connected to PostgreSQL database');
-        } catch (error){
-            console.error('Unable to connect to the database:', error);
+        try {
+            // Initialize database and get the db object with credentials
+            const dbInstance = await init();
+            
+            // Verify database connection
+            await dbInstance.sequelize.authenticate();
+            console.log('Successfully connected to PostgreSQL database');
+
+            // Store sequelize instance globally if needed
+            global.sequelize = dbInstance.sequelize;
+
+            if (influxdbSecrets.success) {
+                initializeDbClients(INFLUXDB_URL, influxdbSecrets.data.apiKey, influxdbSecrets.data.organisation, influxdbSecrets.data.bucket);
+            } else {
+                let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+                if(response.success){
+                    await createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
+                    initializeDbClients(INFLUXDB_URL, response.data, ORG, BUCKET);
+                } else {
+                    throw new Error("Unable to retrieve the API token");
+                }
+            }
+
+            const sessionQuery = await getSessionSecret();
+            if(sessionQuery.success){
+                sessionSecret = sessionQuery.data.sessionSecret;
+            } else {
+                let response = await createSessionSecret();
+                if(response.success){
+                    sessionSecret = response.data.sessionSecret;
+                } else {
+                    throw new Error("Unable to retrieve session secret");
+                }
+            }
+        } catch (error) {
+            console.error('Backend initialization error:', error);
             throw error;
         }
-
-        if (influxdbSecrets.success) {
-            initializeDbClients(INFLUXDB_URL, influxdbSecrets.data.apiKey, influxdbSecrets.data.organisation, influxdbSecrets.data.bucket);
-        } else {
-            let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
-            if(response.success){
-                createSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
-                initializeDbClients(INFLUXDB_URL, response.data, ORG, BUCKET);
-            } else {
-                console.log("Unable to retrieve the API token :");
-                throw new Error("Unable to retrieve the API token")
-            }
-        }
-
-        const sessionQuery = await getSessionSecret();
-        if(sessionQuery.success){
-            // console.log(sessionQuery.data.sessionSecret);
-            sessionSecret = sessionQuery.data.sessionSecret;
-        } else {
-            let response = await createSessionSecret();
-            if(response.success){
-                sessionSecret = response.data.sessionSecret
-            } else {
-                console.log("Unable to retrieve session secret")
-                throw new Error("Unable to retrieve session secret")
-            }
-        }
-
 
     } else if (env === 'development'){
         console.log("Retrieving secrets from the development environment")
