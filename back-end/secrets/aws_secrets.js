@@ -4,6 +4,7 @@ require('dotenv').config({path: envFile});
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto')
+const { execSync } = require('child_process');
 
 const { SecretsManagerClient, CreateSecretCommand, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
 const { fromInstanceMetadata } = require("@aws-sdk/credential-providers");
@@ -13,6 +14,7 @@ const AWS_REGION = process.env.AWS_REGION;
 const SESSIONSECRETS = process.env.SESSION_SECRETS;
 const META_TIMEOUT = parseInt(process.env.META_TIMEOUT, 10) || 1000;
 const META_RETRIES = process.env.META_RETRIES;
+const MQTT_SECRETS = process.env.MQTT_SECRETS
 
 
 // Create a SecretsManagerClient instance with credentials from instance metadata
@@ -207,7 +209,95 @@ function getDevSessionSecrets(){
 
 }
 
-module.exports = { getSecret, createSecret, createDevSecret, getDevSecrets, createSessionSecret, getSessionSecret, createDevSessionSecret, getDevSessionSecrets};
+function decodeBase64(base64String){
+  return Buffer.from(base64String, 'base64').toString('utf-8');
+}
+
+function checkSecretExists(secretName) {
+  try {
+    const result = execSync('docker secret ls --format "{{.Name}}"', { encoding: 'utf-8' });
+    const existingSecrets = result.split('\n').filter(Boolean);
+    return existingSecrets.includes(secretName);
+  } catch (error) {
+    console.error('Error checking secret existence:', error);
+    return false;
+  }
+}
+
+
+async function createDockerSecrets() {
+  const secrets = await getSecret(MQTT_SECRETS);
+  
+  // List of secrets that are base64 encoded
+  const base64Secrets = ['ca_crt', 'ca_key', 'server_crt', 'server_key'];
+
+  // Track created secrets for logging
+  const createdSecrets = [];
+  const skippedSecrets = [];
+
+  if(!secrets.success){
+    console.error("Error retrieving secrets from AWS Secrets Manager: ", secrets.error);
+    return;
+  }
+  
+  // Create Docker secrets
+  for (const [key, value] of Object.entries(secrets.data)) {
+    const secretName = `mqtt_${key}`;
+
+
+
+    // Check if secret already exists
+    if (checkSecretExists(secretName)) {
+      skippedSecrets.push(secretName);
+      continue;
+    }
+
+    const secretValue = base64Secrets.includes(key) ? decodeBase64(value) : value;
+    const tempFile = `./${key}.temp`;
+
+
+
+    
+    try {
+      // Write secret to temporary file
+      fs.writeFileSync(tempFile, secretValue);
+      
+      // Create Docker secret
+      execSync(`docker secret create ${secretName} ${tempFile}`);
+      
+      // Clean up temporary file
+      fs.unlinkSync(tempFile);
+      
+      createdSecrets.push(secretName);
+    } catch (error) {
+      console.error(`Error creating Docker secret ${secretName}:`, error);
+      // Clean up temp file if it exists
+      if (fs.existsSync(tempFile)) {
+        fs.unlinkSync(tempFile);
+      }
+    }
+  }
+
+
+  // Log summary
+  if (createdSecrets.length > 0) {
+    console.log('\nCreated new secrets:', createdSecrets.join(', '));
+  }
+  if (skippedSecrets.length > 0) {
+    console.log('Skipped existing secrets:', skippedSecrets.join(', '));
+  }
+  if (createdSecrets.length === 0 && skippedSecrets.length === 0) {
+    console.log('No secrets were processed');
+  }
+
+  return {
+    created: createdSecrets,
+    skipped: skippedSecrets
+  };
+}
+
+
+module.exports = { getSecret, createSecret, createDevSecret, getDevSecrets, createSessionSecret, getSessionSecret, createDevSessionSecret, getDevSessionSecrets, createDockerSecrets};
 
 
 
