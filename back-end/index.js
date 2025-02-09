@@ -80,12 +80,13 @@ function initializeDbClients(arg_url, arg_token, arg_org, arg_bucket){
 
 
 async function backendInit() {
+    let dbInstance;
 
     if(env === 'production'){
         const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
         try {
             // Initialize database and get the db object with credentials
-            const dbInstance = await init();
+            dbInstance = await init();
             
             // Verify database connection
             await dbInstance.sequelize.authenticate();
@@ -120,6 +121,7 @@ async function backendInit() {
                     throw new Error("Unable to retrieve session secret");
                 }
             }
+            return dbInstance;
         } catch (error) {
             console.error('Backend initialization error:', error);
             throw error;
@@ -167,6 +169,8 @@ async function backendInit() {
             throw error;
         }
 
+        return dbInstance;
+        
     }
     
   }
@@ -174,13 +178,21 @@ async function backendInit() {
 
 async function startServer() {
     try {
-        await backendInit();
+        const dbInstance = await backendInit();
+
+        // Make sure we have a valid sequelize instance
+        if (!dbInstance || !dbInstance.sequelize) {
+            throw new Error('Database initialization failed - no sequelize instance available');
+        }
 
         const sessionStore = new SequelizeStore({
-            db: sequelize,
+            db: dbInstance.sequelize,
             checkExpirationInterval: 15 * 60 * 1000,
             expiration: 24 * 60 * 60 * 1000
         });
+
+        // Make sure the session table is created
+        sessionStore.sync();
 
         const app = express();
 
@@ -196,6 +208,21 @@ async function startServer() {
             },
             credentials: true,
         }));
+
+        // Set up session middleware
+        app.use(
+            session({
+                secret: sessionSecret,
+                store: sessionStore,
+                saveUninitialized: false,
+                resave: false,
+                cookie: {
+                    maxAge: 60000 * 60,
+                    secure: env === 'production', // Use secure cookies in production
+                    sameSite: 'strict'
+                },
+            })
+        );
 
 
         mqttClient.on('message', (topic, message) => {
@@ -253,17 +280,7 @@ async function startServer() {
         const user_routes = require('./router/users.js');
         const sslServicesRoutes = require('./router/ssl-services.js');
 
-        app.use(
-            session({
-                secret: sessionSecret,
-                store: sessionStore,
-                saveUninitialized: false,
-                resave: false,
-                cookie: {
-                    maxAge: 60000 * 60,
-                },
-            })
-        );
+
 
         app.use("/", general_routes);
         app.use("/users", user_routes);
@@ -277,7 +294,7 @@ async function startServer() {
 
     } catch (error) {
         console.error("Server startup failed:", error); // Log the overall error
-        // Optionally, you could process.exit(1) here to completely stop the process
+        throw error; // Rethrow the error to ensure the process exits
     }
 }
 
