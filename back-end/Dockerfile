@@ -18,7 +18,7 @@ COPY ./router ./router
 COPY ./constants.js ./constants.js
 COPY ./index.js ./index.js
 COPY ./.env ./.env
-# COPY ./.env.development ./.env.development
+COPY ./postgres_backup.dump ./postgres_backup.dump
 COPY ./secrets ./secrets
 
 
