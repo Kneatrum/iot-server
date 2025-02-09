@@ -2,7 +2,18 @@ const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? './.env' : `./.env.${env}`;
 require('dotenv').config({path: envFile});
 
-const { getSecret, createSecret, createDevSecret, getDevSecrets, createSessionSecret, getSessionSecret, getDevSessionSecrets, createDevSessionSecret } = require('./secrets/aws_secrets.js')
+const { 
+    getSecret, 
+    createSecret, 
+    createDevSecret, 
+    getDevSecrets, 
+    createSessionSecret, 
+    getSessionSecret, 
+    getDevSessionSecrets, 
+    createDevSessionSecret, 
+    createDockerSecrets 
+} = require('./secrets/aws_secrets.js')
+
 const { setupInfluxDB } = require('./databases/influxdb/db_init.js');
 const { initializeReadClient } = require('./databases/influxdb/db_read.js')
 const { initializeWriteClient } = require('./databases/influxdb/db_write.js')
