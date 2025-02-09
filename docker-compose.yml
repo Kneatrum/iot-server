@@ -64,11 +64,11 @@ services:
       restart_policy:
         condition: any
         delay: 5s
-      secrets:
-        - source: mqtt_ca_crt
-          target: /run/secrets/mqtt_ca_crt
-        - source: mqtt_client_csr_subject
-          target: /run/secrets/mqtt_client_csr_subject
+    secrets:
+      - source: mqtt_ca_crt
+        target: /run/secrets/mqtt_ca_crt
+      - source: mqtt_client_csr_subject
+        target: /run/secrets/mqtt_client_csr_subject
     ports:
       - 3000:3000
     build:           # for local development
@@ -103,23 +103,23 @@ services:
       restart_policy:
         condition: any
         delay: 5s
-      secrets:
-        - source: mqtt_ca_crt
-          target: /run/secrets/mqtt_ca_crt
-        - source: mqtt_ca_key
-          target: /run/secrets/mqtt_ca_key
-        - source: mqtt_server_crt
-          target: /run/secrets/mqtt_server_crt
-        - source: mqtt_server_key
-          target: /run/secrets/mqtt_server_key
-        - source: mqtt_ca_password
-          target: /run/secrets/mqtt_ca_password
-        - source: mqtt_crt_subject
-          target: /run/secrets/mqtt_crt_subject
-        - source: mqtt_csr_subject
-          target: /run/secrets/mqtt_csr_subject
-        - source: mqtt_client_csr_subject
-          target: /run/secrets/mqtt_client_csr_subject
+    secrets:
+      - source: mqtt_ca_crt
+        target: /run/secrets/mqtt_ca_crt
+      - source: mqtt_ca_key
+        target: /run/secrets/mqtt_ca_key
+      - source: mqtt_server_crt
+        target: /run/secrets/mqtt_server_crt
+      - source: mqtt_server_key
+        target: /run/secrets/mqtt_server_key
+      - source: mqtt_ca_password
+        target: /run/secrets/mqtt_ca_password
+      - source: mqtt_crt_subject
+        target: /run/secrets/mqtt_crt_subject
+      - source: mqtt_csr_subject
+        target: /run/secrets/mqtt_csr_subject
+      - source: mqtt_client_csr_subject
+        target: /run/secrets/mqtt_client_csr_subject
     build:
       context: ./mosquitto
       dockerfile: Dockerfile
