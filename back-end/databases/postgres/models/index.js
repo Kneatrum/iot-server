@@ -27,6 +27,13 @@ async function init() {
       }
 
       console.log('Successfully retrieved database credentials');
+      console.log(
+        `Database: ${postgresDBConfig.data.database}\n` +
+        `Username: ${postgresDBConfig.data.username}\n` +
+        `Host: ${POSTGRES_HOSTNAME}\n` +
+        `Dialect: ${DIALECT}\n` +
+        `Logging: ${POSTGRES}\n`
+      )
       
       // Create Sequelize instance with AWS credentials
       sequelize = new Sequelize(
