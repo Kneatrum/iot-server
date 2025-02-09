@@ -11,6 +11,7 @@ on:
       - '**/src/**'
       - '**/*.env'
       - '.github/workflows/deployment.yml' 
+      - '**/back-end/**'
 
 jobs:
   deploy:
