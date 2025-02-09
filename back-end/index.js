@@ -95,7 +95,39 @@ async function backendInit() {
 
     if(env === 'production'){
         const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
+
+
         try {
+
+            const secretsResult = await createDockerSecrets();
+        
+            // Log results
+            if (secretsResult.created.length > 0) {
+                console.log('Initialization created new secrets:', secretsResult.created);
+            }
+        
+            // Continue only if all required secrets exist
+            const requiredSecrets = [
+                'ca_password', 
+                'crt_subject',
+                'csr_subject',
+                'client_csr_subject',
+                'ca_crt',
+                'ca_key',
+                'server_crt',
+                'server_key',
+            ]; 
+
+            const missingSecrets = requiredSecrets.filter(secret => 
+                !secretsResult.created.includes(secret) && !secretsResult.skipped.includes(secret)
+            );
+        
+            if (missingSecrets.length > 0) {
+                throw new Error(`Missing required secrets: ${missingSecrets.join(', ')}`);
+            }
+
+
+
             // Initialize database and get the db object with credentials
             dbInstance = await init();
             
