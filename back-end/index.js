@@ -108,9 +108,11 @@ async function backendInit() {
             }
 
             const sessionQuery = await getSessionSecret();
+            console.log("Session query: ", sessionQuery);
             if(sessionQuery.success){
                 sessionSecret = sessionQuery.data.sessionSecret;
             } else {
+                console.log("Unable to retrieve session secret");
                 let response = await createSessionSecret();
                 if(response.success){
                     sessionSecret = response.data.sessionSecret;
