@@ -2,21 +2,56 @@ const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
 require('dotenv').config({path: envFile});
 
-
 const pem = require("pem");
 const fs = require("fs");
 const path = require("path");
 
+// Function to read Docker secret
+function readDockerSecret(secretName) {
+  try {
+    return fs.readFileSync(`/run/secrets/${secretName}`, 'utf8').trim();
+  } catch (error) {
+    console.error(`Error reading Docker secret ${secretName}:`, error);
+    throw new Error(`Failed to read Docker secret: ${secretName}`);
+  }
+}
 
-const caCrtPath = path.join(__dirname, '../../mosquitto/certs/ca.crt');
-const caKeyPath = path.join(__dirname, '../../mosquitto/certs/ca.key');
-const caKeyPassword = process.env.CA_PASSWORD
-const clientCsrSubject = process.env.CLIENT_CSR_SUBJECT
+// Function to get credentials based on environment
+function getCredentials() {
+  if (env === 'production') {
+    // Read from Docker secrets
+    try {
+      const caCert = readDockerSecret('mqtt_ca_crt');
+      const caKey = readDockerSecret('mqtt_ca_key');
+      const caPassword = readDockerSecret('mqtt_ca_password');
+      const clientCsrSubject = readDockerSecret('mqtt_client_csr_subject');
 
+      return {
+        caCert,
+        caKey,
+        caPassword,
+        clientCsrSubject
+      };
+    } catch (error) {
+      console.error('Error reading Docker secrets:', error);
+      throw error;
+    }
+  } else {
+    // Read from environment variables and files
+    return {
+      caCert: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.crt'), 'utf8'),
+      caKey: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.key'), 'utf8'),
+      caPassword: process.env.CA_PASSWORD,
+      clientCsrSubject: process.env.CLIENT_CSR_SUBJECT
+    };
+  }
+}
 
+// Remove the direct file path references since we'll get them from credentials
+const credentials = getCredentials();
 
 function parseCsrSubject(csrSubject) {
-  const fields = csrSubject.split('/').filter(Boolean); // Remove empty strings
+  const fields = csrSubject.split('/').filter(Boolean);
   const subjectObject = {};
   fields.forEach(field => {
     const [key, value] = field.split('=');
@@ -25,13 +60,11 @@ function parseCsrSubject(csrSubject) {
   return subjectObject;
 }
 
-
 function constructCsrSubject(subjectObject) {
   return Object.entries(subjectObject)
     .map(([key, value]) => `/${key}=${value}`)
     .join('');
 }
-
 
 function updateSubjectObject(subject, updates) {
   return { ...subject, ...Object.fromEntries(
@@ -39,11 +72,8 @@ function updateSubjectObject(subject, updates) {
   )};
 }
 
-
-/* openssl genrsa -out client.key 2048 */
 async function generateClientPrivateKey() {
   return new Promise((resolve, reject) => {
-    // Generate a 2048-bit RSA private key
     pem.createPrivateKey(2048, (err, key) => {
       if (err) return reject(err);
       resolve({clientPrivateKey: key});
@@ -51,15 +81,8 @@ async function generateClientPrivateKey() {
   });
 }
 
-
-//____________________________________________________________________________________________________
-
-
-/* openssl req -new -out client.csr -key client.key */
 async function generateClientCSR(subjectDetails, clientPrivateKey) {
   return new Promise((resolve, reject) => {
-
-    // Create a CSR with the provided subject details
     pem.createCSR(
       {
         key: clientPrivateKey,
@@ -69,8 +92,8 @@ async function generateClientCSR(subjectDetails, clientPrivateKey) {
         locality: subjectDetails.L,
         organization: subjectDetails.O,
         organizationUnit: subjectDetails.OU,
-        emailAddress: "", // Client's email address
-        challengePassword: "", // No challenge password
+        emailAddress: "",
+        challengePassword: "",
       },
       (err, csr) => {
         if (err) return reject(err);
@@ -80,31 +103,16 @@ async function generateClientCSR(subjectDetails, clientPrivateKey) {
   });
 }
 
-
-
-/* openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAserial serialfile -out client.crt -days 360 */
-async function signClientCSR(
-  caCertificatePath, 
-  caPrivateKeyPath,
-  caKeyPassword,
-  clientCertificateSigningRequest,
-  deviceSerialNumber
-) {
+async function signClientCSR(clientCertificateSigningRequest, deviceSerialNumber) {
   return new Promise((resolve, reject) => {
-    // Read CA certificate, CA key, and client CSR
-    const caCertificate = fs.readFileSync(caCertificatePath, "utf8");
-    const caKey = fs.readFileSync(caPrivateKeyPath, "utf8");
-  
-
-    // Sign the CSR with the CA
     pem.createCertificate(
       {
-        serviceCertificate: caCertificate, // CA certificate
-        serviceKey: caKey, // CA private key
-        csr: clientCertificateSigningRequest, // Client CSR
-        serviceKeyPassword: caKeyPassword, // Password for the CA private key
-        serial: deviceSerialNumber, // Serial number (unique for each cert)
-        days: 360, // Certificate validity in days
+        serviceCertificate: credentials.caCert,
+        serviceKey: credentials.caKey,
+        csr: clientCertificateSigningRequest,
+        serviceKeyPassword: credentials.caPassword,
+        serial: deviceSerialNumber,
+        days: 360,
       },
       (err, cert) => {
         if (err) return reject(err);
@@ -114,7 +122,6 @@ async function signClientCSR(
   });
 }
 
-
 async function generateCertificates({
   country = null,
   state = null,
@@ -122,68 +129,52 @@ async function generateCertificates({
   organization = null,
   organizationUnit = null,
   serialNumber = null,
-  }) {
-    try {
-      // Parse and update the CSR subject
-      // console.log("CSR Subject: ", clientCsrSubject)
-      const tempSubjectObject = updateSubjectObject(parseCsrSubject(clientCsrSubject), {
-        C: country,
-        ST: state,
-        L: locality,
-        O: organization,
-        OU: organizationUnit,
-        CN: serialNumber,
-      });
-  
-      
-      const subjectObject = constructCsrSubject(tempSubjectObject);
-  
-      // Debug logging (enabled via environment variable)
-      if (process.env.DEBUG_MODE === 'true') {
-        console.log('Updated Subject Object:', tempSubjectObject);
-        console.log('Modified CSR Subject:', subjectObject);
-      }
-  
-      // Generate the private key
-      const { clientPrivateKey } = await generateClientPrivateKey();
-  
-  
-      // Generate the CSR
-      const { clientCSR } = await generateClientCSR(subjectObject, clientPrivateKey.key);
-      // console.log("Client CSR: ", clientCSR.csr)
-  
-      // Sign the CSR to create the certificate
-      const { signedCert: clientCertificate } = await signClientCSR(
-        caCrtPath,
-        caKeyPath,
-        caKeyPassword,
-        clientCSR.csr,
-        subjectObject.CN
-      );
+}) {
+  try {
+    const tempSubjectObject = updateSubjectObject(parseCsrSubject(credentials.clientCsrSubject), {
+      C: country,
+      ST: state,
+      L: locality,
+      O: organization,
+      OU: organizationUnit,
+      CN: serialNumber,
+    });
 
-      const caCertificate = fs.readFileSync(caCrtPath, "utf8");
-  
-      // Return the generated artifacts
-      return {
-        status: 'success',
-        data: {
-          privateKey: clientPrivateKey.key,
-          caCert: caCertificate,
-          clientCertificate,
-        },
-      };
-      
-    } catch (error) {
-      console.error({
-        message: error.message,
-        stack: error.stack,
-        timestamp: new Date(),
-        context: 'generateCertificates',
-      });
-  
-      throw new Error('Failed to generate certificates. See logs for details.');
+    const subjectObject = constructCsrSubject(tempSubjectObject);
+
+    if (process.env.DEBUG_MODE === 'true') {
+      console.log('Updated Subject Object:', tempSubjectObject);
+      console.log('Modified CSR Subject:', subjectObject);
     }
+
+    const { clientPrivateKey } = await generateClientPrivateKey();
+
+    const { clientCSR } = await generateClientCSR(subjectObject, clientPrivateKey.key);
+
+    const { signedCert: clientCertificate } = await signClientCSR(
+      clientCSR.csr,
+      subjectObject.CN
+    );
+
+    return {
+      status: 'success',
+      data: {
+        privateKey: clientPrivateKey.key,
+        caCert: credentials.caCert,
+        clientCertificate,
+      },
+    };
+    
+  } catch (error) {
+    console.error({
+      message: error.message,
+      stack: error.stack,
+      timestamp: new Date(),
+      context: 'generateCertificates',
+    });
+
+    throw new Error('Failed to generate certificates. See logs for details.');
+  }
 }
 
-
-module.exports =  generateCertificates;
+module.exports = generateCertificates;
