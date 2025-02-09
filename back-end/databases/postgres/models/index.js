@@ -30,7 +30,7 @@ async function init() {
       console.log(
         `Whole secret: ${JSON.stringify(postgresDBConfig.data)}\n` +
         `Database: ${postgresDBConfig.data.databaseName}\n` +
-        `Username: ${postgresDBConfig.data.username}\n` +
+        `Username: ${postgresDBConfig.data.userName}\n` +
         `Host: ${POSTGRES_HOSTNAME}\n` +
         `Dialect: ${DIALECT}\n` +
         `Logging: ${POSTGRES_LOGGING}\n`
@@ -39,7 +39,7 @@ async function init() {
       // Create Sequelize instance with AWS credentials
       sequelize = new Sequelize(
         postgresDBConfig.data.databaseName,
-        postgresDBConfig.data.username,
+        postgresDBConfig.data.userName,
         postgresDBConfig.data.password,
         {
           host: POSTGRES_HOSTNAME,
