@@ -32,7 +32,7 @@ async function init() {
         `Username: ${postgresDBConfig.data.username}\n` +
         `Host: ${POSTGRES_HOSTNAME}\n` +
         `Dialect: ${DIALECT}\n` +
-        `Logging: ${POSTGRES}\n`
+        `Logging: ${POSTGRES_LOGGING}\n`
       )
       
       // Create Sequelize instance with AWS credentials
