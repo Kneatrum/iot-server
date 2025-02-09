@@ -105,8 +105,7 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/Dockerfile ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/
 
         scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/Dockerfile  ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/postgres_backup.dump  ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/Dockerfile  ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
 
         scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto ${USER}@${HOST}:/home/ubuntu/iot-server/ 
 
