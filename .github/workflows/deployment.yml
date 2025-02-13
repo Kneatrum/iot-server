@@ -161,7 +161,7 @@ jobs:
 
           for IMAGE in "${IMAGES[@]}"; do
             echo "Pulling $IMAGE..."
-            ocker pull $IMAGE
+            docker pull $IMAGE
           done
 
 
