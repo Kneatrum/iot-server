@@ -297,7 +297,7 @@ async function createDockerSecrets() {
 }
 
 
-module.exports = { getSecret, createSecret, createDevSecret, getDevSecrets, createSessionSecret, getSessionSecret, createDevSessionSecret, getDevSessionSecrets, createDockerSecrets};
+module.exports = { getSecret, createSecret, createDevSecret, getDevSecrets, createSessionSecret, getSessionSecret, createDevSessionSecret, getDevSessionSecrets};
 
 // If running directly (not imported)
 if (require.main === module) {
