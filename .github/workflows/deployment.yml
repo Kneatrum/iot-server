@@ -8,7 +8,6 @@ on:
       - docker-compose.yml
       - nginx.conf
       - manage-secrets.sh
-      - update-aws-secrets.sh
       - '**/Dockerfile'
       - '**/src/**'
       - '**/*.env'
@@ -103,7 +102,6 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem manage-secrets.sh ${USER}@${HOST}:/home/ubuntu/iot-server/
-         scp -o StrictHostKeyChecking=no -i github-ec2.pem update-aws-secrets.sh ${USER}@${HOST}:/home/ubuntu/iot-server/
 
         scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/ # Might not be necessary
         scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/Dockerfile ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/
@@ -137,22 +135,6 @@ jobs:
           # fi
 
           SCRIPT_PATH="/home/ubuntu/iot-server/manage-secrets.sh"
-          UPDATE_SCRIPT_PATH="/home/ubuntu/iot-server/update-aws-secrets.sh"
-          
-          if [ -f "$UPDATE_SCRIPT_PATH" ]; then
-            if [ ! -x "$UPDATE_SCRIPT_PATH" ]; then
-              chmod +x "$UPDATE_SCRIPT_PATH"
-              echo "Made $UPDATE_SCRIPT_PATH executable."
-            else
-              echo "$UPDATE_SCRIPT_PATH is already executable."
-            fi
-
-            # Execute the script
-            "$UPDATE_SCRIPT_PATH"
-          else
-            echo "Script $UPDATE_SCRIPT_PATH not found!"
-            exit 1
-          fi
 
           if [ -f "$SCRIPT_PATH" ]; then
             if [ ! -x "$SCRIPT_PATH" ]; then
