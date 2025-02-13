@@ -100,6 +100,7 @@ jobs:
         # Upload docker-compose.yml and nginx.conf using SCP
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem manage-secrets.sh ${USER}@${HOST}:/home/ubuntu/iot-server/
 
         scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/ # Might not be necessary
         scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/Dockerfile ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/
@@ -128,9 +129,27 @@ jobs:
           
           #**********************************************************
           # Check if swarm is initialized and initialize it if not.
-          # if ! docker node ls &> /dev/null; then
-          #   docker swarm init
-          # fi
+          if ! docker node ls &> /dev/null; then
+            docker swarm init
+          fi
+
+          SCRIPT_PATH="/home/ubuntu/iot-server/manage-secrets.sh"
+
+          if [ -f "$SCRIPT_PATH" ]; then
+            if [ ! -x "$SCRIPT_PATH" ]; then
+              chmod +x "$SCRIPT_PATH"
+              echo "Made $SCRIPT_PATH executable."
+            else
+              echo "$SCRIPT_PATH is already executable."
+            fi
+
+            # Execute the script
+            "$SCRIPT_PATH"
+          else
+            echo "Script $SCRIPT_PATH not found!"
+            exit 1
+          fi
+          
           # Deploy the stack.
           # docker stack deploy -c docker-compose.yml iot
         EOF
