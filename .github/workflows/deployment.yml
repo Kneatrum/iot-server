@@ -41,17 +41,17 @@ jobs:
           docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest
         fi
 
-        # if [ -d "./front-end" ]; then
-        #   docker build -t front-end ./front-end
-        #   docker tag front-end:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
-        #   docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
-        # fi
+        if [ -d "./front-end" ]; then
+          docker build -t front-end ./front-end
+          docker tag front-end:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
+        fi
 
-        # if [ -d "./mosquitto" ]; then
-        #   docker build -t mosquitto ./mosquitto
-        #   docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-        #   docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
-        # fi
+        if [ -d "./mosquitto" ]; then
+          docker build -t mosquitto ./mosquitto
+          docker tag mosquitto:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest
+        fi
 
         #  if [ -d "./nginx" ]; then
         #   docker build -t nginx ./nginx
@@ -150,6 +150,19 @@ jobs:
             echo "Script $SCRIPT_PATH not found!"
             exit 1
           fi
+
+          # Pull the latest images
+          IMAGES=(
+            "182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest"
+            "182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest"
+            "182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest"
+            "nginx:stable-alpine"
+          )
+
+          for IMAGE in "${IMAGES[@]}"; do
+            echo "Pulling $IMAGE..."
+            ocker pull $IMAGE
+          done
 
 
           # Deploy the stack.
