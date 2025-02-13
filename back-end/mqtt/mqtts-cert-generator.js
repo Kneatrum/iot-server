@@ -6,15 +6,31 @@ const pem = require("pem");
 const fs = require("fs");
 const path = require("path");
 
-// Function to read Docker secret
+const DOCKER_SECRET_PATH = process.env.DOCKER_SECRET_PATH;
+
+
 function readDockerSecret(secretName) {
   try {
-    return fs.readFileSync(`/run/secrets/${secretName}`, 'utf8').trim();
+      const secretPath = DOCKER_SECRET_PATH + secretName;
+      if (fs.existsSync(secretPath)) {
+          return fs.readFileSync(secretPath, "utf8").trim();
+      } else {
+          console.warn(`Secret "${secretName}" not found.`);
+          return null;
+      }
   } catch (error) {
-    console.error(`Error reading Docker secret ${secretName}:`, error);
-    throw new Error(`Failed to read Docker secret: ${secretName}`);
+      console.error(`Error reading secret "${secretName}":`, error.message);
+      return null;
   }
 }
+
+// function readDockerSecrets(secretNames) {
+//   const secrets = {};
+//   secretNames.forEach((name) => {
+//       secrets[name] = readDockerSecret(name);
+//   });
+//   return secrets;
+// }
 
 // Function to get credentials based on environment
 function getCredentials() {
