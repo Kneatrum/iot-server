@@ -29,6 +29,9 @@ BASE64_SECRETS=(
     "server_key"
 )
 
+# Trap to clean up temporary files
+trap 'rm -f /tmp/mqtt_secret_*' EXIT
+
 # Function to check if a string is in an array
 contains() {
     local needle="$1"
@@ -40,7 +43,7 @@ contains() {
 # Function to validate base64 string
 is_valid_base64() {
     local input="$1"
-    echo "$input" | base64 -d >/dev/null 2>&1
+    echo "$input" | base64 -d -w 0 >/dev/null 2>&1
     return $?
 }
 
@@ -55,7 +58,7 @@ create_docker_secret() {
     local secret_value="$2"
     
     # Create a temporary file to store the secret
-    local temp_file=$(mktemp)
+    local temp_file=$(mktemp /tmp/mqtt_secret_XXXXXX)
     echo -n "$secret_value" > "$temp_file"
     
     # Create Docker secret
@@ -75,8 +78,8 @@ process_secret() {
     if ! check_secret_exists "$SECRET_KEY"; then
         echo "Docker secret mqtt_$SECRET_KEY doesn't exist, creating..."
         
-        if [ -z "$SECRET_VALUE" ] || [ "$SECRET_VALUE" = "null" ]; then
-            echo "Error: Secret $SECRET_KEY is empty or null in AWS Secrets Manager"
+        if [ -z "$SECRET_VALUE" ]; then
+            echo "Error: Secret $SECRET_KEY is empty in AWS Secrets Manager"
             return 1
         fi
         
@@ -87,7 +90,7 @@ process_secret() {
                 echo "Please check the encoding in AWS Secrets Manager"
                 return 1
             fi
-            SECRET_VALUE=$(echo "$SECRET_VALUE" | base64 -d)
+            SECRET_VALUE=$(echo "$SECRET_VALUE" | base64 -d -w 0)
         fi
         
         create_docker_secret "$SECRET_KEY" "$SECRET_VALUE"
@@ -95,6 +98,12 @@ process_secret() {
         echo "Docker secret mqtt_$SECRET_KEY already exists, skipping..."
     fi
 }
+
+# Ensure Docker Swarm is active
+if ! docker info | grep -q "Swarm: active"; then
+    echo "Error: Docker Swarm is not initialized. Run 'docker swarm init' first."
+    exit 1
+fi
 
 # Main script
 echo "Checking and creating Docker secrets..."
@@ -106,8 +115,9 @@ AWS_SECRET_JSON=$(aws secretsmanager get-secret-value \
     --query 'SecretString' \
     --output text)
 
-if [ $? -ne 0 ]; then
-    echo "Error: Failed to retrieve secrets from AWS Secrets Manager"
+# Validate AWS Secrets Manager response
+if [ -z "$AWS_SECRET_JSON" ] || ! echo "$AWS_SECRET_JSON" | jq empty 2>/dev/null; then
+    echo "Error: Invalid response from AWS Secrets Manager."
     exit 1
 fi
 
@@ -116,8 +126,8 @@ HAS_ERRORS=0
 
 # Process each secret
 for SECRET_KEY in "${SECRETS[@]}"; do
-    # Extract the secret value using jq
-    SECRET_VALUE=$(echo "$AWS_SECRET_JSON" | jq -r ".$SECRET_KEY")
+    # Extract the secret value using jq, replacing null values with an empty string
+    SECRET_VALUE=$(echo "$AWS_SECRET_JSON" | jq -r ".${SECRET_KEY} // empty")
     
     if ! process_secret "$SECRET_KEY" "$SECRET_VALUE"; then
         HAS_ERRORS=1
