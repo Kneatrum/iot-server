@@ -49,7 +49,7 @@ is_valid_base64() {
 
 # Function to check if a Docker secret exists
 check_secret_exists() {
-    docker secret inspect "mqtt_$1" >/dev/null 2>&1
+    docker secret inspect "$1" >/dev/null 2>&1
 }
 
 # Function to create Docker secret
@@ -62,12 +62,12 @@ create_docker_secret() {
     echo -n "$secret_value" > "$temp_file"
     
     # Create Docker secret
-    docker secret create "mqtt_$secret_name" "$temp_file" >/dev/null
+    docker secret create "$secret_name" "$temp_file" >/dev/null
     
     # Remove temporary file
     rm "$temp_file"
     
-    echo "Created Docker secret: mqtt_$secret_name"
+    echo "Created Docker secret: $secret_name"
 }
 
 # Function to process a single secret
@@ -76,7 +76,7 @@ process_secret() {
     local SECRET_VALUE="$2"
     
     if ! check_secret_exists "$SECRET_KEY"; then
-        echo "Docker secret mqtt_$SECRET_KEY doesn't exist, creating..."
+        echo "Docker secret $SECRET_KEY doesn't exist, creating..."
         
         if [ -z "$SECRET_VALUE" ]; then
             echo "Error: Secret $SECRET_KEY is empty in AWS Secrets Manager"
@@ -95,7 +95,7 @@ process_secret() {
         
         create_docker_secret "$SECRET_KEY" "$SECRET_VALUE"
     else
-        echo "Docker secret mqtt_$SECRET_KEY already exists, skipping..."
+        echo "Docker secret $SECRET_KEY already exists, skipping..."
     fi
 }
 
