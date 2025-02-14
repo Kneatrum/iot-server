@@ -11,22 +11,22 @@ SECRET_NAME="mqttSecurity"
 
 # List of expected secret keys
 SECRETS=(
-    "ca_password"
-    "crt_subject"
-    "csr_subject"
-    "client_csr_subject"
-    "ca_crt"
-    "ca_key"
-    "server_crt"
-    "server_key"
+    "mqtt_ca_password"
+    "mqtt_crt_subject"
+    "mqtt_csr_subject"
+    "mqtt_client_csr_subject"
+    "mqtt_ca_crt"
+    "mqtt_ca_key"
+    "mqtt_server_crt"
+    "mqtt_server_key"
 )
 
 # Base64 encoded secrets
 BASE64_SECRETS=(
-    "ca_crt"
-    "ca_key"
-    "server_crt"
-    "server_key"
+    "mqtt_ca_crt"
+    "mqtt_ca_key"
+    "mqtt_server_crt"
+    "mqtt_server_key"
 )
 
 # Trap to clean up temporary files
