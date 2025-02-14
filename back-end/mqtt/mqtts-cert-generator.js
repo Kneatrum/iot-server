@@ -37,10 +37,10 @@ function getCredentials() {
   if (env === 'production') {
     // Read from Docker secrets
     try {
-      const caCert = readDockerSecret('mqtt_ca_crt');
-      const caKey = readDockerSecret('mqtt_ca_key');
-      const caPassword = readDockerSecret('mqtt_ca_password');
-      const clientCsrSubject = readDockerSecret('mqtt_client_csr_subject');
+      const caCert = readDockerSecret('ca_crt');
+      const caKey = readDockerSecret('ca_key');
+      const caPassword = readDockerSecret('ca_password');
+      const clientCsrSubject = readDockerSecret('client_csr_subject');
 
       return {
         caCert,
