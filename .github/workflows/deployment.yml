@@ -164,6 +164,10 @@ jobs:
             docker pull $IMAGE
           done
 
+          # Deploy stack with updated images
+          docker stack deploy -c docker-compose.yml --resolve-image=always iot-stack
+
+          echo "Stack update complete!"
 
           # Deploy the stack.
           # docker stack deploy -c docker-compose.yml iot
