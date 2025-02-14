@@ -16,6 +16,7 @@ function readDockerSecret(secretName) {
           return fs.readFileSync(secretPath, "utf8").trim();
       } else {
           console.warn(`Secret "${secretName}" not found.`);
+          console.warn(`Path is: "${secretPath}"`);
           return null;
       }
   } catch (error) {
