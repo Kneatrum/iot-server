@@ -11,7 +11,7 @@ const DOCKER_SECRET_PATH = process.env.DOCKER_SECRET_PATH;
 
 function readDockerSecret(secretName) {
   try {
-      const secretPath = DOCKER_SECRET_PATH + secretName;
+    const secretPath = `${DOCKER_SECRET_PATH.replace(/\/?$/, '/')}${secretName}`;
       if (fs.existsSync(secretPath)) {
           return fs.readFileSync(secretPath, "utf8").trim();
       } else {
