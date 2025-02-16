@@ -92,6 +92,10 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+    volumes:
+      - type: volume
+        source: backend-logs
+        target: /root/.npm/_logs
     logging:
       driver: "json-file"
       options:
@@ -170,3 +174,7 @@ secrets:
     external: true
   mqtt_client_csr_subject:
     external: true
+
+volumes:
+  back-end-logs:
+    driver: local
