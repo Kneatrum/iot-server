@@ -107,7 +107,7 @@ services:
   mosquitto:
     image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest  
     deploy:
-      replicas: 1
+      replicas: 2
       update_config:
         order: start-first
         failure_action: rollback
@@ -136,14 +136,18 @@ services:
       context: ./mosquitto
       dockerfile: Dockerfile
     ports:
-      - 1883:1883
-      - 9001:9001
+    - target: 1883
+      published: 1883
+      mode: ingress
+    - target: 9001
+      published: 9001
+      mode: ingress
     volumes:
-      - ./mosquitto/config:/mosquitto/config
-      - ./mosquitto/data:/mosquitto/data
-      - ./mosquitto/log:/mosquitto/log
+    - ./mosquitto/config:/mosquitto/config
+    - mosquitto_data:/mosquitto/data
+    - mosquitto_log:/mosquitto/log
     healthcheck:
-      test: ["CMD", "mosquitto_sub", "-t", '$$SYS/#', "-C", "1", "-i", "healthcheck"]
+      test: ["CMD-SHELL", "mosquitto_sub -t '$SYS/#' -C 1 -i healthcheck || exit 1"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -173,3 +177,7 @@ secrets:
     external: true
   mqtt_client_csr_subject:
     external: true
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:
