@@ -10,7 +10,7 @@ services:
     depends_on:
       - front-end
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         order: start-first
         failure_action: rollback
@@ -31,7 +31,7 @@ services:
     depends_on:
       - back-end
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         order: start-first
         failure_action: rollback
@@ -56,7 +56,7 @@ services:
     depends_on:
       - mosquitto
     deploy:
-      replicas: 2
+      replicas: 1
       update_config:
         order: start-first
         failure_action: rollback
@@ -92,6 +92,11 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     networks:
       - iot-network
 
