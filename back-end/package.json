@@ -1,7 +1,7 @@
 {
-  "name": "fitbit-web",
+  "name": "iot-server",
   "version": "1.0.0",
-  "description": "back-end server for a fitness tracking application",
+  "description": "back-end for iot project",
   "main": "index.js",
   "scripts": {
     "start": "NODE_ENV=production node  index.js",
