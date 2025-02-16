@@ -69,6 +69,10 @@ services:
         target: /run/secrets/mqtt_ca_crt
       - source: mqtt_client_csr_subject
         target: /run/secrets/mqtt_client_csr_subject
+      - source: mqtt_ca_key
+        target: /run/secrets/mqtt_ca_key
+      - source: mqtt_ca_password
+        target: /run/secrets/mqtt_ca_password
     ports:
       - 3000:3000
     build:           # for local development
