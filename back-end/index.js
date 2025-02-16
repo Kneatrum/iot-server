@@ -219,6 +219,11 @@ async function startServer() {
             credentials: true,
         }));
 
+        // Health check endpoint
+        app.get('/health', (req, res) => {
+            res.status(200).json({ status: 'ok', message: 'Server is running' });
+        });
+
         // Set up session middleware
         app.use(
             session({
