@@ -176,5 +176,5 @@ secrets:
     external: true
 
 volumes:
-  back-end-logs:
+  backend-logs:
     driver: local
