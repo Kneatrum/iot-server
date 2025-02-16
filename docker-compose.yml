@@ -77,7 +77,7 @@ services:
     ports:
       - target: 3000
         published: 3000
-        mode: host
+        mode: ingress
     build:           # for local development
       context: ./back-end      # for local development
       dockerfile: Dockerfile   # for local development
