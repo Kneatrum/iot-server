@@ -62,8 +62,9 @@ services:
         failure_action: rollback
         delay: 10s
       restart_policy:
-        condition: any
+        condition: on-failure
         delay: 5s
+        max_attempts: 5
     secrets:
       - source: mqtt_ca_crt
         target: /run/secrets/mqtt_ca_crt
@@ -74,7 +75,9 @@ services:
       - source: mqtt_ca_password
         target: /run/secrets/mqtt_ca_password
     ports:
-      - 3000:3000
+      - target: 3000
+        published: 3000
+        mode: host
     build:           # for local development
       context: ./back-end      # for local development
       dockerfile: Dockerfile   # for local development
@@ -87,15 +90,11 @@ services:
     #   elif [ "$NODE_ENV" = "production" ]; then npm run start;
     #   else echo "Unknown NODE_ENV=$NODE_ENV"; exit 1; fi'
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:3000/health"]
       interval: 10s
       timeout: 5s
       retries: 3
       start_period: 30s
-    # volumes:
-    #   - type: bind
-    #     source: ./npm-logs
-    #     target: /root/.npm/_logs
     logging:
       driver: "json-file"
       options:
