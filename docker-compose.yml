@@ -92,10 +92,10 @@ services:
       timeout: 5s
       retries: 3
       start_period: 30s
-    volumes:
-      - type: bind
-        source: ./npm-logs
-        target: /root/.npm/_logs
+    # volumes:
+    #   - type: bind
+    #     source: ./npm-logs
+    #     target: /root/.npm/_logs
     logging:
       driver: "json-file"
       options:
