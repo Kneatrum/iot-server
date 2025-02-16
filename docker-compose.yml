@@ -56,7 +56,7 @@ services:
     depends_on:
       - mosquitto
     deploy:
-      replicas: 1
+      replicas: 2
       update_config:
         order: start-first
         failure_action: rollback
