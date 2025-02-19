@@ -298,8 +298,7 @@ async function startServer() {
 
 
         app.use("/", general_routes);
-        // app.use("/users", user_routes);
-        app.use("/", user_routes);
+        app.use("/users", user_routes);
         app.use("/ssl-services", sslServicesRoutes);
 
         sessionStore.sync();
