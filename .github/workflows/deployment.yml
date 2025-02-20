@@ -109,7 +109,9 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
         scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/Dockerfile  ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
 
-        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto ${USER}@${HOST}:/home/ubuntu/iot-server/ 
+        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto/config ${USER}@${HOST}:/home/ubuntu/iot-server/mosquitto/ 
+        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto/data ${USER}@${HOST}:/home/ubuntu/iot-server/mosquitto/ 
+        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto/log ${USER}@${HOST}:/home/ubuntu/iot-server/mosquitto/ 
 
 
         # Execute Docker commands on EC2 via SSH
@@ -168,6 +170,9 @@ jobs:
           docker stack deploy -c docker-compose.yml --resolve-image=always iot-stack
 
           echo "Stack update complete!"
+
+          # Remove unused images
+          docker image prune -f
 
           # Deploy the stack.
           # docker stack deploy -c docker-compose.yml iot
