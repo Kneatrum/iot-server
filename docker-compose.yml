@@ -43,7 +43,7 @@ services:
       context: ./front-end
       dockerfile: Dockerfile
     volumes:
-      - ./front-end/build:/usr/share/nginx/html:ro # Ensures the built React app is served
+      - ./front-end/build:/usr/share/nginx/html:ro 
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost"]
       interval: 10s
