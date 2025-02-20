@@ -100,7 +100,7 @@ jobs:
 
         # Upload docker-compose.yml and nginx.conf using SCP
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
-        # scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem manage-secrets.sh ${USER}@${HOST}:/home/ubuntu/iot-server/
 
         scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/ # Might not be necessary
