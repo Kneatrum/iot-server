@@ -31,6 +31,9 @@ WORKDIR /front-end
 # Copy the build output from the previous stage
 COPY --from=builder /front-end/build /usr/share/nginx/html
 
+# Copy the Nginx configuration file
+COPY ../nginx.conf /etc/nginx/nginx.conf
+
 # Expose the port Nginx is configured to listen on
 EXPOSE 80
 
