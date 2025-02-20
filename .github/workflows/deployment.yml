@@ -171,6 +171,9 @@ jobs:
 
           echo "Stack update complete!"
 
+          # Remove unused images
+          docker image prune -f
+
           # Deploy the stack.
           # docker stack deploy -c docker-compose.yml iot
         EOF
