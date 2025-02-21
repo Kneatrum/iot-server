@@ -11,22 +11,16 @@ WORKDIR /front-end
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --production
+RUN npm install
 
 # Copy the rest of the application code
-COPY ./public ./public
-COPY ./src ./src
-COPY .env .env
-# COPY ./.env.production ./.env.production
+COPY . .
 
 # Build the React app
 RUN npm run build
 
 # Production stage to copy the build output
 FROM nginx:stable-alpine
-
-# Set the working directory
-WORKDIR /front-end
 
 # Copy the build output from the previous stage
 COPY --from=builder /front-end/build /usr/share/nginx/html
