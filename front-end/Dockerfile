@@ -8,14 +8,17 @@ ENV GENERATE_SOURCEMAP=false
 WORKDIR /front-end
 
 # Copy package files
-COPY front-end/package*.json ./
+COPY package*.json ./
 
 # Install dependencies
 RUN npm ci --only=production \
     && npm cache clean --force
 
 # Copy source files
-COPY ./ ./
+COPY ./public ./public
+COPY ./src ./src
+COPY ./.env ./.env
+COPY ./nginx.conf ./nginx.conf
 
 # Build the app
 RUN npm run build
