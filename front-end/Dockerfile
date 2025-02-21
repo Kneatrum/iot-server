@@ -15,7 +15,7 @@ RUN npm ci --only=production \
     && npm cache clean --force
 
 # Copy source files
-COPY front-end/ ./
+COPY ./ ./
 
 # Build the app
 RUN npm run build
