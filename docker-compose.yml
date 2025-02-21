@@ -1,9 +1,10 @@
 services:
 
   nginx:
+    image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
     build:
-        context: ./front-end
-        dockerfile: nginx.Dockerfile
+      context: ./front-end
+      dockerfile: nginx.Dockerfile
     ports:
       - 443:443
       - 80:80  
