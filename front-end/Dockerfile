@@ -1,32 +1,27 @@
-# Use a multi-stage build to reduce the final image size
 FROM node:20.13.0-alpine AS builder
 
-# Set the NODE_ENV environment variable to production
+# Set environment variables
 ENV NODE_ENV=production
+ENV DISABLE_ESLINT_PLUGIN=true
+ENV GENERATE_SOURCEMAP=false
 
-# Set the working directory
 WORKDIR /front-end
 
-# Copy only the package.json and package-lock.json (if available)
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install
+# Install dependencies with a single layer and clean up in the same step
+RUN npm ci --only=production \
+    && npm cache clean --force \
+    && rm -rf /root/.npm/_cacache
 
-# Copy the rest of the application code
+# Copy only necessary files
 COPY . .
 
-# Build the React app
+# Build the app
 RUN npm run build
 
-# Production stage to copy the build output
 FROM nginx:stable-alpine
-
-# Copy the build output from the previous stage
 COPY --from=builder /front-end/build /usr/share/nginx/html
-
-# Expose the port Nginx is configured to listen on
 EXPOSE 80
-
-# Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
