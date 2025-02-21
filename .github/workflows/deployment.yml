@@ -45,8 +45,8 @@ jobs:
           # docker build -t front-end ./front-end
           # docker tag front-end:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
           # docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
-          
-          docker build -t nginx ./nginx
+
+          docker build -t nginx ./front-end
           docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
           docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
         fi
