@@ -156,7 +156,7 @@ jobs:
             "182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest"
             "182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest"
             "182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest"
-            "nginx:stable-alpine"
+            "182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest"
           )
 
           for IMAGE in "${IMAGES[@]}"; do
