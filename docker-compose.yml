@@ -83,7 +83,7 @@ services:
       context: ./back-end      # for local development
       dockerfile: Dockerfile   # for local development
     env_file:
-      - ./back-end/.env
+      - ./back-end/.env.production
     environment:
       NODE_ENV: "production" 
     # command: >
