@@ -27,7 +27,7 @@ const Register = () => {
     setErrorMessage('');
     try {
       
-      const response = await api.post('/register', formData);
+      const response = await api.post('/users/register', formData);
   
       if (response.status === 201) {
         navigate('/login');
