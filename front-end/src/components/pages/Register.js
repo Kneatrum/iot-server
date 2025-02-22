@@ -27,7 +27,7 @@ const Register = () => {
     setErrorMessage('');
     try {
       
-      const response = await api.post('/users/register', formData);
+      const response = await api.post('/register', formData);
   
       if (response.status === 201) {
         navigate('/login');
@@ -37,7 +37,7 @@ const Register = () => {
         setErrorMessage(error.response.data.message);
       } else {
        
-        setErrorMessage('An error occurred. Please try again.');
+        setErrorMessage('An error occurred. Please try again.' + error);
       }
     } finally {
       setLoading(false);
