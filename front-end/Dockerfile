@@ -17,7 +17,7 @@ RUN npm ci --only=production \
 # Copy source files
 COPY ./public ./public
 COPY ./src ./src
-COPY ./.env ./.env
+COPY ./.env.production ./.env.production
 COPY ./nginx.conf ./nginx.conf
 
 # Build the app
