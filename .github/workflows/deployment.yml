@@ -107,10 +107,10 @@ jobs:
         # scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem manage-secrets.sh ${USER}@${HOST}:/home/ubuntu/iot-server/
 
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/ # Might not be necessary
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/.env.production ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/ # Might not be necessary
         scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/Dockerfile ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/
 
-        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env.production ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
         scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/Dockerfile  ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
 
         scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto ${USER}@${HOST}:/home/ubuntu/iot-server/ 
