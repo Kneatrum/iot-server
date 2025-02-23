@@ -71,7 +71,7 @@ user_routes.post('/login', async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const user = await User.findOne({ where: { email } });
+        const user = await db.User.findOne({ where: { email } });
 
         if(!user){
             return res.status(401).json({ error: 'Unauthorized. Please sign up first.' });
@@ -105,7 +105,7 @@ user_routes.post('/logout', (req, res) => {
 // Get all users
 user_routes.get('/', async (req, res) => {
     try {
-        const users = await User.findAll();
+        const users = await db.User.findAll();
         return res.send(users);
     } catch (err){
         console.log("Error: ", err);
@@ -117,7 +117,7 @@ user_routes.get('/', async (req, res) => {
 // Get all device data
 user_routes.get('/get-devices', async (req, res) => {
     try {
-        const devices = await Device.findAll();
+        const devices = await db.Device.findAll();
         return res.send(devices);
     } catch (err){
         console.log("Error: ", err);
@@ -128,7 +128,7 @@ user_routes.get('/get-devices', async (req, res) => {
 // Get devices by their names and serial numbers
 user_routes.get('/device-details',  async (req, res) => { 
     try { 
-        const devices = await Device.findAll({
+        const devices = await db.Device.findAll({
             attributes: ['deviceName', 'serialNumber', 'activeStatus'], // Select only deviceName and serialNumber
             include: [
                 {
@@ -137,14 +137,14 @@ user_routes.get('/device-details',  async (req, res) => {
                     attributes: ['layout'],
                     include:[
                         {
-                            model: Chart,
+                            model: db.Chart,
                             as: 'chart',
                             attributes: ['config', 'chartType', 'dateSpan']
                         }
                     ]
                 },
                 {
-                    model: Topic,
+                    model: db.Topic,
                     as: 'topics',
                     attributes: ['uuid', 'description', 'topic']
                 }
@@ -164,7 +164,7 @@ user_routes.post('/disable-previous-device', isAuthenticated, async (req, res) =
     const transaction = await sequelize.transaction();
 
     try {
-        await Device.update(
+        await db.Device.update(
             { activeStatus: false }, // Update activeStatus
             {
                 where: {
@@ -195,7 +195,7 @@ user_routes.post('/add-device', isAuthenticated, async (req, res) => {
 
     try {
         
-        const user = await User.findOne({
+        const user = await db.User.findOne({
             where: { uuid: userID } ,
             transaction 
         });
@@ -204,7 +204,7 @@ user_routes.post('/add-device', isAuthenticated, async (req, res) => {
             throw new Error('User not found');
         }
 
-        await Device.update(
+        await db.Device.update(
             { activeStatus: false }, // Update activeStatus
             {
                 where: {
@@ -214,7 +214,7 @@ user_routes.post('/add-device', isAuthenticated, async (req, res) => {
             { transaction }
         );
         
-        const device = await Device.create(
+        const device = await db.Device.create(
             {
                 userId: user.id,
                 deviceName: newDevice.deviceName,
@@ -230,7 +230,7 @@ user_routes.post('/add-device', isAuthenticated, async (req, res) => {
             topic
         }));
         
-        await Topic.bulkCreate(topicsData , { transaction });
+        await db.Topic.bulkCreate(topicsData , { transaction });
         
         await transaction.commit();
 
@@ -259,7 +259,7 @@ user_routes.delete('/delete-device/:serialNumber', /*isAuthenticated,*/ async (r
         // }
 
         // Find the device by serial number and associated user
-        const device = await Device.findOne({
+        const device = await db.Device.findOne({
             where: {
                 serialNumber,
                 //userId: user.id // Ensure the device belongs to the current user
@@ -271,7 +271,7 @@ user_routes.delete('/delete-device/:serialNumber', /*isAuthenticated,*/ async (r
         }
 
         // Delete the device and associated topics
-        await Topic.destroy({ where: { deviceId: device.id } }); // Delete associated topics
+        await db.Topic.destroy({ where: { deviceId: device.id } }); // Delete associated topics
         await device.destroy(); // Delete the device itself
 
         return res.status(200).json({ message: 'Device deleted successfully' });
@@ -293,12 +293,12 @@ user_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
             return res.status(400).json({ error: 'Serial number is required' });
         }
 
-        const user = await User.findOne({
+        const user = await db.User.findOne({
             where: { uuid: userID }
         });
 
         // Find the device with the given serial number (and optionally user association)
-        const device = await Device.findOne({
+        const device = await db.Device.findOne({
             where: {
                 serialNumber,
                 userId: user.id, 
@@ -324,13 +324,13 @@ user_routes.post('/topic', isAuthenticated, async (req, res) => {
     const userID = req.session.user.uuid;
 
     try {
-        const user = await User.findOne({
+        const user = await db.User.findOne({
             where: { 
                 uuid: userID
             }
         });
 
-        await Topic.create({ userId: user.id, description, topic });
+        await db.Topic.create({ userId: user.id, description, topic });
 
         return res.status(201).json({ message: 'Topic added successfully' });
     } catch (err){
@@ -345,14 +345,14 @@ user_routes.get('/topic', /*isAuthenticated,*/ async (req, res) => { /**/
     // const userID = req.session.user.uuid;
 
     try {
-        // const topic = await Topic.findAll({
+        // const topic = await db.Topic.findAll({
         //     where: { 
         //         uuid: userID
         //     }
         // });
         // console.log(req.session);
         // console.log(req.sessionID);
-        const topic = await Topic.findAll();
+        const topic = await db.Topic.findAll();
         return res.send(topic);
     } catch (err){
         console.log("Error: ", err);
@@ -379,7 +379,7 @@ user_routes.delete('/topic/', async (req, res) => {
 
     try {
         // Find the topic by the topic string itself
-        const topicToDelete = await Topic.findOne({
+        const topicToDelete = await db.Topic.findOne({
             where: { topic: topic }
         });
 
@@ -412,13 +412,13 @@ async function createPageAndCharts() {
         /* page layout data */
       }, { transaction });
   
-      const chart = await Chart.create({
+      const chart = await db.Chart.create({
         pageId: page.id,
         /* chart data */
       }, { transaction });
 
-      const topic1 = await Topic.create({ name: 'Topic 1', userId: user.id });
-      const topic2 = await Topic.create({ name: 'Topic 2', userId: user.id });
+      const topic1 = await db.Topic.create({ name: 'Topic 1', userId: user.id });
+      const topic2 = await db.Topic.create({ name: 'Topic 2', userId: user.id });
 
       // Assuming you have the chart and topics already created
       await chart.addTopics([topic1.id, topic2.id], { transaction });
@@ -436,7 +436,7 @@ user_routes.post('/dashboard', isAuthenticated, async (req, res) => {
     const userID = req.session.user.uuid;
 
     try {
-        const user = await User.findOne({
+        const user = await db.User.findOne({
             where: { 
                 uuid: userID
             }
@@ -458,7 +458,7 @@ user_routes.put('/:topic', isAuthenticated, async (req, res) => {
     const { topic } = req.params;
     const userID = req.session.user.uuid;
     try {
-        const user = await User.findOne({
+        const user = await db.User.findOne({
             where: { 
                 uuid: userID
             }
@@ -480,7 +480,7 @@ user_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
     const userID = req.session.user.uuid;
 
     try {
-        const user = await User.findOne({
+        const user = await db.User.findOne({
             where: { 
                 uuid: userID,
             }
@@ -504,7 +504,7 @@ user_routes.post('/batch-updates', async (req, res) => {
     try {
         const { changes } = req.body;
         
-        const user = await User.findOne({
+        const user = await db.User.findOne({
             where: { 
                 uuid: userID
             }
@@ -518,7 +518,7 @@ user_routes.post('/batch-updates', async (req, res) => {
 
         for(let i = 0; i < changes.length; i++){
 
-            const device = await Device.findOne({
+            const device = await db.Device.findOne({
                 where: {
                     userId: user.id,
                     serialNumber: changes[i].serialNumber
@@ -563,7 +563,7 @@ user_routes.post('/batch-updates', async (req, res) => {
                     dateSpan: chart.dateSpan
                 };
 
-                const createdChart = await Chart.bulkCreate([chartData], { transaction });
+                const createdChart = await db.Chart.bulkCreate([chartData], { transaction });
                 
             } else if(changes[i].dbAction === "updateLayout") {
                 const data = changes[i].layoutChanges;
@@ -621,7 +621,7 @@ user_routes.put('/:chart', isAuthenticated, async (req, res) => {
     const userID = req.session.user.uuid;
 
     try {
-        const user = await User.findOne({
+        const user = await db.User.findOne({
             where: { 
                 uuid: userID
             }
