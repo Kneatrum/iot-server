@@ -30,18 +30,17 @@ user_routes.post('/register', async (req, res) => {
 
     try {
         console.log("Received :", userName, password, email)
-        // const userExists = await User.findOne({ where: { email } });
+        const userExists = await User.findOne({ where: { email } });
 
-        // if(userExists){
-        //     return res.status(409).json({ 
-        //         message: 'A user with the provided Email address already exists.' 
-        //     });
-        // }
+        if(userExists){
+            return res.status(409).json({ 
+                message: 'A user with the provided Email address already exists.' 
+            });
+        }
 
-        // const hashedPassword = await bcrypt.hash(password, 12);
-        // await User.create({ userName, email, password: hashedPassword });
-        
-        return res.status(201).json({ message: 'Registration successful', userName, email, password });
+        const hashedPassword = await bcrypt.hash(password, 12);
+        await User.create({ userName, email, password: hashedPassword });
+        return res.status(201).json({ message: 'Registration successful' });
     } catch(err){
         console.log(err)
         return res.status(500).json(err)
