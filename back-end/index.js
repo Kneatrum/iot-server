@@ -292,7 +292,7 @@ async function startServer() {
         });
 
         const general_routes = require('./router/general.js').general;
-        const user_routes = require('./router/users.js');
+        const user_routes = require('./router/users.js').users;
         const sslServicesRoutes = require('./router/ssl-services.js');
 
 

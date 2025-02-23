@@ -616,4 +616,4 @@ user_routes.get('/status', isAuthenticated, async (req, res) => {
     return res.status(200).json({isAuthenticated: true})
 });
 
-module.exports = user_routes;
+module.exports.users = user_routes;
