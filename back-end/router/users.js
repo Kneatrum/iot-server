@@ -4,6 +4,11 @@ const bcrypt = require('bcryptjs');
 const user_routes = express.Router();
 const { sequelize } = require('../databases/postgres/models/index');
 
+console.log('User model:', User);
+console.log('Device model:', Device);
+console.log('Topic model:', Topic);
+console.log('Chart model:', Chart);
+console.log('Layout model:', Layout);
 
 function isAuthenticated(req, res, next) {
     if (req.session.user) {
