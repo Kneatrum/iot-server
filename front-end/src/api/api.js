@@ -10,7 +10,7 @@ const usersRoute = '/users';
 const usersBaseUrl = `${usersRoute}`
 const certsBaseUrl = `${backEndHost}${certificatesRoute}`
 
-const usersApi = axios.create({
+const api = axios.create({
     baseURL: usersBaseUrl,
     withCredentials: true, 
 });
@@ -20,4 +20,4 @@ const certsApi = axios.create({
     withCredentials: true, 
 });
 
-export {usersApi, certsApi};
+export {api, certsApi};
