@@ -17,4 +17,14 @@ sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version || { echo "Docker Compose installation verification failed"; exit 1; }
 
 # Run the docker containers
-sudo docker-compose up  || { echo "Failed to start Docker Compose"; exit 1; }
+# sudo docker-compose up  || { echo "Failed to start Docker Compose"; exit 1; }
+
+# curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+# sudo apt install unzip -y
+
+# unzip awscliv2.zip
+
+# sudo ./aws/install
+
+# sudo rm awscliv2.zip
