@@ -57,7 +57,7 @@ user_routes.post('/register', async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        await User.create({ userName, email, password: hashedPassword });
+        await db.User.create({ userName, email, password: hashedPassword });
         return res.status(201).json({ message: 'Registration successful' });
     } catch(err){
         console.log(err)
