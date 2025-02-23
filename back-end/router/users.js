@@ -29,7 +29,7 @@ user_routes.post('/register', async (req, res) => {
     const { userName, email, password } = req.body
 
     try {
-        // console.log("Received :", userName, password, email)
+        console.log("Received :", userName, password, email)
         // const userExists = await User.findOne({ where: { email } });
 
         // if(userExists){
@@ -40,7 +40,8 @@ user_routes.post('/register', async (req, res) => {
 
         // const hashedPassword = await bcrypt.hash(password, 12);
         // await User.create({ userName, email, password: hashedPassword });
-        return res.status(201).json({ message: 'Registration successful' });
+        
+        return res.status(201).json({ message: 'Registration successful', userName, email, password });
     } catch(err){
         console.log(err)
         return res.status(500).json(err)
