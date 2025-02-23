@@ -16,6 +16,14 @@ function isAuthenticated(req, res, next) {
     }
 }
 
+
+
+user_routes.get('/test', async (req, res) => {
+    return res.status(200).json({ message: 'Registration successful' });
+});
+
+
+
 // Register
 user_routes.post('/register', async (req, res) => {
     const { userName, email, password } = req.body
