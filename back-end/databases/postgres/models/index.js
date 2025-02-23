@@ -25,7 +25,6 @@ async function init() {
         throw new Error("Failed to retrieve PostgreSQL secrets from AWS");
       }
       
-      // Create Sequelize instance with AWS credentials
       sequelize = new Sequelize(
         postgresDBConfig.data.databaseName,
         postgresDBConfig.data.userName,
@@ -43,7 +42,6 @@ async function init() {
         }
       );
     } else {
-      // Development environment
       const config = require(__dirname + '/../config/config.json')[env];
       if (config.use_env_variable) {
         sequelize = new Sequelize(process.env[config.use_env_variable], config);
@@ -58,27 +56,29 @@ async function init() {
     }
 
     // Load models
-    fs.readdirSync(__dirname)
-      .filter(file => (
-        file.indexOf('.') !== 0 &&
-        file !== basename &&
-        file.slice(-3) === '.js' &&
-        file.indexOf('.test.js') === -1
-      ))
-      .forEach(file => {
-        const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-        db[model.name] = model;
-      });
+    const modelFiles = fs.readdirSync(__dirname).filter(file =>
+      file.indexOf('.') !== 0 &&
+      file !== basename &&
+      file.endsWith('.js') &&
+      !file.includes('.test.js')
+    );
+
+    for (const file of modelFiles) {
+      const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
+      db[model.name] = model;
+    }
 
     // Associate models
-    Object.keys(db).forEach(modelName => {
+    for (const modelName of Object.keys(db)) {
       if (db[modelName].associate) {
         db[modelName].associate(db);
       }
-    });
+    }
 
     db.sequelize = sequelize;
     db.Sequelize = Sequelize;
+
+    console.log('Models loaded:', Object.keys(db)); // Debugging model loading
 
     return db;
   } catch (error) {
@@ -87,4 +87,13 @@ async function init() {
   }
 }
 
-module.exports = { init, sequelize: db.sequelize };
+// Ensure models are initialized before export
+module.exports = {
+  init,
+  getModels: async () => {
+    if (!sequelize) {
+      await init();
+    }
+    return db;
+  }
+};
