@@ -1,14 +1,22 @@
 const express = require('express');
-const { User, Device, Topic, Chart, Layout } = require('../databases/postgres/models');
+const { getModels } = require('../databases/postgres/models');
 const bcrypt = require('bcryptjs');
 const user_routes = express.Router();
 const { sequelize } = require('../databases/postgres/models/index');
 
-console.log('User model:', User);
-console.log('Device model:', Device);
-console.log('Topic model:', Topic);
-console.log('Chart model:', Chart);
-console.log('Layout model:', Layout);
+let db;
+
+(async () => {
+    try {
+      db = await getModels();
+      console.log('User model:', db.User); 
+      console.log('Device model:', db.Device); 
+      console.log('Topic model:', db.Topic); 
+      console.log('Chart model:', db.Chart); 
+    } catch (err) {
+      console.error('Failed to initialize database models:', err);
+    }
+  })();
 
 function isAuthenticated(req, res, next) {
     if (req.session.user) {
@@ -34,8 +42,13 @@ user_routes.post('/register', async (req, res) => {
     const { userName, email, password } = req.body
 
     try {
+
+        if (!db) {
+            return res.status(500).json({ message: 'Database not initialized' });
+        }
+
         console.log("Received :", userName, password, email)
-        const userExists = await User.findOne({ where: { email } });
+        const userExists = await db.User.findOne({ where: { email } });
 
         if(userExists){
             return res.status(409).json({ 
