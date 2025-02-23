@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import styles from '../styles/register.module.css';
-import { api } from '../../api/api';
-import axios from 'axios';
+import { usersApi } from '../../api/api';
 import { useNavigate } from 'react-router-dom';
 import Toast from '../Toast.js';
 import Spinner from '../Spinner.js';
@@ -28,8 +27,7 @@ const Register = () => {
     setErrorMessage('');
     try {
       
-      // const response = await api.post('/register', formData);
-      axios.post('http://back-end:3000/users/register', formData);
+      const response = await usersApi.post('/register', formData);
   
       if (response.status === 201) {
         navigate('/login');
