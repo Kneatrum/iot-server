@@ -159,7 +159,7 @@ jobs:
           # Pull the latest images
           IMAGES=(
             "182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest"
-            "182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest"
+            # "182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest"
             "182399716240.dkr.ecr.us-east-1.amazonaws.com/mosquitto:latest"
             "182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest"
           )
