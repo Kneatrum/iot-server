@@ -6,7 +6,7 @@ services:
       context: ./certbot
       dockerfile: Dockerfile
     volumes: 
-      - /home/ubuntu/iot-server/certbot/conf:/etc/letsencrypt
-      - /home/ubuntu/iot-server/certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
     env_file:
-      - .env
+      - ./certbot.env
