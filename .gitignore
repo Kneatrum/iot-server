@@ -23,3 +23,5 @@ mosquitto/data/mosquitto.db
 mosquitto/certs
 back-end/postgres_backup.dump
 aws/
+
+certbot/.env
