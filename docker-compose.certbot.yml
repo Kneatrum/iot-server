@@ -2,11 +2,12 @@
 services:
   certbot:
     image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/certbot:latest
-    build:
-      context: ./certbot
-      dockerfile: Dockerfile
+    # build:
+    #   context: ./certbot
+    #   dockerfile: Dockerfile
     volumes: 
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    env_file:
-      - ./certbot/.env
+    # env_file:
+    #   - ./certbot/.env
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email martin.mwiti.n@gmail.com -d dopesilicon.com --agree-tos
