@@ -162,6 +162,14 @@ jobs:
 
           cd /home/ubuntu/iot-server/
 
+          echo "email=${{ secrets.CERTBOT_EMAIL }}" >> ./certbot/.env
+          if [ ! -x ./certbot/entrypoint.sh ]; then
+            chmod +x ./certbot/entrypoint.sh
+            echo "Made entrypoint.sh executable."
+          else
+            echo "entrypoint.sh is already executable."
+          fi
+
           export NODE_ENV=production
 
           # Configure AWS CLI with the region
