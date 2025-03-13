@@ -14,6 +14,10 @@ on:
       - '.github/workflows/deployment.yml' 
       - '**/back-end/**'
       - '**/front-end/**'
+      - renew_certbot.sh
+      - docker-compose.certbot.yml
+      - '**/mosquitto/**'
+      - '**/certbot/**'
 
 jobs:
   deploy:
@@ -100,36 +104,57 @@ jobs:
             echo "Directory already exists: /home/ubuntu/iot-server/front-end"
           fi
 
-          if [ ! -d "/home/ubuntu/iot-server/mosquitto" ]; then
-            mkdir -p /home/ubuntu/iot-server/mosquitto
-            echo "Created directory: /home/ubuntu/iot-server/mosquitto"
+          if [ ! -d "/home/ubuntu/iot-server/mosquitto/conf" ]; then
+            mkdir -p /home/ubuntu/iot-server/mosquitto/conf
+            echo "Created directory: /home/ubuntu/iot-server/mosquitto/conf"
           else
-            echo "Directory already exists: /home/ubuntu/iot-server/mosquitto"
+            echo "Directory already exists: /home/ubuntu/iot-server/mosquitto/conf"
           fi
 
-          if [ ! -d "/home/ubuntu/iot-server/certbot" ]; then
-            mkdir -p /home/ubuntu/iot-server/certbot
-            echo "Created directory: /home/ubuntu/iot-server/certbot"
+          if [ ! -d "/home/ubuntu/iot-server/mosquitto/data" ]; then
+            mkdir -p /home/ubuntu/iot-server/mosquitto/data
+            echo "Created directory: /home/ubuntu/iot-server/mosquitto/data"
           else
-            echo "Directory already exists: /home/ubuntu/iot-server/certbot"
+            echo "Directory already exists: /home/ubuntu/iot-server/mosquitto/data"
+          fi
+
+          if [ ! -d "/home/ubuntu/iot-server/mosquitto/log" ]; then
+            mkdir -p /home/ubuntu/iot-server/mosquitto/log
+            echo "Created directory: /home/ubuntu/iot-server/mosquitto/log"
+          else
+            echo "Directory already exists: /home/ubuntu/iot-server/mosquitto/log"
+          fi
+
+          if [ ! -d "/home/ubuntu/iot-server/certbot/conf" ]; then
+            mkdir -p /home/ubuntu/iot-server/certbot/conf
+            echo "Created directory: /home/ubuntu/iot-server/certbot/conf"
+          else
+            echo "Directory already exists: /home/ubuntu/iot-server/certbot/conf"
+          fi
+
+          if [ ! -d "/home/ubuntu/iot-server/certbot/www" ]; then
+            mkdir -p /home/ubuntu/iot-server/certbot/www
+            echo "Created directory: /home/ubuntu/iot-server/certbot/www"
+          else
+            echo "Directory already exists: /home/ubuntu/iot-server/certbot/www"
           fi
 
         EOF
 
-        # Upload docker-compose.yml and nginx.conf using SCP
+        # Upload docker-compose.yml
         scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.yml ${USER}@${HOST}:/home/ubuntu/iot-server/
-        # scp -o StrictHostKeyChecking=no -i github-ec2.pem nginx.conf ${USER}@${HOST}:/home/ubuntu/iot-server/
+
+        # Upload the necessary files to EC2
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem renew_certbot.sh  ${USER}@${HOST}:/home/ubuntu/iot-server/
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem docker-compose.certbot.yml  ${USER}@${HOST}:/home/ubuntu/iot-server/
         scp -o StrictHostKeyChecking=no -i github-ec2.pem manage-secrets.sh ${USER}@${HOST}:/home/ubuntu/iot-server/
 
+        # Upload the back-end, front-end and mosquitto directories to EC2
         scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/.env.production ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/ # Might not be necessary
         scp -o StrictHostKeyChecking=no -i github-ec2.pem front-end/Dockerfile ${USER}@${HOST}:/home/ubuntu/iot-server/front-end/
-
         scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
         scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/Dockerfile  ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
-
-        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto ${USER}@${HOST}:/home/ubuntu/iot-server/ 
-
-        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem certbot ${USER}@${HOST}:/home/ubuntu/iot-server/
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem certbot/Dockerfile  ${USER}@${HOST}:/home/ubuntu/iot-server/certbot/
 
         # Execute Docker commands on EC2 via SSH
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
