@@ -8,4 +8,11 @@ if [ -z "$email" ] ; then
 fi
 
 # Run certbot with the provided environment variables
-certbot certonly --webroot -w /var/www/certbot --force-renewal --email "$email" -d "dopesilicon.com" --agree-tos
+exec certbot certonly \
+  --webroot \
+  --webroot-path /var/www/certbot \
+  --force-renewal \
+  --email "$email" \
+  --domain "dopesilicon.com" \
+  --agree-tos \
+  --no-eff-email

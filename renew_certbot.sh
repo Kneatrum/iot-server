@@ -1,7 +1,9 @@
 #!/bin/bash
+set -e
 
 # Pull the latest certbot image from ECR
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
+# aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 182399716240.dkr.ecr.us-east-1.amazonaws.com
+docker pull 182399716240.dkr.ecr.us-east-1.amazonaws.com/certbot:latest
 
 # Option 1: Use docker-compose
 cd /home/ubuntu/iot-server
