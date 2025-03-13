@@ -63,6 +63,12 @@ jobs:
         #   docker tag nginx:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
         #   docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/nginx:latest
         # fi
+        
+        if [ -d "./certbot" ]; then
+          docker build -t certbot ./certbot
+          docker tag certbot:latest 182399716240.dkr.ecr.us-east-1.amazonaws.com/certbot:latest
+          docker push 182399716240.dkr.ecr.us-east-1.amazonaws.com/certbot:latest
+        fi
 
     - name: Sign in to EC2
       env:
@@ -101,6 +107,13 @@ jobs:
             echo "Directory already exists: /home/ubuntu/iot-server/mosquitto"
           fi
 
+          if [ ! -d "/home/ubuntu/iot-server/certbot" ]; then
+            mkdir -p /home/ubuntu/iot-server/certbot
+            echo "Created directory: /home/ubuntu/iot-server/certbot"
+          else
+            echo "Directory already exists: /home/ubuntu/iot-server/certbot"
+          fi
+
         EOF
 
         # Upload docker-compose.yml and nginx.conf using SCP
@@ -116,6 +129,7 @@ jobs:
 
         scp -r -o StrictHostKeyChecking=no -i github-ec2.pem mosquitto ${USER}@${HOST}:/home/ubuntu/iot-server/ 
 
+        scp -r -o StrictHostKeyChecking=no -i github-ec2.pem certbot ${USER}@${HOST}:/home/ubuntu/iot-server/
 
         # Execute Docker commands on EC2 via SSH
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
