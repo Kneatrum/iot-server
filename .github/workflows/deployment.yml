@@ -155,7 +155,7 @@ jobs:
         scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/.env ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
         scp -o StrictHostKeyChecking=no -i github-ec2.pem back-end/Dockerfile  ${USER}@${HOST}:/home/ubuntu/iot-server/back-end/ 
         scp -o StrictHostKeyChecking=no -i github-ec2.pem certbot/Dockerfile  ${USER}@${HOST}:/home/ubuntu/iot-server/certbot/
-        # scp -o StrictHostKeyChecking=no -i github-ec2.pem certbot/.env  ${USER}@${HOST}:/home/ubuntu/iot-server/certbot/
+        scp -o StrictHostKeyChecking=no -i github-ec2.pem certbot/entrypoint.sh ${USER}@${HOST}:/home/ubuntu/iot-server/certbot/
 
         # Execute Docker commands on EC2 via SSH
         ssh -o StrictHostKeyChecking=no -i github-ec2.pem ${USER}@${HOST} << 'EOF'
