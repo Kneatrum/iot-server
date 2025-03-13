@@ -8,3 +8,5 @@ services:
     volumes: 
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
+    env_file:
+      - ./certbot/.env
