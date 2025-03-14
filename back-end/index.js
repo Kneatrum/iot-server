@@ -79,6 +79,8 @@ const {
 const allowedOrigins = [
     frontEndHost,
     HOST_URL,
+    'https://dopesilicon.com',
+    'https://www.dopesilicon.com',
   ];
 
 
@@ -300,6 +302,7 @@ async function startServer() {
         app.use("/", general_routes);
         app.use("/users", user_routes);
         app.use("/ssl-services", sslServicesRoutes);
+        app.set('trust proxy', true);
 
         sessionStore.sync();
 
