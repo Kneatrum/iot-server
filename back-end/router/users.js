@@ -132,7 +132,7 @@ user_routes.get('/device-details',  async (req, res) => {
             attributes: ['deviceName', 'serialNumber', 'activeStatus'], // Select only deviceName and serialNumber
             include: [
                 {
-                    model: Layout,
+                    model: db.Layout,
                     as: 'layouts',
                     attributes: ['layout'],
                     include:[
