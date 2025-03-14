@@ -30,30 +30,6 @@ services:
     networks:
       - iot-network
 
-  # front-end:
-  #   image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/front-end:latest
-  #   depends_on:
-  #     - back-end
-  #   deploy:
-  #     replicas: 2
-  #     update_config:
-  #       order: start-first
-  #       failure_action: rollback
-  #       delay: 10s
-  #     restart_policy:
-  #       condition: any
-  #       delay: 5s
-  #   build:
-  #     context: ./front-end
-  #     dockerfile: Dockerfile
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 3
-  #     start_period: 30s
-  #   networks:
-  #     - iot-network
 
   back-end:
     image: 182399716240.dkr.ecr.us-east-1.amazonaws.com/back-end:latest  
