@@ -28,8 +28,7 @@ const Register = () => {
     setErrorMessage('');
     try {
       
-      // const response = await api.post('/register', formData);
-      axios.post('/users/register', formData);
+      const response = await api.post('/register', formData);
   
       if (response.status === 201) {
         navigate('/login');
@@ -38,8 +37,8 @@ const Register = () => {
       if (error.response && error.response.status === 409) {
         setErrorMessage(error.response.data.message);
       } else {
-       
-        setErrorMessage('An error occurred. Please try again.' + error);
+        const errorMsg = error.response?.data?.message || error.message || 'An error occurred. Please try again.';
+        setErrorMessage(errorMsg);
       }
     } finally {
       setLoading(false);
