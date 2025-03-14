@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from '../styles/register.module.css';
-// import { api } from '../../api/api';
-import axios from 'axios';
+import { api } from '../../api/api';
+// import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Toast from '../Toast.js';
 import Spinner from '../Spinner.js';
