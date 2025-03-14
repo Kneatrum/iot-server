@@ -139,6 +139,26 @@ jobs:
             echo "Directory already exists: /home/ubuntu/iot-server/certbot/www"
           fi
 
+          OWNER_UID=$(stat -c "%u" /home/ubuntu/iot-server/certbot)
+          OWNER_GID=$(stat -c "%g" /home/ubuntu/iot-server/certbot)
+
+          if [ "$OWNER_UID" -ne 1000 ] || [ "$OWNER_GID" -ne 1000 ]; then
+            sudo chown -R 1000:1000 /home/ubuntu/iot-server/certbot
+            echo "Ownership updated to 1000:1000"
+          else
+            echo "Ownership already set to 1000:1000"
+          fi
+
+          # Check permissions (755: rwxr-xr-x)
+          CURRENT_PERMS=$(stat -c "%a" /home/ubuntu/iot-server/certbot)
+
+          if [ "$CURRENT_PERMS" -ne 755 ]; then
+            sudo chmod -R 755 /home/ubuntu/iot-server/certbot
+            echo "Permissions updated to 755"
+          else
+            echo "Permissions already set to 755"
+          fi
+
         EOF
 
         # Upload docker-compose.yml
