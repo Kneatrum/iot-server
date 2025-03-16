@@ -174,7 +174,8 @@ async function backendInit() {
         }
 
         try {
-            await sequelize.authenticate();
+            dbInstance = await init();
+            await dbInstance.sequelize.authenticate();
             console.log('Connected to PostgreSQL database');
         } catch (error) {
             console.error('Error connecting to PostgreSQL database:', error);
