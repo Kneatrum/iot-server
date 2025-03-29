@@ -15,18 +15,29 @@ module.exports = (sequelize, DataTypes) => {
         as: 'chart'
       });
     }
+
+    // toJSON(){
+    //   return { ...this.get(), id: undefined }
+    // }
+
   }
 
   Layout.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false
+    },
     deviceId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'devices',
         key: 'id'
       },
       onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     },
     layout: {
       allowNull: false,

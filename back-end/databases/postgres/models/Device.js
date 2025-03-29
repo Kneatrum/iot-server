@@ -22,18 +22,29 @@ module.exports = (sequelize, DataTypes) => {
         })
 
     }
+
+    // toJSON(){
+    //   return { ...this.get(), id: undefined }
+    // }
+
   }
 
   Device.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false
+    },
     userId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'users',
         key: 'id'
       },
       onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     },
     deviceName: {
       allowNull: false,

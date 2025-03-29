@@ -18,33 +18,37 @@ module.exports = (sequelize, DataTypes) => {
 
     }
 
-    toJSON(){
-      return { ...this.get(), id: undefined }
-    }
+    // toJSON(){
+    //   return { ...this.get(), id: undefined }
+    // }
   }
 
   Topic.init({
-    uuid: {
+    id: {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false
     },
     chartId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       references: {
         model: 'charts',
         key: 'id'
       },
       onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
+      unique: true
     },
     deviceId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       references: {
         model: 'devices',
         key: 'id'
       },
       onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
+      unique: true
     },
     description: {
       type: DataTypes.STRING,

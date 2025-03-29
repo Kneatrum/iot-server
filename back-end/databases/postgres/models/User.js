@@ -10,23 +10,20 @@ module.exports = (sequelize, DataTypes) => {
         as: 'devices'
       });
 
-      User.hasMany(models.Topic,{
-        foreignKey: "userId", 
-        as: 'topics'
-      });
-
     }
 
-    toJSON(){
-      return { ...this.get(), id: undefined }
-    }
+    // toJSON(){
+    //   return { ...this.get(), id: undefined }
+    // }
     
   }
 
   User.init({
-    uuid: {
+    id: {
       type: DataTypes.UUID,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false
     },
     sessionID: {
       type: DataTypes.STRING

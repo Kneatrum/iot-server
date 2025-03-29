@@ -19,22 +19,28 @@ module.exports = (sequelize, DataTypes) => {
       
     }
 
-    toJSON() {
-      return { ...this.get(), id: undefined };
-    }
+    // toJSON() {
+    //   return { ...this.get(), id: undefined };
+    // }
 
   }
 
   Chart.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false
+    },
     layoutId: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.UUID,
       allowNull: false,
       references: {
         model: 'layouts',
         key: 'id'
       },
       onUpdate: 'CASCADE',
-      onDelete: 'CASCADE'
+      onDelete: 'CASCADE',
     },
     chartType: {
       type: DataTypes.STRING,
