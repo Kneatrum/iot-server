@@ -2,7 +2,7 @@ const express = require('express');
 const { getModels } = require('../databases/postgres/models');
 const bcrypt = require('bcryptjs');
 const user_routes = express.Router();
-const { sequelize } = require('../databases/postgres/models/index');
+const { getSequelize } = require('../databases/postgres/models/index');
 
 let db;
 
@@ -162,6 +162,7 @@ user_routes.get('/device-details',  async (req, res) => {
 
 
 user_routes.post('/disable-previous-device', isAuthenticated, async (req, res) => {
+    const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
 
     try {
@@ -188,6 +189,7 @@ user_routes.post('/disable-previous-device', isAuthenticated, async (req, res) =
 
 // Add new device
 user_routes.post('/add-device', isAuthenticated, async (req, res) => {
+    const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
     const { newDevice, topics } = req.body;
     const userID = req.session.user.uuid;
@@ -401,6 +403,7 @@ user_routes.delete('/topic/', async (req, res) => {
 
 
 async function createPageAndCharts() {
+    const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
     
     try {
@@ -498,6 +501,7 @@ user_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
 })
 
 user_routes.post('/batch-updates', async (req, res) => {
+    const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
     const userID = req.session.user.id;
 
