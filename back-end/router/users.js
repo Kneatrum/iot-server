@@ -378,7 +378,7 @@ user_routes.get('/layouts', /*isAuthenticated,*/ async (req, res) => { /**/
     // const userID = req.session.user.uuid;
 
     try {
-        const layouts = await Layout.findAll();
+        const layouts = await db.Layout.findAll();
         return res.send(layouts);
     } catch (err){
         console.log("Error: ", err);
@@ -551,7 +551,7 @@ user_routes.post('/batch-updates', async (req, res) => {
                 const chart = changes[i].dbPayload.chart;
 
                 // Check for existing layout
-                const existingLayout = await Layout.findOne({
+                const existingLayout = await db.Layout.findOne({
                     where: sequelize.literal(`layout->>'i' = '${layout.i}'`),
                     transaction
                 });
@@ -568,7 +568,7 @@ user_routes.post('/batch-updates', async (req, res) => {
                 };
 
                 console.log("Saving layout")
-                let createdLayout = await Layout.bulkCreate([layoutData], { transaction }); 
+                let createdLayout = await db.Layout.bulkCreate([layoutData], { transaction }); 
                           
                     
                 const chartData = {
@@ -586,7 +586,7 @@ user_routes.post('/batch-updates', async (req, res) => {
                 const layoutId = changes[i].layoutIndex; 
             
                 // Find the existing layout first
-                const existingLayout = await Layout.findOne({
+                const existingLayout = await db.Layout.findOne({
                     where: sequelize.literal(`layout->>'i' = '${layoutId}'`),
                     transaction
                 });
@@ -603,7 +603,7 @@ user_routes.post('/batch-updates', async (req, res) => {
                 };
             
                 // Update the layout
-                await Layout.update(
+                await db.Layout.update(
                     { layout: updatedLayout },
                     {
                         where: sequelize.literal(`layout->>'i' = '${layoutId}'`),
