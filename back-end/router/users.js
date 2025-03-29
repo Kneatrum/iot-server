@@ -116,7 +116,7 @@ user_routes.get('/', async (req, res) => {
 
 
 // Get all device data
-user_routes.get('/get-devices', async (req, res) => {
+user_routes.get('/get-devices',  isAuthenticated,  async (req, res) => {
     try {
         const devices = await db.Device.findAll();
         return res.send(devices);
