@@ -87,13 +87,22 @@ async function init() {
   }
 }
 
-// Ensure models are initialized before export
+// Initialize the database connection and models
+let initPromise = init(); 
+
+async function getSequelize() {
+  await initPromise; 
+  return sequelize;
+}
+
+async function getModels() {
+  await  initPromise;
+  return db;
+}
+
 module.exports = {
   init,
-  getModels: async () => {
-    if (!sequelize) {
-      await init();
-    }
-    return db;
-  }
+  getModels,
+  getSequelize,
+  Sequelize
 };
