@@ -202,7 +202,7 @@ user_routes.post('/add-device', isAuthenticated, async (req, res) => {
     const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
     const { newDevice, topics } = req.body;
-    const userID = req.session.user.uuid;
+    const userID = req.session.user.id;
 
     // const transaction = await sequelize.transaction(); 
 
