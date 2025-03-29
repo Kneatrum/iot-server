@@ -127,10 +127,17 @@ user_routes.get('/get-devices',  isAuthenticated,  async (req, res) => {
 })
 
 // Get devices by their names and serial numbers
-user_routes.get('/device-details',  async (req, res) => { 
-    try { 
+user_routes.get('/device-details', async (req, res) => { 
+    try {
+        
+        const user = req.session.user
+
+        if(!user){
+            return res.status(401).json({ error: 'Unauthorized. Please sign up first.' });
+        }
+
         const devices = await db.Device.findAll({
-            attributes: ['deviceName', 'serialNumber', 'activeStatus'], // Select only deviceName and serialNumber
+            attributes: ['userId', 'deviceName', 'serialNumber', 'activeStatus'], // Select only deviceName and serialNumber
             include: [
                 {
                     model: db.Layout,
@@ -149,9 +156,12 @@ user_routes.get('/device-details',  async (req, res) => {
                     as: 'topics',
                     attributes: ['id', 'description', 'topic']
                 }
-            ]
+            ],
+            where: {
+                userId: user.id
+            }
         }); 
-                
+
         // Return the mapped array
         return res.json(devices); 
     } catch (err) { 
