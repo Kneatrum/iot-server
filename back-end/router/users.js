@@ -83,7 +83,8 @@ user_routes.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid password or email!' });
         }
 
-        req.session.user = user;
+        req.session.user = { id: user.id, email: user.email };
+        req.session.save();
         
         return res.status(200).json({ message: 'Login successful' });  
 
@@ -146,7 +147,7 @@ user_routes.get('/device-details',  async (req, res) => {
                 {
                     model: db.Topic,
                     as: 'topics',
-                    attributes: ['uuid', 'description', 'topic']
+                    attributes: ['id', 'description', 'topic']
                 }
             ]
         }); 
@@ -196,7 +197,7 @@ user_routes.post('/add-device', isAuthenticated, async (req, res) => {
     try {
         
         const user = await db.User.findOne({
-            where: { uuid: userID } ,
+            where: { id: userID } ,
             transaction 
         });
 
@@ -283,7 +284,7 @@ user_routes.delete('/delete-device/:serialNumber', /*isAuthenticated,*/ async (r
 
 user_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
     const { serialNumber } = req.query; 
-    const userID = req.session.user.uuid; 
+    const userID = req.session.user.id; 
     console.log("#############3", serialNumber);
     console.log("**************", userID);
 
@@ -294,7 +295,7 @@ user_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
         }
 
         const user = await db.User.findOne({
-            where: { uuid: userID }
+            where: { id: userID }
         });
 
         // Find the device with the given serial number (and optionally user association)
@@ -433,12 +434,12 @@ async function createPageAndCharts() {
 // Add dashboard
 user_routes.post('/dashboard', isAuthenticated, async (req, res) => {
     const { topic } = req.params;
-    const userID = req.session.user.uuid;
+    const userID = req.session.user.id;
 
     try {
         const user = await db.User.findOne({
             where: { 
-                uuid: userID
+                id: userID
             }
         });
 
@@ -456,11 +457,11 @@ user_routes.post('/dashboard', isAuthenticated, async (req, res) => {
 // Update a topic
 user_routes.put('/:topic', isAuthenticated, async (req, res) => {
     const { topic } = req.params;
-    const userID = req.session.user.uuid;
+    const userID = req.session.user.id;
     try {
         const user = await db.User.findOne({
             where: { 
-                uuid: userID
+                id: userID
             }
         });
 
@@ -477,12 +478,12 @@ user_routes.put('/:topic', isAuthenticated, async (req, res) => {
 // Update a dashboard
 user_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
     const { dashboard } = req.params;
-    const userID = req.session.user.uuid;
+    const userID = req.session.user.id;
 
     try {
         const user = await db.User.findOne({
             where: { 
-                uuid: userID,
+                id: userID,
             }
         });
 
@@ -498,7 +499,7 @@ user_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
 
 user_routes.post('/batch-updates', async (req, res) => {
     const transaction = await sequelize.transaction();
-    const userID = req.session.user.uuid;
+    const userID = req.session.user.id;
 
 
     try {
@@ -506,7 +507,7 @@ user_routes.post('/batch-updates', async (req, res) => {
         
         const user = await db.User.findOne({
             where: { 
-                uuid: userID
+                id: userID
             }
         });
 
@@ -618,12 +619,12 @@ user_routes.post('/batch-updates', async (req, res) => {
 // Update a chart
 user_routes.put('/:chart', isAuthenticated, async (req, res) => {
     const { chart } = req.params;
-    const userID = req.session.user.uuid;
+    const userID = req.session.user.id;
 
     try {
         const user = await db.User.findOne({
             where: { 
-                uuid: userID
+                id: userID
             }
         });
         
