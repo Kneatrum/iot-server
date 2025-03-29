@@ -205,6 +205,7 @@ async function startServer() {
         });
 
         // Make sure the session table is created
+        await dbInstance.sequelize.sync(); 
         sessionStore.sync();
 
         const app = express();
