@@ -5,6 +5,9 @@ import { useNavigate } from 'react-router-dom';
 import Toast from '../Toast.js';
 import Spinner from '../Spinner.js';
 
+const userDevices = "userDevices";
+const myDevicesMap = new Map();
+
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',

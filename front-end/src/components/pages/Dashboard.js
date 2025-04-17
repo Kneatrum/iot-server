@@ -79,7 +79,7 @@ ChartJS.register(
 const Dashboard = () => {
   const [compactType, setCompactType] = useState('vertical');
   const [margin, setMargin] = useState([20, 20]);
-  // const [apiData, setApiData] = useState([]);
+  const [userID, setUserID] = useState(null);
   const [chartData, setChartData] = useState({});
   const [realTimeData, setRealTimeData] = useState([]);
   const [isCollapsed, setIsCollapsed] = useState(true);
@@ -111,6 +111,21 @@ const Dashboard = () => {
   //   console.log("(UseEffect) Active device: ", activeDevice);
   //   console.log("Devices: ", devices)
   // }, [activeDevice])
+
+  
+  useEffect(() => {
+    api.get('/identity')
+    .then((response) => {
+      console.log("Response: ", response.data);
+      if(response.data){
+        setUserID(response.data);
+      }
+    })
+    .catch((error) => {
+      console.log("Error: ", error.message)
+    })
+  }, [ isLoading ]);
+
 
   useEffect(() => {
     api
@@ -637,7 +652,7 @@ function getChangedLayoutWithChanges(prevLayouts, newLayouts) {
     <>
       <Header/>
       <Sidebar showModal = {showModal} saveLayout = {saveLayout} addWidget={addWidget} devices={devices} isCollapsed={isCollapsed} onToggle={toggleSidebar} />
-      <DeviceToolbar isCollapsed={isCollapsed} mqttTopics={topics} devices={devices}  activeDevice={activeDevice} setActiveDevice={setActiveDevice}  setDeviceCount={setDeviceCount}/>
+      <DeviceToolbar isCollapsed={isCollapsed} mqttTopics={topics} devices={devices}  activeDevice={activeDevice} setActiveDevice={setActiveDevice}  setDeviceCount={setDeviceCount} userID = {userID}/>
       {overlayActive && <div className={styles.overlay}></div>}
 
       { (!isLoading) && (activeDevice.index !== null && activeDevice.index !== undefined) && devices[activeDevice.index]  && 

@@ -9,6 +9,8 @@ import { ReactComponent as DownloadIcon } from '../assets/download.svg'
 import { useDispatch } from "react-redux";
 import { addDevice } from './devicesSlice';
 
+import generateUniqueId from '../tools/unique-hash-generator';
+
 
 import Topics from './Topics';
 import TopicsLayout from './Modal/TopicsLayout';
@@ -33,7 +35,7 @@ let DEVICE_TEMPLATE = {
     changes: [], // To track changes made to the device
   };
 
-function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveDevice, setDeviceCount }) {
+function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveDevice, setDeviceCount, userID }) {
     const [stage, setStage] = useState(1);
     const [deviceName, setDeviceName] = useState('');
     const [serialNumber, setSerialNumber] = useState('');
@@ -128,6 +130,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
         }
 
         const newDevice = {
+            uniqueHash: "",
             deviceName: "", 
             serialNumber: "",
             activeStatus: false,
@@ -136,7 +139,10 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
             topics: [],
             changes: [], // To track changes made to the device
         };
-        
+
+        const hash =  generateUniqueId(userID, serialNumber);
+        if(!hash) return;
+        newDevice.uniqueHash =  hash;
         newDevice.deviceName = deviceName;
         newDevice.serialNumber = serialNumber;
         newDevice.activeStatus = true;
@@ -163,10 +169,19 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
             dispatch(addDevice(newDevice));
 
             setDeviceCount((prevCount) => ({
-                    prevCount: prevCount + 1
-                    // dispatch(setActiveDeviceIndex({prevIndex: prevIndex, activeIndex: index}));
-                })
-            );
+                prevCount: prevCount + 1
+                // dispatch(setActiveDeviceIndex({prevIndex: prevIndex, activeIndex: index}));
+            }));
+
+
+            api.post('/update-device-cache', { hash })
+            .then((response) => {
+                console.log(response.data);
+            })
+            .catch((error) => {
+                console.error('Failed to update device cache:', error.message);
+                setFailed(true);
+            });
             // setDevices([...devices, { name: deviceName, serial: serialNumber }]);
         })
         .catch((error) => {

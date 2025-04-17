@@ -11,7 +11,7 @@ import { removeDevice, setActiveDeviceIndex } from '../devicesSlice';
 const deviceOptions = ['Settings', 'Delete', 'Edit'];
 const defaultActiveTab = 0;
 
-function DeviceToolbar({ isCollapsed, mqttTopics, devices, setActiveDevice, setDeviceCount }) {
+function DeviceToolbar({ isCollapsed, mqttTopics, devices, setActiveDevice, setDeviceCount, userID }) {
   const [addStatus, setAddStatus] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
@@ -160,6 +160,7 @@ function removeBySerial(list, serialNumber) {
           mqttTopics={mqttTopics}
           setActiveDevice={setActiveDevice}
           setDeviceCount={setDeviceCount}
+          userID = {userID}
         />
       ) : (
         ''
