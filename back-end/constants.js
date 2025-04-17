@@ -1,38 +1,19 @@
 
-const measurements = {
-  temperature: "temperature",
-  sound: "sound",
-  heart_rate: "heart",
-  sleep: "sleep",
-  walking: "walking",
-  jogging: "jogging",
-  steps: "steps",
-  biking: "biking",
-  idling: "idling",
-  oxygen: "oxygen"
-}
+// const measurements = {
+//   free_tier_iot_data: "free_tier_iot_data",
+// }
   
-const devices = {
-  device_1: "device_1",
-}
   
-const tags = {
-  device: "device" 
-}
+// const tags = {
+//   user_id: "user_id",
+//   unique_hash: "unique_hash",
+//   user_email: "user_email",
+//   device_name: "device_name",
+//   device_serial_no: "device_serial_no"
+// }
   
-const fields = {
-  degrees: "degrees",
-  sound: "sound_type",
-  beats_per_inute: "beats_per_minute",
-  sleep_stage: "sleep_stage",
-  steps: "steps",
-  minutes: "minutes",
-  percentage: "percent"
-}
 
-module.exports = {
-  measurements,
-  devices,
-  tags,
-  fields
-};
+// module.exports = {
+//   measurements,
+//   tags
+// };
