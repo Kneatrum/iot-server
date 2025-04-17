@@ -14,95 +14,78 @@ const DIALECT = process.env.POSTGRES_DIALECT || 'postgres';
 const POSTGRES_LOGGING = process.env.POSTGRES_LOGGING === 'true';
 
 const db = {};
-let sequelize = null;
+let sequelize;
 
-async function init() {
-  try {
-    if (env === 'production') {
-      const postgresDBConfig = await getSecret(POSTGRESDB_SECRETS);
-      
-      if (!postgresDBConfig || !postgresDBConfig.success) {
-        throw new Error("Failed to retrieve PostgreSQL secrets from AWS");
-      }
-      
-      sequelize = new Sequelize(
-        postgresDBConfig.data.databaseName,
-        postgresDBConfig.data.userName,
-        postgresDBConfig.data.password,
-        {
-          host: POSTGRES_HOSTNAME,
-          dialect: DIALECT,
-          logging: POSTGRES_LOGGING,
-          pool: {
-            max: 5,
-            min: 0,
-            acquire: 30000,
-            idle: 10000
-          }
-        }
-      );
-    } else {
-      const config = require(__dirname + '/../config/config.json')[env];
-      if (config.use_env_variable) {
-        sequelize = new Sequelize(process.env[config.use_env_variable], config);
-      } else {
-        sequelize = new Sequelize(
-          config.database,
-          config.username,
-          config.password,
-          config
-        );
-      }
+// Sync wrapper
+function loadModels(sequelizeInstance) {
+  const modelFiles = fs.readdirSync(__dirname).filter(file =>
+    file.indexOf('.') !== 0 &&
+    file !== basename &&
+    file.endsWith('.js') &&
+    !file.includes('.test.js')
+  );
+
+  for (const file of modelFiles) {
+    const model = require(path.join(__dirname, file))(sequelizeInstance, Sequelize.DataTypes);
+    db[model.name] = model;
+  }
+
+  // Set associations
+  for (const modelName of Object.keys(db)) {
+    if (db[modelName].associate) {
+      db[modelName].associate(db);
     }
-
-    // Load models
-    const modelFiles = fs.readdirSync(__dirname).filter(file =>
-      file.indexOf('.') !== 0 &&
-      file !== basename &&
-      file.endsWith('.js') &&
-      !file.includes('.test.js')
-    );
-
-    for (const file of modelFiles) {
-      const model = require(path.join(__dirname, file))(sequelize, Sequelize.DataTypes);
-      db[model.name] = model;
-    }
-
-    // Associate models
-    for (const modelName of Object.keys(db)) {
-      if (db[modelName].associate) {
-        db[modelName].associate(db);
-      }
-    }
-
-    db.sequelize = sequelize;
-    db.Sequelize = Sequelize;
-
-    console.log('Models loaded:', Object.keys(db)); // Debugging model loading
-
-    return db;
-  } catch (error) {
-    console.error('Database initialization error:', error);
-    throw error;
   }
 }
 
-// Initialize the database connection and models
-let initPromise = init(); 
+async function initializeDatabase() {
+  if (env === 'production') {
+    const postgresDBConfig = await getSecret(POSTGRESDB_SECRETS);
 
-async function getSequelize() {
-  await initPromise; 
-  return sequelize;
+    if (!postgresDBConfig || !postgresDBConfig.success) {
+      throw new Error("Failed to retrieve PostgreSQL secrets from AWS");
+    }
+
+    sequelize = new Sequelize(
+      postgresDBConfig.data.databaseName,
+      postgresDBConfig.data.userName,
+      postgresDBConfig.data.password,
+      {
+        host: POSTGRES_HOSTNAME,
+        dialect: DIALECT,
+        logging: POSTGRES_LOGGING,
+        pool: {
+          max: 5,
+          min: 0,
+          acquire: 30000,
+          idle: 10000,
+        },
+      }
+    );
+  } else {
+    const config = require(__dirname + '/../config/config.json')[env];
+    if (config.use_env_variable) {
+      sequelize = new Sequelize(process.env[config.use_env_variable], config);
+    } else {
+      sequelize = new Sequelize(config.database, config.username, config.password, config);
+    }
+  }
+
+  loadModels(sequelize);
+
+  db.sequelize = sequelize;
+  db.Sequelize = Sequelize;
 }
 
-async function getModels() {
-  await  initPromise;
-  return db;
-}
+const databaseinitialized = initializeDatabase()
+  .then(() => db)
+  .catch(err => {
+    console.error('Failed to initialize database:', err);
+    throw err;
+  });
 
 module.exports = {
-  init,
-  getModels,
-  getSequelize,
-  Sequelize
+  databaseinitialized, // export the promise for setup
+  db,          // allows synchronous access *after* await initialized
+  sequelize    // optional if you want to access just sequelize
 };
