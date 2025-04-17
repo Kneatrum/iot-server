@@ -46,6 +46,11 @@ module.exports = (sequelize, DataTypes) => {
       onUpdate: 'CASCADE',
       onDelete: 'CASCADE',
     },
+    uniqueHash: {
+      type: DataTypes.CHAR(12),
+      allowNull: false,
+      unique: true
+    },
     deviceName: {
       allowNull: false,
       type: DataTypes.STRING
