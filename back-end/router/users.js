@@ -126,6 +126,18 @@ user_routes.get('/', async (req, res) => {
     }
 })
 
+// Get user id
+user_routes.get('/identity', isAuthenticated, async (req, res) => {
+    try {
+        const userID = req.session?.user?.id;
+        if (!userID) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+        return res.send(userID);
+    } catch (err) {
+       console.error("Unable to obtain user id:", err)
+    }
+});
 
 // Get all device data
 user_routes.get('/get-devices',  isAuthenticated,  async (req, res) => {
