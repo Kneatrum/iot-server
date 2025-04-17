@@ -2,28 +2,40 @@ const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
 require('dotenv').config({path: envFile});
 
-const { InfluxDB } = require('@influxdata/influxdb-client');
+// const { InfluxDB } = require('@influxdata/influxdb-client');
 const { measurements, devices, tags, fields} = require('../../constants');
+const influxClient = require('./influxdbClient.js');
 
 
+let influxQueryClient = null;
+let influxBucket = null;
 
 
+(async () => {
+  try {
+    const { queryClient, bucket } = await influxClient.getClient();
 
-let bucket;
-let queryClient;
+    if (!queryClient) {
+        console.error('InfluxDB query client is not initialized.');
+    } else {
+        influxQueryClient = queryClient;
+        console.log('InfluxDB query client initialized successfully.');
+    }
+
+    if (!bucket) {
+        console.error('InfluxDB bucket is not initialized.');
+    } else {
+        influxBucket = bucket;
+        console.log('InfluxDB bucket initialized successfully.');
+    }
+
+  } catch (error) {
+    console.error('Failed to initialize InfluxDB write client and bucket:', error);
+  }
+})();
 
 const sleepStates = ['deep', 'light', 'rem', 'awake'];
 
-
-function initializeReadClient(arg_url, arg_token, arg_organisation, arg_bucket) {
-    url = arg_url;
-    token = arg_token;
-    org = arg_organisation;
-    bucket = arg_bucket;
-    let client = new InfluxDB({ url, token });
-    queryClient = client.getQueryApi(org);
-}
-  
 
 function formatMinutes(minutes) {
     const strMinutes = minutes.toFixed(1)
@@ -106,7 +118,7 @@ function getTimeSummary(input_data){
 // Get all data
 const getAllData = () => {
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(start: 0)
         |> filter(fn: (r) => 
             r._measurement == "sleep"
@@ -114,7 +126,7 @@ const getAllData = () => {
 
         let tableObjects = [];
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row);
                 tableObjects.push(tableObject);
@@ -144,7 +156,7 @@ const getHeartBeatRate = (startDate) => {
     }
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.heart_rate}" and
@@ -156,7 +168,7 @@ const getHeartBeatRate = (startDate) => {
             data: []
         };
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -189,7 +201,7 @@ const getTemperature = (startDate) => {
 
     return new Promise((resolve, reject) => {
         console.log("Start")
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.temperature}" and
@@ -198,7 +210,7 @@ const getTemperature = (startDate) => {
 
         let results = [];
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row);
                 const { _time: time, _value: value } = tableObject;
@@ -229,7 +241,7 @@ const getAction = (startDate) => {
     }
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "device" and
@@ -238,7 +250,7 @@ const getAction = (startDate) => {
 
         let results = [];
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -269,7 +281,7 @@ const getSound = (startDate) => {
     }
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.sound}" and
@@ -278,7 +290,7 @@ const getSound = (startDate) => {
 
         let results = [];
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -317,7 +329,7 @@ const getSleepData = (numDays) => {
     }
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(start: ${param})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.sleep}" and
@@ -330,7 +342,7 @@ const getSleepData = (numDays) => {
         }
         let results = [];
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -367,7 +379,7 @@ const getWalkingData = (startDate) => {
     }
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.walking}" and
@@ -378,7 +390,7 @@ const getWalkingData = (startDate) => {
 
         let results = [];
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -408,7 +420,7 @@ const getJoggingData = (startDate) => {
     }
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.jogging}" and
@@ -418,7 +430,7 @@ const getJoggingData = (startDate) => {
 
         let results = [];
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -459,7 +471,7 @@ const getSteps = (numDays) => {
     
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(start: ${param})
         |> filter(fn: (r) => r._measurement == "${measurements.steps}" and
             r.${tags.device} == "${devices.device_1}" and 
@@ -474,7 +486,7 @@ const getSteps = (numDays) => {
 
 
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -508,7 +520,7 @@ const getBikingData = (startDate) => {
     }
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.biking}" and
@@ -518,7 +530,7 @@ const getBikingData = (startDate) => {
 
         let results = [];
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -549,7 +561,7 @@ const getIdlingData = (startDate) => {
     }
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.idling}" and
@@ -560,7 +572,7 @@ const getIdlingData = (startDate) => {
 
         let results = [];
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -587,7 +599,7 @@ const getOxygenSaturationData = (startDate) => {
     let query =  `start: ${startDate}, stop: ${now}`
 
     return new Promise((resolve, reject) => {
-        let fluxQuery = `from(bucket: "${bucket}")
+        let fluxQuery = `from(bucket: "${influxBucket}")
         |> range(${query})
         |> filter(fn: (r) => 
             r._measurement == "${measurements.oxygen}" and
@@ -599,7 +611,7 @@ const getOxygenSaturationData = (startDate) => {
             data: []
         };
 
-        queryClient.queryRows(fluxQuery, {
+        influxQueryClient.queryRows(fluxQuery, {
             next: (row, tableMeta) => {
                 const tableObject = tableMeta.toObject(row)
                 const { _time: time, _value: value } = tableObject;
@@ -631,6 +643,5 @@ module.exports = {
     getSteps,
     getBikingData,
     getIdlingData,
-    getOxygenSaturationData,
-    initializeReadClient
+    getOxygenSaturationData
 };

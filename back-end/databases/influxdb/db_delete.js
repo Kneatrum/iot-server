@@ -2,22 +2,30 @@ const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
 require('dotenv').config({path: envFile});
 
-const { InfluxDB } = require('@influxdata/influxdb-client');
-const { DeleteAPI } = require('@influxdata/influxdb-client-apis');
+// const { InfluxDB } = require('@influxdata/influxdb-client');
+// const { DeleteAPI } = require('@influxdata/influxdb-client-apis');
+const influxClient = require('./influxdbClient.js');
 
 
-let deleteAPI = null;
 
 
-function initializeDeleteClient(arg_url, arg_token, arg_organisation, arg_bucket) {
-  url = arg_url;
-  token = arg_token;
-  org = arg_organisation;
-  bucket = arg_bucket;
-  let client = new InfluxDB({ url, token });
-  deleteAPI = new DeleteAPI(client);
-  queryClient = client.getQueryApi(org);
-}
+
+let influxDeleteAPI = null;
+
+(async () => {
+  try {
+    const { deleteAPI } = await influxClient.getClient();
+
+    if (!deleteAPI) {
+      console.error('InfluxDB write client is not initialized.');
+    } else {
+      influxDeleteAPI = deleteAPI;
+      console.log('InfluxDB write client initialized successfully.');
+    }
+  } catch (error) {
+    console.error('Failed to initialize InfluxDB write client:', error);
+  }
+})();
 
 
 // Delete all records 
@@ -26,7 +34,7 @@ async function deleteAllMeasurementData(bucket, measurement, tag) {
     const startTime = '1970-01-01T00:00:00Z';
     const stop = new Date();
   
-    await deleteAPI.postDelete({
+    await influxDeleteAPI.postDelete({
       org,
       bucket: bucket,
       // you can better specify orgID, bucketID in place or org, bucket if you already know them
@@ -45,7 +53,7 @@ async function deleteMeasurement(bucket, measurement) {
     const startTime = '1970-01-01T00:00:00Z';
     const stop = new Date();
   
-    await deleteAPI.postDelete({
+    await influxDeleteAPI.postDelete({
       org,
       bucket: bucket,
       // you can better specify orgID, bucketID in place or org, bucket if you already know them

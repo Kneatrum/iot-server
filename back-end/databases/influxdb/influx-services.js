@@ -1,7 +1,11 @@
+
+// db_init.js
+// This file functions to set up InfluxDB, get users, organizations, and buckets.
+
+
 const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
 require('dotenv').config({path: envFile});
-
 
 const axios = require('axios');
 
@@ -43,7 +47,6 @@ const setupInfluxDB = async (adminUsername, adminPassword, org, bucket) => {
     }
 };
 
-
 async function getUsers(adminToken) {
     const usersResponse = await axios.get(`${influxBaseURL}/api/v2/users`, {
       headers: {
@@ -52,7 +55,6 @@ async function getUsers(adminToken) {
     });
     return usersResponse.data.users;
 }
-
 
 async function getOrgs(adminToken){
     const orgsResponse = await axios.get(`${influxBaseURL}/api/v2/orgs`, {
@@ -72,4 +74,10 @@ async function getBuckets(adminToken) {
     return bucketsResponse.data.buckets
 }
 
-module.exports = { setupInfluxDB, getUsers, getOrgs, getBuckets }
+
+module.exports = {
+    setupInfluxDB,
+    getUsers,
+    getOrgs,
+    getBuckets
+};
