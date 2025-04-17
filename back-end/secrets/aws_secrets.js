@@ -1,3 +1,13 @@
+
+
+
+// aws_secrets.js
+
+// Description: This file contains functions to create, retrieve, and manage secrets in AWS Secrets Manager.
+// It includes functions to create and retrieve secrets for InfluxDB and session management.
+// It also includes functions to create Docker secrets from AWS Secrets Manager secrets.
+//
+
 const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
 require('dotenv').config({path: envFile});
@@ -16,6 +26,13 @@ const META_TIMEOUT = parseInt(process.env.META_TIMEOUT, 10) || 1000;
 const META_RETRIES = process.env.META_RETRIES;
 const MQTT_SECRETS = process.env.MQTT_SECRETS
 
+const INFLUXDB_SECRETS = process.env.INFLUX_SECRETS;
+
+const USERNAME = "Martin";
+const PASSWORD = "password1234";
+const ORG = "fitnessOrg";
+const BUCKET = "fitBucket";
+
 
 // Create a SecretsManagerClient instance with credentials from instance metadata
 const client = new SecretsManagerClient({
@@ -29,7 +46,7 @@ const client = new SecretsManagerClient({
 
 
 // Function to create a new secret in AWS Secrets Manager
-async function createSecret(secretName,secretString) {
+async function createInfluxDBProdSecret(secretName,secretString) {
 
         // `{
         //   "username":"${userName}",
@@ -114,7 +131,7 @@ async function getSessionSecret(){
 }
 
 
-function getDevSecrets(){
+function getInfluxDBDevSecrets(){
 
   let organisation = process.env.ORG;
   let bucket = process.env.BUCKET;
@@ -136,7 +153,7 @@ function getDevSecrets(){
 }
 
 // Function to create a new secret in the development environment
-async function createDevSecret(userName, password, apiKey, bucket, organisation) {
+async function createInfluxDBDevSecret(userName, password, apiKey, bucket, organisation) {
   const ENV_FILE_PATH = path.resolve(__dirname, envFile);
   
   userName = `\nUSERNAME=${userName}`;
@@ -297,7 +314,120 @@ async function createDockerSecrets() {
 }
 
 
-module.exports = { getSecret, createSecret, createDevSecret, getDevSecrets, createSessionSecret, getSessionSecret, createDevSessionSecret, getDevSessionSecrets};
+async function retrieveSessionSecret(){
+
+  let sessionSecret = null;
+
+  if (env === 'production'){
+
+    const sessionQuery = await getSessionSecret();
+
+    if(sessionQuery.success){
+      sessionSecret = sessionQuery.data.sessionSecret;
+    } else {
+      console.log("Unable to retrieve session secret");
+      let response = await createSessionSecret();
+      if(response.success){
+        sessionSecret = response.data.sessionSecret;
+      } else {
+        throw new Error("Unable to retrieve session secret");
+      }
+    }
+
+  } else if( env === 'development'){
+
+    let sessionQuery = getDevSessionSecrets();
+
+    if(sessionQuery.success){
+      sessionSecret =  sessionQuery.data
+    } else {
+      let result = await createDevSessionSecret();
+      if(result.success){
+        sessionSecret = result.data
+      } else {
+        throw new Error("Unable to create dev session secret");
+      }
+    }
+
+  }
+
+  return sessionSecret;
+}
+
+
+async function retrieveInfluxDBSecrets() {
+  if (env === 'production') {
+    try {
+      const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
+
+      if (influxdbSecrets) {
+
+        if (!influxdbSecrets?.success || !influxdbSecrets?.data) {
+          throw new Error("Unable to retrieve InfluxDB secrets");
+        }
+  
+        const { apiKey, organisation, bucket } = influxdbSecrets.data;
+  
+        if (!apiKey || !organisation || !bucket) {
+          throw new Error("Incomplete InfluxDB secrets received");
+        }
+
+        return { apiKey, organisation, bucket };
+      } else {
+        let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+        await createInfluxDBProdSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
+        return { apiKey: response.data, organisation: ORG, bucket: BUCKET };
+      }
+
+    } catch (error) {
+      console.error('Error retrieving InfluxDB secrets:', error);
+      return null;
+    }
+
+  } else if (env === 'development') {
+    const result = getInfluxDBDevSecrets();
+
+    if (result?.success && result?.data) {
+      const { apiKey, organisation, bucket } = result.data;
+
+      if (!apiKey || !organisation || !bucket) {
+        console.error('Incomplete InfluxDB secrets in development mode');
+        return null;
+      }
+
+      return { apiKey, organisation, bucket };
+    } else {
+      console.error('Error retrieving InfluxDB secrets:', result?.error || 'Unknown error');
+      // At this point, there are no previously stored secrets, so create new ones 
+      console.log("Creating InfluxDB secrets");
+
+      let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
+      if(response?.success && response?.data){
+        createInfluxDBDevSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
+        console.log("Onboarding success")
+        return { apiKey: response.data, organisation: ORG, bucket: BUCKET };
+      } else {
+        console.log("Unable to get the API token");
+        // throw new Error("Unable to retrieve API token");
+        return null;
+      }
+    }
+  }
+}
+
+
+
+
+
+module.exports = { 
+  getSecret, 
+  createInfluxDBProdSecret, 
+  createInfluxDBDevSecret, 
+  getInfluxDBDevSecrets,  
+  getDevSessionSecrets, 
+  retrieveSessionSecret,
+  retrieveInfluxDBSecrets
+};
 
 // If running directly (not imported)
 if (require.main === module) {
