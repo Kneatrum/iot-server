@@ -58,7 +58,6 @@ module.exports = (sequelize, DataTypes) => {
     serialNumber: {
       allowNull: false,
       type: DataTypes.STRING,
-      unique: true
     },
     activeStatus: {
       allowNull: false,
@@ -69,6 +68,13 @@ module.exports = (sequelize, DataTypes) => {
     sequelize,
     tableName: "devices",
     modelName: 'Device',
+    indexes: [
+      {
+        unique: true,
+        fields: ['userId', 'serialNumber'],
+        name: 'user_device_serial_unique'
+      }
+    ]
   });
 
   return Device;
