@@ -1,22 +1,28 @@
 const express = require('express');
-const { getModels } = require('../databases/postgres/models');
+// const { getModels } = require('../databases/postgres/models');
 const bcrypt = require('bcryptjs');
 const user_routes = express.Router();
-const { getSequelize } = require('../databases/postgres/models/index');
+// const { getSequelize } = require('../databases/postgres/models/index');
+const { updateDeviceCache, removeDeviceMetadata } = require('../../back-end/deviceRegistry');
+const { getUserDevices } = require('../databases/postgres/services');
 
-let db;
+const   dbInitPromise  = require('../databases/postgres/models/index');
+
+const { 
+    getAllUsersAndDevices,
+    addDevice, 
+    getSingleDeviceMetadata 
+} = require('../databases/postgres/services');
+
+let db = null;
+let sequelize = null;
 
 (async () => {
-    try {
-      db = await getModels();
-      console.log('User model:', db.User); 
-      console.log('Device model:', db.Device); 
-      console.log('Topic model:', db.Topic); 
-      console.log('Chart model:', db.Chart); 
-    } catch (err) {
-      console.error('Failed to initialize database models:', err);
-    }
-  })();
+    const init = await dbInitPromise; 
+    db = init.db;
+    sequelize = init.sequelize;
+})();
+
 
 function isAuthenticated(req, res, next) {
     if (req.session.user) {
@@ -69,6 +75,7 @@ user_routes.post('/register', async (req, res) => {
 // Log in
 user_routes.post('/login', async (req, res) => {
     const { email, password } = req.body;
+    const sessionId = req.sessionID;
 
     try {
         const user = await db.User.findOne({ where: { email } });
@@ -85,6 +92,11 @@ user_routes.post('/login', async (req, res) => {
 
         req.session.user = { id: user.id, email: user.email };
         req.session.save();
+
+        const userDevices  = await getUserDevices(user.id);
+        if ( userDevices){
+            updateDeviceCache(userDevices, sessionId);
+        }
         
         return res.status(200).json({ message: 'Login successful' });  
 
@@ -172,7 +184,7 @@ user_routes.get('/device-details', async (req, res) => {
 
 
 user_routes.post('/disable-previous-device', isAuthenticated, async (req, res) => {
-    const sequelize = await getSequelize();
+    // const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
 
     try {
@@ -199,59 +211,31 @@ user_routes.post('/disable-previous-device', isAuthenticated, async (req, res) =
 
 // Add new device
 user_routes.post('/add-device', isAuthenticated, async (req, res) => {
-    const sequelize = await getSequelize();
-    const transaction = await sequelize.transaction();
     const { newDevice, topics } = req.body;
     const userID = req.session.user.id;
-
+    try {
+        await addDevice(userID, newDevice, topics);
+        return res.status(201).json({ message: 'Device added successfully' });
+    } catch {
+        return res.status(500).json({ error: "Something went wrong" }); 
+    }
     // const transaction = await sequelize.transaction(); 
+});
+
+
+user_routes.post('/update-device-cache', isAuthenticated, async (req, res) => {
+    const { uniqueHash } = req.body;
+    const userID = req.session.user.id;
 
     try {
-        
-        const user = await db.User.findOne({
-            where: { id: userID } ,
-            transaction 
-        });
-
-        if (!user) {
-            throw new Error('User not found');
+        const metadata = await getSingleDeviceMetadata(userID, uniqueHash);
+        if (!metadata) {
+            return res.status(404).json({ error: 'Device not found' });
         }
-
-        await db.Device.update(
-            { activeStatus: false }, // Update activeStatus
-            {
-                where: {
-                    activeStatus: true, // Only update devices that are currently active
-                },
-            },
-            { transaction }
-        );
-        
-        const device = await db.Device.create(
-            {
-                userId: user.id,
-                deviceName: newDevice.deviceName,
-                serialNumber: newDevice.serialNumber,
-                activeStatus: newDevice.activeStatus
-            },
-            { transaction }
-        );
-        
-        const topicsData = topics.map(({ description, topic }) => ({
-            deviceId: device.id,
-            description,
-            topic
-        }));
-        
-        await db.Topic.bulkCreate(topicsData , { transaction });
-        
-        await transaction.commit();
-
-        return res.status(201).json({ message: 'Device added successfully' });
-    } catch (err) {
-        await transaction.rollback();
-        console.error("Error:", err);
-        return res.status(500).json({ error: "Something went wrong" });
+        updateDeviceCache(metadata);
+        return res.status(200).json({ message: 'Cache updated successfully' });
+    } catch {
+        return res.status(500).json({ error: "Failed to update cache" }); 
     }
 });
 
@@ -286,6 +270,8 @@ user_routes.delete('/delete-device/:serialNumber', /*isAuthenticated,*/ async (r
         // Delete the device and associated topics
         await db.Topic.destroy({ where: { deviceId: device.id } }); // Delete associated topics
         await device.destroy(); // Delete the device itself
+
+        removeDeviceMetadata(serialNumber);
 
         return res.status(200).json({ message: 'Device deleted successfully' });
     } catch (err) {
@@ -333,17 +319,17 @@ user_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
 
 // Add Topic
 user_routes.post('/topic', isAuthenticated, async (req, res) => {
-    const { description, topic } = req.body;
-    const userID = req.session.user.uuid;
+    const { chartId, deviceId, description, topic } = req.body;
+    const userID = req.session.user.id;
 
     try {
-        const user = await db.User.findOne({
-            where: { 
-                uuid: userID
-            }
-        });
+        // const user = await db.Device.findOne({
+        //     where: { 
+        //         id: userID
+        //     }
+        // });
 
-        await db.Topic.create({ userId: user.id, description, topic });
+        await db.Topic.create({ chartId, deviceId, description, topic });
 
         return res.status(201).json({ message: 'Topic added successfully' });
     } catch (err){
@@ -351,6 +337,59 @@ user_routes.post('/topic', isAuthenticated, async (req, res) => {
         return res.status(500).json({ error : "Something went wrong"})
     }
 })
+
+
+user_routes.get('/user-devices', isAuthenticated, async (req, res) => {
+    const id = req.session.user.id;
+    const email = req.session.user.email;
+
+    try {
+        const devices = await db.Device.findAll({
+            attributes: ['deviceName', 'serialNumber', 'updatedAt'], 
+            where: { userId: id }
+        });
+
+        // Find the latest updatedAt timestamp among all devices
+        const updatedAt = devices.reduce((latest, device) => {
+            const current = new Date(device.updatedAt);
+            return current > latest ? current : latest;
+        }, new Date(0)); // Start with epoch
+
+        // Remove 'updatedAt' from individual devices if you don't want it in the response
+        const sanitizedDevices = devices.map(({ deviceName, serialNumber }) => ({
+            deviceName,
+            serialNumber
+        }));
+
+        const userDevices = {
+            myDevices: {
+                id,
+                email,
+                updatedAt: updatedAt.toISOString(),
+                devices: sanitizedDevices
+            }
+        };
+
+        return res.send(userDevices);
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+});
+
+
+
+user_routes.get('/all-users-devices', async (req, res) => {
+
+    try {
+        const usersAndDevices =  await getAllUsersAndDevices();
+        return res.send(usersAndDevices);
+    } catch (err) {
+        console.log("Error: ", err);
+        return res.status(500).json({ error: "Something went wrong" });
+    }
+});
+
 
 
 // Get all topics
@@ -413,7 +452,7 @@ user_routes.delete('/topic/', async (req, res) => {
 
 
 async function createPageAndCharts() {
-    const sequelize = await getSequelize();
+    // const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
     
     try {
@@ -511,7 +550,7 @@ user_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
 })
 
 user_routes.post('/batch-updates', async (req, res) => {
-    const sequelize = await getSequelize();
+    // const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
     const userID = req.session.user.id;
 
