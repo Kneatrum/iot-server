@@ -21,6 +21,22 @@ module.exports = {
         allowNull: false,
         unique: true
       },
+      planId: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+        references: {
+          model: 'plans',
+          key: 'id'
+        }
+      },
+      planStartDate: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
+      planEndDate: {
+        type: Sequelize.DATE,
+        allowNull: true
+      },
       password: {
         type: Sequelize.STRING,
         allowNull: false
@@ -28,12 +44,12 @@ module.exports = {
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       },
       updatedAt: {
         allowNull: false,
         type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW
+        defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       }
     });
   },
