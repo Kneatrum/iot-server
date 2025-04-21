@@ -7,6 +7,7 @@ const { updateDeviceCache, removeDeviceMetadata } = require('../../back-end/devi
 const { getUserDevices } = require('../databases/postgres/services');
 
 const   dbInitPromise  = require('../databases/postgres/models/index');
+const { isAuthenticated } = require('../auth/auth');
 
 const { 
     getAllUsersAndDevices,
@@ -24,16 +25,7 @@ let sequelize = null;
 })();
 
 
-function isAuthenticated(req, res, next) {
-    if (req.session.user) {
-        // User is authenticated, proceed to the next middleware or route handler
-        return next();
-    } else {
-        // User is not authenticated, redirect to login or return unauthorized response
-        // return res.redirect('/login');
-        return res.status(401).json({ error: "Unauthorized" });
-    }
-}
+
 
 
 
