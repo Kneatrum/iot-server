@@ -11,6 +11,7 @@ const session = require('express-session');
 const general_routes = require('./router/general.js').general;
 const user_routes = require('./router/users.js').users;
 const sslServicesRoutes = require('./router/ssl-services.js');
+const devicesRoutes = require('./router/devices.js').devices;
 
 const {  getSessionStore, sessionStoreReady } = require('./databases/postgres/sessionManager.js');
 const { retrieveSessionSecret } = require('./secrets/aws_secrets.js');
@@ -76,6 +77,7 @@ async function createApp() {
     app.use("/", general_routes);
     app.use("/users", user_routes);
     app.use("/ssl-services", sslServicesRoutes);
+    app.use("/devices", devicesRoutes);
     
     app.set('trust proxy', true);
 
