@@ -12,6 +12,7 @@ const general_routes = require('./router/general.js').general;
 const user_routes = require('./router/users.js').users;
 const sslServicesRoutes = require('./router/ssl-services.js');
 const devicesRoutes = require('./router/devices.js').devices;
+const subscriptionsRoutes = require('./router/subscriptions.js').subscriptions;
 
 const {  getSessionStore, sessionStoreReady } = require('./databases/postgres/sessionManager.js');
 const { retrieveSessionSecret } = require('./secrets/aws_secrets.js');
@@ -78,6 +79,7 @@ async function createApp() {
     app.use("/users", user_routes);
     app.use("/ssl-services", sslServicesRoutes);
     app.use("/devices", devicesRoutes);
+    app.use("/subscriptions", subscriptionsRoutes);
     
     app.set('trust proxy', true);
 
