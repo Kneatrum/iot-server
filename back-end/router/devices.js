@@ -27,7 +27,7 @@ let sequelize = null;
 
 
 // Get all device data
-user_routes.get('/get-devices',  isAuthenticated,  async (req, res) => {
+device_routes.get('/get-devices',  isAuthenticated,  async (req, res) => {
     try {
         const devices = await db.Device.findAll();
         return res.send(devices);
@@ -42,7 +42,7 @@ user_routes.get('/get-devices',  isAuthenticated,  async (req, res) => {
 
 
 // Add new device
-user_routes.post('/add-device', isAuthenticated, async (req, res) => {
+device_routes.post('/add-device', isAuthenticated, async (req, res) => {
     const { newDevice, topics } = req.body;
     const userID = req.session.user.id;
     try {
@@ -56,7 +56,7 @@ user_routes.post('/add-device', isAuthenticated, async (req, res) => {
 
 
 // Delete device by serial number
-user_routes.delete('/delete-device/:serialNumber', /*isAuthenticated,*/ async (req, res) => {
+device_routes.delete('/delete-device/:serialNumber', /*isAuthenticated,*/ async (req, res) => {
     const { serialNumber } = req.params; // Get serial number from URL parameters
     // const userID = req.session.user.uuid; // Retrieve user ID from session
 
@@ -96,7 +96,7 @@ user_routes.delete('/delete-device/:serialNumber', /*isAuthenticated,*/ async (r
 });
 
 
-user_routes.get('/all-users-devices', async (req, res) => {
+device_routes.get('/all-users-devices', async (req, res) => {
 
     try {
         const usersAndDevices =  await getAllUsersAndDevices();
@@ -109,7 +109,7 @@ user_routes.get('/all-users-devices', async (req, res) => {
 
 
 // Get devices by their names and serial numbers
-user_routes.get('/device-details', async (req, res) => { 
+device_routes.get('/device-details', async (req, res) => { 
     try {
         
         const user = req.session.user
@@ -154,7 +154,7 @@ user_routes.get('/device-details', async (req, res) => {
 
 
 
-user_routes.post('/disable-previous-device', isAuthenticated, async (req, res) => {
+device_routes.post('/disable-previous-device', isAuthenticated, async (req, res) => {
     // const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
 
@@ -181,7 +181,7 @@ user_routes.post('/disable-previous-device', isAuthenticated, async (req, res) =
 
 
 
-user_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
+device_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
     const { serialNumber } = req.query; 
     const userID = req.session.user.id; 
     console.log("#############3", serialNumber);
@@ -219,7 +219,7 @@ user_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
 
 
 
-user_routes.get('/user-devices', isAuthenticated, async (req, res) => {
+device_routes.get('/user-devices', isAuthenticated, async (req, res) => {
     const id = req.session.user.id;
     const email = req.session.user.email;
 
@@ -260,7 +260,7 @@ user_routes.get('/user-devices', isAuthenticated, async (req, res) => {
 
 
 
-user_routes.post('/batch-updates', async (req, res) => {
+device_routes.post('/batch-updates', async (req, res) => {
     // const sequelize = await getSequelize();
     const transaction = await sequelize.transaction();
     const userID = req.session.user.id;
@@ -385,7 +385,7 @@ user_routes.post('/batch-updates', async (req, res) => {
 
 
 // Add Topic
-user_routes.post('/topic', isAuthenticated, async (req, res) => {
+device_routes.post('/topic', isAuthenticated, async (req, res) => {
     const { chartId, deviceId, description, topic } = req.body;
     const userID = req.session.user.id;
 
@@ -408,7 +408,7 @@ user_routes.post('/topic', isAuthenticated, async (req, res) => {
 
 
 // Get all topics
-user_routes.get('/topic', /*isAuthenticated,*/ async (req, res) => { /**/
+device_routes.get('/topic', /*isAuthenticated,*/ async (req, res) => { /**/
     // const userID = req.session.user.uuid;
 
     try {
@@ -428,7 +428,7 @@ user_routes.get('/topic', /*isAuthenticated,*/ async (req, res) => { /**/
 })
 
 // Get all layouts
-user_routes.get('/layouts', /*isAuthenticated,*/ async (req, res) => { /**/
+device_routes.get('/layouts', /*isAuthenticated,*/ async (req, res) => { /**/
     // const userID = req.session.user.uuid;
 
     try {
@@ -441,7 +441,7 @@ user_routes.get('/layouts', /*isAuthenticated,*/ async (req, res) => { /**/
 })
 
 
-user_routes.delete('/topic/', async (req, res) => {
+device_routes.delete('/topic/', async (req, res) => {
     const { topic } = req.body;
 
     try {
@@ -466,7 +466,7 @@ user_routes.delete('/topic/', async (req, res) => {
 
 
 // Add dashboard
-user_routes.post('/dashboard', isAuthenticated, async (req, res) => {
+device_routes.post('/dashboard', isAuthenticated, async (req, res) => {
     const { topic } = req.params;
     const userID = req.session.user.id;
 
@@ -489,7 +489,7 @@ user_routes.post('/dashboard', isAuthenticated, async (req, res) => {
 
 
 // Update a topic
-user_routes.put('/:topic', isAuthenticated, async (req, res) => {
+device_routes.put('/:topic', isAuthenticated, async (req, res) => {
     const { topic } = req.params;
     const userID = req.session.user.id;
     try {
@@ -510,7 +510,7 @@ user_routes.put('/:topic', isAuthenticated, async (req, res) => {
 })
 
 // Update a dashboard
-user_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
+device_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
     const { dashboard } = req.params;
     const userID = req.session.user.id;
 
@@ -533,7 +533,7 @@ user_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
 
 
 // Update a chart
-user_routes.put('/:chart', isAuthenticated, async (req, res) => {
+device_routes.put('/:chart', isAuthenticated, async (req, res) => {
     const { chart } = req.params;
     const userID = req.session.user.id;
 
@@ -556,7 +556,7 @@ user_routes.put('/:chart', isAuthenticated, async (req, res) => {
 
 
 
-user_routes.post('/update-device-cache', isAuthenticated, async (req, res) => {
+device_routes.post('/update-device-cache', isAuthenticated, async (req, res) => {
     const { uniqueHash } = req.body;
     const userID = req.session.user.id;
 
