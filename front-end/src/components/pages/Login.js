@@ -34,7 +34,11 @@ const Login = () => {
       if (response.status === 200) {
         const data = await response.data;
         console.log(data)
+        if(!data.plan || data.plan === 'unassigned') {
+          navigate('/plans');
+        } else {
         navigate('/dashboard');
+      }
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {
