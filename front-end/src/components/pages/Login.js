@@ -37,8 +37,8 @@ const Login = () => {
         if(!data.plan || data.plan === 'unassigned') {
           navigate('/plans');
         } else {
-        navigate('/dashboard');
-      }
+          navigate('/dashboard');
+        }
       }
     } catch (error) {
       if (error.response && error.response.status === 401) {
