@@ -6,6 +6,7 @@ back-end/mqtt/mqtt-certs-generator-bcp.js
 back-end/mqtt/automated_mqtt.py
 back-end/doc/
 back-end/.env.development
+back-end/exchange_rates/exchangeRatesBackup.json
 mqtt-auth.sh
 
 front-end/node_modules
