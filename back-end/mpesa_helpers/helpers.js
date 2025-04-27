@@ -1,5 +1,5 @@
 
-import axios from 'axios';
+const axios = require('axios');
 
 const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? './.env' : `./.env.${env}`;
