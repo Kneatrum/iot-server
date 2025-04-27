@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from '../styles/plans.module.css';
 
 import { plansApi } from '../../api/api';
@@ -19,6 +20,13 @@ const formatUploadRate = (seconds) => {
 
 const PlansPage = () => {
   const [plans, setPlans] = useState([]);
+  const navigate = useNavigate();
+
+
+  const onClickChoosePlan = (plan) => {
+    navigate('/payments', { state: { plan } });
+  }
+
 
   useEffect(() => {
     // Fetch plans from the API
@@ -66,7 +74,7 @@ const PlansPage = () => {
           </div>
 
           <div className={styles.planCardFooter}>
-            <button className={styles.choosePlanButton} >Choose Plan</button>
+            <button onClick={() => onClickChoosePlan(plan)}   className={styles.choosePlanButton} >Choose Plan</button>
           </div>
 
         </div>
