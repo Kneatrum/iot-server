@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
   class Plan extends Model {
    
     static associate(models) {
-        Plan.hasMany(models.User, { foreignKey: 'planId' });
+        Plan.hasMany(models.Subscription, { foreignKey: 'planId', as : 'subscriptions' });
     }
 
     // toJSON(){
@@ -17,9 +17,9 @@ module.exports = (sequelize, DataTypes) => {
   Plan.init({
     id: {
         allowNull: false,
-        autoIncrement: true,
-        type: DataTypes.INTEGER,
         primaryKey: true,
+        type: DataTypes.UUID,
+        defaultValue: DataTypes.UUIDV4
     },
     name: {
         allowNull: false,

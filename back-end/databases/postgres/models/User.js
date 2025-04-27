@@ -6,7 +6,7 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       
       User.hasMany(models.Device, { foreignKey: "userId", as: 'devices'});
-      User.belongsTo(models.Plan, { foreignKey: "planId" });
+      User.hasMany(models.Subscription, { foreignKey: "userId", as : 'subscriptions'});
       User.belongsToMany(models.Role, { through: "user_roles", foreignKey: "userId", otherKey: "roleId"})
 
     }
@@ -36,22 +36,6 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
       unique: true
     }, 
-    planId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      references: {
-        model: 'Plan',
-        key: 'id'
-      }
-    },
-    planStartDate: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
-    planEndDate: {
-      type: DataTypes.DATE,
-      allowNull: false
-    },
     password: {
       type: DataTypes.STRING,
       allowNull: false
