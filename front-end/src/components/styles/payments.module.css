@@ -1,0 +1,217 @@
+
+
+.body {
+    background-color: #01010F;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;  
+}
+
+.container {
+  max-width: 500px;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  padding: 40px 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.priceDisplay {
+    text-align: center;
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: white;
+}
+
+.priceDisplay span {
+    color: #448fff;
+}
+
+.durationSelector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.durationButton {
+    background-color: rgba(68, 143, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.durationButton:hover {
+    background-color: rgba(68, 143, 255, 0.3);
+}
+
+.durationText {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.totalPrice  {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.currencySelector {
+    margin-bottom: 30px;
+}
+
+.currencyLabel {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.select {
+    width: 100%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background-color: rgba(2, 2, 20, 0.918);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: rgb(255, 255, 255);
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 16px center;
+    cursor: pointer;
+}
+
+.paymentMethods {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.paymentMethod {
+    flex: 1;
+    border-radius: 8px;
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.paymentMethod:hover {
+    background-color: rgba(68, 143, 255, 0.1);
+    border-color: rgba(68, 143, 255, 0.3);
+}
+
+.paymentMethodActive { 
+    background-color: rgba(68, 143, 255, 0.15);
+    border-color: #448fff;
+}
+
+.paymentIcon {
+    height: 24px;
+    margin-bottom: 8px;
+    filter: brightness(0) invert(1);
+    opacity: 0.8;
+}
+
+.btnPay {
+    width: 100%;
+    padding: 16px;
+    border-radius: 8px;
+    background-color: #448fff;
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+  
+.btnPay:hover {
+    background-color: #3a7ad9;
+}
+
+.secureBadge {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 14px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #448fff;
+    font-weight: 700;
+    font-size: 24px;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+    color: white;
+}
+
+
+.creditCard {
+    fill: #949292;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 20px;
+    filter: brightness(0) invert(1);
+    opacity: 0.5;
+}
+
+.mpesaLogo {
+    width: 48px;
+    height: 48px;
+    margin-bottom: 8px;
+    vertical-align: top;
+}
+
+.airtelLogo {
+    height: 32px;
+    width: 32px;
+    margin-bottom: 24px; 
+}
+
+.portion {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* background-color: #ffffff; */
+    width: 40%;
+    height: 70%;
+}
+
+.icon {
+    fill: #ffffff;
+}
+
