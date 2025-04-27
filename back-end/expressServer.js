@@ -14,6 +14,7 @@ const sslServicesRoutes = require('./router/ssl-services.js');
 const devicesRoutes = require('./router/devices.js').devices;
 const planRoutes = require('./router/plans.js').plans;
 const rolesRoutes = require('./router/roles.js').roles;
+const mpesaRoutes = require('./router/mpesa.js').mobileMoney;
 
 const {  getSessionStore, sessionStoreReady } = require('./databases/postgres/sessionManager.js');
 const { retrieveSessionSecret } = require('./secrets/aws_secrets.js');
@@ -82,6 +83,7 @@ async function createApp() {
     app.use("/devices", devicesRoutes);
     app.use("/plans", planRoutes);
     app.use("/roles", rolesRoutes);
+    app.use("/api/mpesa", mpesaRoutes);
     
     app.set('trust proxy', true);
 
