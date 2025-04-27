@@ -1,45 +1,32 @@
 'use strict';
+
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('users', {
+    await queryInterface.createTable('user_roles', {
       id: {
         allowNull: false,
         primaryKey: true,
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
       },
-      sessionID: {
-        type: Sequelize.STRING
-      },
-      userName: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
-      email: {
-        type: Sequelize.STRING,
+      userId: {
+        type: Sequelize.UUID,
         allowNull: false,
-        unique: true
-      },
-      planId: {
-        type: Sequelize.INTEGER,
-        allowNull: true,
         references: {
-          model: 'plans',
+          model: 'users',
           key: 'id'
-        }
+        },
+        onDelete: 'CASCADE'
       },
-      planStartDate: {
-        type: Sequelize.DATE,
-        allowNull: true
-      },
-      planEndDate: {
-        type: Sequelize.DATE,
-        allowNull: true
-      },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false
+      roleId: {
+        type: Sequelize.UUID,
+        allowNull: false,
+        references: {
+          model: 'roles',
+          key: 'id'
+        },
+        onDelete: 'CASCADE'
       },
       createdAt: {
         allowNull: false,
@@ -52,8 +39,15 @@ module.exports = {
         defaultValue: Sequelize.literal('CURRENT_TIMESTAMP'),
       }
     });
+    
+    // Add index for faster lookups
+    await queryInterface.addIndex('user_roles', ['userId', 'roleId'], {
+      unique: true,
+      name: 'user_role_unique'
+    });
   },
+
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('users');
+    await queryInterface.dropTable('user_roles');
   }
 };
