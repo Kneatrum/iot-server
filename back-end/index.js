@@ -2,6 +2,8 @@ const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? './.env' : `./.env.${env}`;
 require('dotenv').config({path: envFile});
 
+require('./schedules/exchange-rate-cronjob.js');
+
 const createApp = require('./expressServer.js');
 
 const { getAllUsersAndDevices } = require('./databases/postgres/services.js');
