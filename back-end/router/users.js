@@ -40,7 +40,7 @@ user_routes.post('/register', async (req, res) => {
             return res.status(500).json({ message: 'Database not initialized' });
         }
 
-        console.log("Received :", userName, password, email)
+
         const userExists = await db.User.findOne({ where: { email } });
 
         if(userExists){
@@ -48,9 +48,25 @@ user_routes.post('/register', async (req, res) => {
                 message: 'A user with the provided Email address already exists.' 
             });
         }
+        
+        if(!userName || !email || !password){
+            return res.status(400).json({
+                message: 'Please provide all required fields.'
+            });
+        }
 
         const hashedPassword = await bcrypt.hash(password, 12);
-        await db.User.create({ userName, email, password: hashedPassword });
+
+        const newUser = await db.User.create({ userName, email, password: hashedPassword});
+
+        const defaultRole = await db.Role.findOne({ where: { name: 'user' } });
+
+        if (!defaultRole) {
+            return res.status(500).json({ message: 'Default role not found' });
+        }
+
+        await newUser.addRole(defaultRole);
+
         return res.status(201).json({ message: 'Registration successful' });
     } catch(err){
         console.log(err)
@@ -65,7 +81,32 @@ user_routes.post('/login', async (req, res) => {
     const sessionId = req.sessionID;
 
     try {
-        const user = await db.User.findOne({ where: { email } });
+        const user = await db.User.findOne({ 
+            attributes: ['id', 'password'],
+            where: { email },
+            include: [
+                {
+                    model: db.Role,
+                    attributes: ['name'],
+                    through: { attributes: [] }, // Exclude the join table attributes
+                },
+                {
+                    model: db.Subscription,
+                    as: 'subscriptions',
+                    where: { status: 'active' },
+                    required: false,
+                    // attributes: [], // Optional: exclude subscription attributes if you only need the plan
+                    include: [
+                        {
+                            model: db.Plan,
+                            as: 'plan',
+                            attributes: ['name'],
+                        }
+                    ],
+                }
+            ] 
+        });
+        
 
         if(!user){
             return res.status(401).json({ error: 'Unauthorized. Please sign up first.' });
@@ -77,15 +118,22 @@ user_routes.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid password or email!' });
         }
 
-        req.session.user = { id: user.id, email: user.email };
+
+        let roles = user.Roles.map(role => role.name);
+        let plan = user.Subscription?.plan?.name;
+
+        req.session.user = { id: user.id, roles, plan };
+
         req.session.save();
 
         const userDevices  = await getUserDevices(user.id);
         if ( userDevices){
             updateDeviceCache(userDevices, sessionId);
         }
+
+        console.log( "Session :", req.session.user, );
         
-        return res.status(200).json({ message: 'Login successful' });  
+        return res.status(200).json({ message: 'Login successful', roles, plan });  
 
     } catch(err){
         console.log(err);
