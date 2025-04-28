@@ -13,7 +13,8 @@
 .container {
   max-width: 500px;
   width: 100%;
-  background-color: rgba(255, 255, 255, 0.03);
+  /* background-color: rgba(255, 255, 255, 0.03); */
+  background-color: rgba(255, 255, 255, 0.06);
   border-radius: 16px;
   padding: 40px 30px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
@@ -137,7 +138,8 @@
     width: 100%;
     padding: 16px;
     border-radius: 8px;
-    background-color: #448fff;
+    /* background-color: #448fff; */
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     color: white;
     border: none;
     font-size: 16px;
@@ -151,7 +153,9 @@
 }
   
 .btnPay:hover {
-    background-color: #3a7ad9;
+    /* background-color: #3a7ad9; */
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+    transform: scale(1.05);
 }
 
 .secureBadge {
