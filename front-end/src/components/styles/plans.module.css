@@ -1,89 +1,113 @@
 
-.container {
-    display: flex;
-    flex-wrap: wrap;
+
+.body {
+    margin: 0;
+    padding: 0;
+    background-color: #0a0a1f;
+    font-family: 'Poppins', sans-serif;
+    color: #fff;
+    /* display: flex; */
     justify-content: center;
-    gap: 20px;
     align-items: center;
     min-height: 100vh;
-    width: 100vw; 
-    background: var(--global-background-color); 
-    font-family: var(--global-font-family);
 }
 
+.title {
+    text-align: center;
+    margin-bottom: 10px;
+    padding-top: 40px;
+    font-size: 1rem;
+    /* justify-content: center; */
+    /* align-items: center; */
+}
 
-.planCard {
+.pricingContainer {
     display: flex;
-    width: 400px;
-    height: 500px;
-    background-color: var(--global-white-color);
-    border-radius: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    flex-direction: column;
-    transition: transform 0.3s;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    padding: 20px;
 }
 
-.planCard:hover {
+.card {
+    background-color: rgba(255, 255, 255, 0.06);
+    border-radius: 20px;
+    overflow: hidden;
+    width: 280px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 12px 30px rgba(68, 143, 255, 0.5);
+}
+
+.cardHeader {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    padding: 20px;
+    text-align: center;
+}
+
+.cardHeader h3 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.price {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.cardBody {
+    padding: 20px;
+    flex: 1;
+}
+
+.cardBody ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: left;
+}
+
+.cardBody ul li {
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+}
+
+.cardBody ul li b {
+    color: #4facfe;
+}
+
+.cardFooter {
+    padding: 20px;
+    text-align: center;
+}
+
+.cardFooter button {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    border: none;
+    color: white;
+    padding: 12px 25px;
+    font-size: 1rem;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.cardFooter button:hover {
+    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
     transform: scale(1.05);
 }
 
-.planCardHeader {
-    justify-content: left;
-    align-items: center;
-    height: 120px;
-    width: 100%;
-    background-color: var(--global-secondary-color);
-    color: var(--global-white-color);
-    font-size: 24px;
-    font-weight: bold;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
-    padding-left: 40px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-}
-
-.planCardBody {
-    display: flex;
-    align-items: center;
-    height: 400px;
-    width: 100%;
-    justify-content: left;
-    padding: 20px;
-    gap: 20px;
-}
-
-.planCardFooter {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100px;
-    width: 100%;
-    /* background-color: rgba(0, 38, 255, 0.685); */
-    color: var(--global-white-color);
-    font-size: 24px;
-    font-weight: bold;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-}
-
-.choosePlanButton {
-    color: rgb(255, 255, 255);
-    height: 50px;
-    width: 100%;
-    border: 0.2px solid #ddd;
-    border-radius: 10px;
-    cursor: pointer;
-    background-color:  var(--global-button-color);
-    margin-left: 30px;
-    margin-right: 30px;
-    margin-bottom: 30px;
-}
-
-.selected {
-    border: 2px solid #000000; /* Optional: make the border color slightly darker */
-}
-
-.choosePlanButton:hover {
-    background-color: var(--global-button-hover-color);
+@media (max-width: 1200px) {
+    .pricing-container {
+        flex-direction: column;
+        align-items: center;
+    }
 }
