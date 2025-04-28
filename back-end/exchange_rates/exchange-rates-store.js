@@ -10,10 +10,16 @@ let lastUpdated = null;
  * Set exchange rates in memory and save to file.
  * @param {Object} rates - New exchange rates.
  */
-function setExchangeRates(rates) {
+function setExchangeRates(rates, saveToFile = true) {
+    if (typeof rates !== 'object' || rates === null) {
+        throw new Error('Invalid exchange rates format. Expected an object.');
+    }
+    if (saveToFile) {
+        saveRatesToFile();
+    }
+    // Update in-memory rates
     exchangeRates = rates;
     lastUpdated = new Date().toISOString();
-    saveRatesToFile();
 }
 
 /**
@@ -52,6 +58,7 @@ function loadRatesFromFile() {
             exchangeRates = parsed.rates || {};
             lastUpdated = parsed.timestamp || null;
             console.log(`Exchange rates loaded from backup file. Last updated: ${lastUpdated}`);
+            return { exchangeRates, lastUpdated };
         } catch (error) {
             console.error('Failed to load exchange rates from file:', error.message);
         }

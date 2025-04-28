@@ -12,16 +12,16 @@ const { setExchangeRates, loadRatesFromFile } = require('../exchange_rates/excha
         const now = new Date();
     
         // Load exchange rates from the file
-        const results = loadRatesFromFile();
-
-        if (results && results.timestamp && results.rates) {
-            const timestampDate = new Date(results.timestamp);
+        const { exchangeRates, lastUpdated } = loadRatesFromFile();
+        
+        if (exchangeRates && lastUpdated) {
+            const timestampDate = new Date(lastUpdated);
             const hoursDifference = (now.getTime() - timestampDate.getTime()) / (1000 * 60 * 60);  // Get difference in hours
             
             // If rates are less than 24 hours old, load from file
             if (hoursDifference < 24) {
                 console.log('Exchange rates are less than 24 hours old. Loading from file...');
-                setExchangeRates(results.rates);
+                setExchangeRates(exchangeRates, false);
                 return; // Early return to avoid fetching rates again
             }
         }
