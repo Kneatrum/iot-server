@@ -3,7 +3,7 @@ import { ApiProvider } from './context/ApiContext';
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import Auth from './components/pages/Auth.js';
+import LandingPage from './components/pages/LandingPage.js';
 import Admin from './components/pages/Admin.js';
 import Login from './components/pages/Login';
 import Register from './components/pages/Register.js';
@@ -24,7 +24,7 @@ const App = () => {
     <ApiProvider>
       <Router>
         <Routes>
-          <Route path="/" element={ <Auth/> } />
+          <Route path="/" element={ <LandingPage/> } />
           <Route path="/admin" element={ <Admin/> } />
           <Route path="/login" element={ <Login/> } />
           <Route path="/register" element={ <Register/> } />

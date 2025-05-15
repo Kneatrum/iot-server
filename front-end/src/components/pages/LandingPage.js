@@ -3,7 +3,7 @@
 
 import styles from '../styles/landing.module.css'
 
-const Auth = () => {
+const LandingPage = () => {
 
   return (
     <div className={styles.container}>
@@ -25,5 +25,5 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default LandingPage;
 
