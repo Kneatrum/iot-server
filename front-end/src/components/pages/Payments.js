@@ -7,7 +7,7 @@ import { ReactComponent as CreditCard } from '../../assets/credit-card.svg';
 import { ReactComponent as AddIcon } from '../../assets/add.svg';
 import { ReactComponent as RemoveIcon } from '../../assets/remove.svg';
 
-import { exchangeRatesApi } from '../../api/api';
+import { exchangeRatesApi, mpesaApi } from '../../api/api';
 
 
 const DEFAULT_DURATION = 1; // Default duration in months
@@ -24,6 +24,7 @@ const Payments = () => {
     const [isCardActive, setIscardActive] = useState(true);
     const [isMpesaActive, setIsMpesaActive] = useState(false);
     const [isAirtelActive, setIsAirtelActive] = useState(false);
+    const [phoneNumber, setPhoneNumber] = useState('');
 
 
     useEffect(() => {
@@ -75,10 +76,45 @@ const Payments = () => {
     function handlePaymentMethodClick(method) {
         if (method === 'creditCard') {
             handleCardChange();
+            setSelectedCurrency(REFERENCE_CURRENCY);
+            setPlanPrice(() => {
+                const selectedCountryEntry = Object.entries(exchangeRates).find(([_, details]) => details.currencyCode === REFERENCE_CURRENCY);
+                
+                if (selectedCountryEntry) {
+                    const selectedCountry = selectedCountryEntry[0];
+                    console.log('Selected currency rate:', exchangeRates[selectedCountry].rate); 
+                    return exchangeRates[selectedCountry].rate * plan.price;
+                } else {
+                    return plan.price;
+                }
+            });
         } else if (method === 'mpesa') {
             handleMpesaChange();
         } else if (method === 'airtel') {
             handleAirtelChange();
+        }
+    }
+
+    async function initMpesaPayment() {
+
+
+        const payload = {
+            phoneNumber: '0728337139', // Replace with actual phone number
+            // amount: planPrice * duration
+            amount: 2
+        }
+
+        try {
+            const response = await mpesaApi.post('/stk-push', payload);
+            const data = response.data;
+
+            if (data.success) {
+                alert('Payment initiated successfully');
+            } else {
+                alert('Payment initiation failed');
+            }
+        } catch (error) {
+            console.error('Error initiating payment:', error);
         }
     }
 
@@ -173,7 +209,35 @@ const Payments = () => {
                     </div>
                 </div>
 
-                <button className={styles.btnPay}>
+                
+                <div className={`${styles.phoneNumberContainer} ${(isMpesaActive || isAirtelActive) ? styles.active : ''}`}>
+                    <div className={styles.phoneNumberLabel}>
+                        <span>Enter phone number</span>
+                    </div>
+
+                    <input 
+                        type="text" 
+                        placeholder="Phone Number" 
+                        value={phoneNumber} 
+                        onChange={(e) => setPhoneNumber(e.target.value)} 
+                        className={styles.input} 
+                        // disabled={!isMpesaActive}
+                    />
+                 
+                </div>
+
+
+                <button className={styles.btnPay} onClick={async () => {
+                    // Handle payment logic here
+                    if(isMpesaActive){
+                        console.log('Payment initiated');
+                        try {
+                            await initMpesaPayment();
+                        } catch (error) {
+                            console.error('Error initiating payment:', error);
+                        }
+                    }
+                }}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
                         <line x1="1" y1="10" x2="23" y2="10"></line>
