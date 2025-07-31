@@ -7,12 +7,14 @@ Global CSS constants are stored here
 
 :root {
     --global-background-color: #01010F;
+    --global-secondary-color: #0066ff;
     --grid-layout-background-color: rgba(50, 150, 300, 0.2);
     --dashboard-transition: margin-left 0.7s ease;
     --global-font-family: Arial, sans-serif;
     --global-white-color: white;
-    --global-button-color: #0040ff;
-    --global-button-hover-color:  #021f75;
+    /* --global-button-color: #021f75; */
+    --global-button-color: #448fff;
+    --global-button-hover-color: #0040ff;
     --header-height: 60px;
     --expanded-sidebar-width: 200px;
     --collapsed-sidebar-width: 40px;
