@@ -14,7 +14,7 @@ let sequelize = null;
     sequelize = init.sequelize;
 })();
 
-plans.get('/', isAuthenticated, async (req, res) => {
+plans.get('/', /*isAuthenticated,*/ async (req, res) => {
     try {
         if (!db) {
             return res.status(500).json({ message: 'Database not initialized' });

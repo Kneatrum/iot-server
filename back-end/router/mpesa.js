@@ -2,6 +2,7 @@ const express = require('express');
 const axios = require('axios');
 const mobile_money_routes = express.Router();
 
+const { isAuthenticated } = require('../auth/auth.js');
 
 const { 
     getTimestamp, 
@@ -15,7 +16,7 @@ const {
 
 
 // Route to initiate STK Push
-mobile_money_routes.post('/stk-push', async (req, res) => {
+mobile_money_routes.post('/stk-push', isAuthenticated, async (req, res) => {
     try {
         const { phoneNumber, amount } = req.body;
         

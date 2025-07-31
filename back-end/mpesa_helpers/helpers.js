@@ -9,7 +9,7 @@ require('dotenv').config({path: envFile});
 const authAPI = process.env.MPESA_AUTH_API;
 const consumerKey = process.env.MPESA_CONSUMER_KEY;
 const consumerSecret = process.env.MPESA_CONSUMER_SECRET;
-const shortCode = process.env.MPESA_SHORT_CODE;
+const shortCode = process.env.MPESA_SHORTCODE;
 const passKey = process.env.MPESA_PASSKEY;
 const callbackURL = process.env.MPESA_CALLBACK_URL;
 const processRequestURL = process.env.MPESA_PROCESS_REQUEST_URL;
