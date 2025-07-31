@@ -1,0 +1,73 @@
+.container {
+  position: relative;
+}
+
+/* Hamburger Icon */
+.hamburger {
+  width: 30px;
+  height: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  z-index: 1001;
+  margin-top: 8px;
+  margin-left: 2rem;
+}
+
+.bar {
+  height: 4px;
+  background-color: #0010e9;
+  border-radius: 2px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Animation when menu is open */
+.open .bar:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+.open .bar:nth-child(2) {
+  opacity: 0;
+}
+.open .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* Menu Styling */
+.menu {
+  position: absolute;
+  top: 70px;
+  right: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  width: 200px;
+  display: none;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.menu li {
+  margin: 0.5rem 0;
+}
+
+.menu a {
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Toggle visibility */
+.show {
+  display: block;
+}

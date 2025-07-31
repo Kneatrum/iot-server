@@ -1,0 +1,83 @@
+.section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+  /* background-color: white; */
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.container {
+  max-width: 80rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.title {
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+  font-weight: 700;
+  color: #1f2937; /* text-gray-900 */
+}
+
+.description {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+  line-height: 1.75rem;
+  color: #000000; 
+}
+
+.grid {
+  display: grid;
+  gap: 2rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.card {
+  /* background-color: #f9fafb;  */
+  background-color:  #0a0a1f;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  font-weight: 500;
+  color:  #4facfe;
+  margin-bottom: 0.5rem;
+}
+
+.cardDescription {
+  color: #c9c9c9;
+}
