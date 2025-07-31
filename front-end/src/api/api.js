@@ -7,12 +7,14 @@ const certificatesRoute = '/ssl-services'
 const usersRoute = '/users';
 const plansRoute = '/plans';
 const exchangeRatesRoute = '/api/exchange-rates';
+const mpesaRoute = '/api/mpesa';
 
 const usersBaseUrl = `${backEndHost}${usersRoute}`
 // const usersBaseUrl = `${usersRoute}`
 const certsBaseUrl = `${backEndHost}${certificatesRoute}`
 const subscriptionsBaseUrl = `${backEndHost}${plansRoute}`
 const exchangeRatesBaseUrl = `${backEndHost}${exchangeRatesRoute}`
+const mpesaBaseUrl = `${backEndHost}${mpesaRoute}`
 
 const api = axios.create({
     baseURL: usersBaseUrl,
@@ -34,4 +36,9 @@ const exchangeRatesApi = axios.create({
     withCredentials: true
 })
 
-export {api, certsApi, plansApi, exchangeRatesApi};
+const mpesaApi = axios.create({
+    baseURL: mpesaBaseUrl,
+    withCredentials: true
+})
+
+export {api, certsApi, plansApi, exchangeRatesApi, mpesaApi};
