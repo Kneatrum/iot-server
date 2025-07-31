@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from '../styles/plans.module.css';
 
-import { plansApi } from '../../api/api';
 
 
 const humanizeStorage = (mb) => {
@@ -18,42 +17,17 @@ const formatUploadRate = (seconds) => {
 };
   
 
-const PlansPage = () => {
-  const [plans, setPlans] = useState([]);
+const PlansPage = ({plans, activePlan, setActivePlan}) => {
   const navigate = useNavigate();
 
 
   const onClickChoosePlan = (plan) => {
-    navigate('/payments', { state: { plan } });
+    // navigate('/payments', { state: { plan } });
+    setActivePlan(plan);
   }
 
-
-  useEffect(() => {
-    // Fetch plans from the API
-    plansApi.get('/')
-      .then(response => {
-        const fetchedPlans = response.data.map(plan => ({
-          id: plan.id,
-          name: plan.name,
-          price: plan.price,
-          deviceLimit: plan.deviceLimit,
-          dataRetentionDays: plan.dataRetentionDays,
-          uploadRate: plan.uploadRate,
-          protocols: plan.protocols,
-          chartsLimit: plan.chartsLimit,
-          storage: plan.storage,
-        }));
-
-        setPlans(fetchedPlans);
-        console.log('Fetched plans:', fetchedPlans);
-      })
-      .catch(error => {
-        console.error('Error fetching plans:', error);
-      });
-  }, []);
-
   return (
-    <div className={styles.body}>
+    <div className={styles.body} id="pricing">
       <h1 className={styles.title}>Choose Your Plan</h1>
       <div className={styles.pricingContainer}>
         {plans.map(plan => (
@@ -76,7 +50,12 @@ const PlansPage = () => {
             </div>
 
             <div className={styles.cardFooter}>
-              <button onClick={() => onClickChoosePlan(plan)}   className={styles.choosePlanButton} >Select Plan</button>
+              <button
+                onClick={() => onClickChoosePlan(plan)}
+                className={activePlan?.id === plan.id ? styles.selectedButton : ''}
+              >
+                {activePlan?.id === plan.id ? 'Selected' : 'Select Plan'}
+              </button>
             </div>
 
           </div>
