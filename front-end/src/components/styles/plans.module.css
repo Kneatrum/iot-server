@@ -2,23 +2,25 @@
 
 .body {
     margin: 0;
-    padding: 0;
+    padding-bottom: 50px;
     background-color: #0a0a1f;
     font-family: 'Poppins', sans-serif;
     color: #fff;
     /* display: flex; */
     justify-content: center;
     align-items: center;
-    min-height: 100vh;
+    /* max-height: 100vh; */
 }
 
 .title {
     text-align: center;
-    margin-bottom: 10px;
+    /* margin-bottom: 10px; */
     padding-top: 40px;
-    font-size: 1rem;
+    font-size: 2.5rem;
     /* justify-content: center; */
     /* align-items: center; */
+    font-weight: 800; 
+    margin-bottom: 1.5rem; 
 }
 
 .pricingContainer {
@@ -90,7 +92,7 @@
 }
 
 .cardFooter button {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    background:  #0a0a1f;
     border: none;
     color: white;
     padding: 12px 25px;
@@ -98,11 +100,18 @@
     border-radius: 50px;
     cursor: pointer;
     transition: background 0.3s ease, transform 0.3s ease;
+    box-shadow: 0 0 10px rgba(137, 116, 255, 0.3);
 }
 
 .cardFooter button:hover {
     background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
     transform: scale(1.05);
+}
+
+.cardFooter button.selectedButton {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    transform: scale(1.05);
+    /* color: #000; */
 }
 
 @media (max-width: 1200px) {
