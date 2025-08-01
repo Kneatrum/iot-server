@@ -263,7 +263,7 @@ useEffect(() => {
   if(sync.current === true && !isLoading && (devices[activeDevice.index].changes.length > 0 )){
     sync.current = false;
     console.log("@@@@@@@@Changes: ", devices[activeDevice.index].changes);
-    api
+    devicesApi
       .post('/batch-updates', {changes:  devices[activeDevice.index].changes})
       .then((response) => {
         // console.log('$$$$$$$$$$$$$$$Data fetched:', response.data);
