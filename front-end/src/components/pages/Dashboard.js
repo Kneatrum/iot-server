@@ -267,7 +267,7 @@ useEffect(() => {
       .post('/batch-updates', {changes:  devices[activeDevice.index].changes})
       .then((response) => {
         // console.log('$$$$$$$$$$$$$$$Data fetched:', response.data);
-        devices[activeDevice.index].changes = [];
+        // devices[activeDevice.index].changes = [];
       })
       .catch((error) => {
         console.error('Error fetching data:', error.message);
