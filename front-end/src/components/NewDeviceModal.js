@@ -140,9 +140,10 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
             changes: [], // To track changes made to the device
         };
 
-        const hash =  generateUniqueId(userID, serialNumber);
-        if(!hash) return;
-        newDevice.uniqueHash =  hash;
+        const uniqueHash =  await generateUniqueId(userID, serialNumber);
+    
+        if(!uniqueHash) return;
+        newDevice.uniqueHash =  uniqueHash;
         newDevice.deviceName = deviceName;
         newDevice.serialNumber = serialNumber;
         newDevice.activeStatus = true;
