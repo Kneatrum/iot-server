@@ -46,7 +46,10 @@ device_routes.post('/add-device', isAuthenticated, async (req, res) => {
     const { newDevice, topics } = req.body;
     const userID = req.session.user.id;
     try {
-        await addDevice(userID, newDevice, topics);
+        const result = await addDevice(userID, newDevice, topics);
+        if (!result) {
+            return res.status(500).json({ error: "Failed to add device" });
+        }
         return res.status(201).json({ message: 'Device added successfully' });
     } catch {
         return res.status(500).json({ error: "Something went wrong" }); 
