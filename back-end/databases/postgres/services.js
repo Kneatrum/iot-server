@@ -184,6 +184,7 @@ async function getSingleDeviceMetadata(userID, uniqueHash){
         const device = await db.Device.create(
             {
                 userId: user.id,
+                uniqueHash: newDevice.uniqueHash,
                 deviceName: newDevice.deviceName,
                 serialNumber: newDevice.serialNumber,
                 activeStatus: newDevice.activeStatus
