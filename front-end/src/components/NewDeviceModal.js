@@ -17,7 +17,7 @@ import TopicsLayout from './Modal/TopicsLayout';
 
 
 import Spinner from '../components/Spinner';
-import { api, certsApi } from '../api/api';
+import { certsApi, devicesApi } from '../api/api';
 import { set } from 'date-fns';
 
 const tabs = ["MQTT", "CoAP", "AMQP", "WebSockets"];
@@ -161,7 +161,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
         setLoading(true);
         setSuccess(false)
 
-        api.post('/add-device', { newDevice, topics })
+        devicesApi.post('/add-device', { newDevice, topics })
         .then((response) => {
             console.log(response.data);
             setAddStatus(true); // Update status if needed
@@ -174,7 +174,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
             }));
 
 
-            api.post('/update-device-cache', { hash })
+            devicesApi.post('/update-device-cache', { uniqueHash })
             .then((response) => {
                 console.log(response.data);
             })
@@ -195,7 +195,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
     };
 
     const onStageOneNext = () => {
-        api
+        devicesApi
             .get('/check-serial-number', {
                 params: { serialNumber : serialNumber }, 
             })
