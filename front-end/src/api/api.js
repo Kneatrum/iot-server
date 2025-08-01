@@ -48,4 +48,4 @@ const mpesaApi = axios.create({
     withCredentials: true
 })
 
-export {api, certsApi, plansApi, exchangeRatesApi, mpesaApi};
+export {api, certsApi, plansApi, exchangeRatesApi, mpesaApi, devicesApi};
