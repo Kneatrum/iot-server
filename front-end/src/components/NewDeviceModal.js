@@ -123,7 +123,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
         // setApiKeyCopied(true);
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!deviceName || !serialNumber || topics.length === 0) {
             alert('Please ensure all fields are filled and at least one MQTT topic is selected.');
             return;
