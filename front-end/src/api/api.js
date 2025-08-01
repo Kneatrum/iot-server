@@ -8,6 +8,7 @@ const usersRoute = '/users';
 const plansRoute = '/plans';
 const exchangeRatesRoute = '/api/exchange-rates';
 const mpesaRoute = '/api/mpesa';
+const devicesRoute = '/devices';
 
 const usersBaseUrl = `${backEndHost}${usersRoute}`
 // const usersBaseUrl = `${usersRoute}`
@@ -15,6 +16,12 @@ const certsBaseUrl = `${backEndHost}${certificatesRoute}`
 const subscriptionsBaseUrl = `${backEndHost}${plansRoute}`
 const exchangeRatesBaseUrl = `${backEndHost}${exchangeRatesRoute}`
 const mpesaBaseUrl = `${backEndHost}${mpesaRoute}`
+const devicesBaseUrl = `${backEndHost}${devicesRoute}`
+
+const devicesApi = axios.create({
+    baseURL: devicesBaseUrl,
+    withCredentials: true, 
+});
 
 const api = axios.create({
     baseURL: usersBaseUrl,
