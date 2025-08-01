@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { api } from '../../api/api';
 import styles from '../styles/authSection.module.css';
 
 const AuthSection = ({ activePlan, setActiveTab, authActiveTab, setAuthActiveTab }) => {
@@ -7,6 +9,11 @@ const AuthSection = ({ activePlan, setActiveTab, authActiveTab, setAuthActiveTab
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordMatchError, setPasswordMatchError] = useState('');
   const [emailError, setEmailError] = useState('');
+  const [shortPasswordError, setShortPasswordError] = useState('');
+  const [invalidPasswordError, setInvalidPasswordError] = useState('');
+  const [loginErrorMessage, setLoginErrorMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -41,6 +48,55 @@ const AuthSection = ({ activePlan, setActiveTab, authActiveTab, setAuthActiveTab
     setActiveTab('login');
   };
 
+  const handleLoginSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!isValidEmail(email)) {
+      setEmailError('Invalid email address');
+      return;
+    }
+
+    if ( !password ) {
+      setInvalidPasswordError('Password cannot be empty');
+      return;
+    }
+
+    if (password.length < 6) {
+      setShortPasswordError('Password must be at least 6 characters long');
+      return;
+    }
+
+    const formData = {
+      email,
+      password,
+    };
+
+    try {
+      const response = await api.post('/login', formData);
+      
+      if (response.status === 200) {
+        const data = await response.data;
+        console.log(data)
+        // if(!data.plan || data.plan === 'unassigned') {
+        //   navigate('/plans');
+        // } else {
+        //   navigate('/dashboard');
+        // }
+        navigate('/dashboard');
+      } else {
+        throw new Error('Login failed');
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        setLoginErrorMessage(error.response.data.error);
+      } else {
+        setLoginErrorMessage('An error occurred. Please try again.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const selected = activePlan;
 
   return (
@@ -71,6 +127,10 @@ const AuthSection = ({ activePlan, setActiveTab, authActiveTab, setAuthActiveTab
               Sign Up
             </button>
           </div>
+
+          {loginErrorMessage && (
+            <p style={{ color: 'red', marginBottom: '1rem' }}>{loginErrorMessage}</p>
+          )}
 
           {authActiveTab === 'signup' ? (
             <form onSubmit={handleSignupSubmit}>
@@ -162,10 +222,7 @@ const AuthSection = ({ activePlan, setActiveTab, authActiveTab, setAuthActiveTab
               </div>
             </form>
           ) : (
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              alert('Login functionality would go here');
-            }}>
+            <form onSubmit={handleLoginSubmit}>
               <div style={{ marginBottom: '1.5rem' }}>
                 <label className={styles.label}>Email Address</label>
                 <input
@@ -173,7 +230,14 @@ const AuthSection = ({ activePlan, setActiveTab, authActiveTab, setAuthActiveTab
                   autoComplete="email"
                   className      ={styles.input}
                   placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (emailError) setEmailError('');
+                    if (loginErrorMessage) setLoginErrorMessage('');
+                  }}
                 />
+                {emailError && <p style={{ color: 'red', marginTop: '0.5rem' }}>{emailError}</p>}
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>
@@ -183,7 +247,20 @@ const AuthSection = ({ activePlan, setActiveTab, authActiveTab, setAuthActiveTab
                   autoComplete="current-password"
                   className={styles.input}
                   placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    if (invalidPasswordError) setInvalidPasswordError('');
+                    if (shortPasswordError) setShortPasswordError('');
+                    if (loginErrorMessage) setLoginErrorMessage('');
+                  }}
                 />
+                {invalidPasswordError && (
+                  <p style={{ color: 'red', marginTop: '0.5rem' }}>{invalidPasswordError}</p>
+                )}
+                {shortPasswordError && (
+                  <p style={{ color: 'red', marginTop: '0.5rem' }}>{shortPasswordError}</p>
+                )}
               </div>
 
               <div>
