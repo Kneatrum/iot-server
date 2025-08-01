@@ -14,7 +14,7 @@ import { v4 as uuidv4 } from 'uuid';
 import  Modal  from '../Modal/Modal.js'
 import { ApiContext } from '../../context/ApiContext';
 import { ReactComponent as MoreSVGIcon } from '../../assets/more.svg';
-import { api } from '../../api/api';
+import { api, devicesApi } from '../../api/api';
 import ChartCustomizingModal from '../ChartCustomizingModal.js';
 import { useDispatch, useSelector } from "react-redux";
 import { addDevice, appendLayout, updateLayout } from "../devicesSlice";
@@ -128,7 +128,7 @@ const Dashboard = () => {
 
 
   useEffect(() => {
-    api
+    devicesApi
       .get('/device-details')
       .then((response) => {
         console.log('Data fetched:', response.data);
