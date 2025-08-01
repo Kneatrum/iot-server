@@ -32,7 +32,7 @@ function Header() {
         const data = await response.data;
         console.log(data);
         setTag((prevTag) => (prevTag === "Log In" ? "Log Out" : "Log In"));
-        navigate('/login');
+        navigate('/');
       }
     } catch(err) {
       console.log('Unable to log out')
