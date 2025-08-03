@@ -43,6 +43,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   const [isChecked, setIsChecked] = useState(false);
   const [ showLegend, setShowLegend ] = useState(true);
   const [ lineColor, setLineColor ] = useState(basePath.data.datasets[0].borderColor);
+  const [ chartTitle, setChartTitle ] = useState(basePath.data.datasets[0].label);
   const [ xAxisTitle, setXAxisTile ] = useState(basePath.options.scales.x.title.text);
   const [ yAxisTitle, setYAxisTile ] = useState(basePath.options.scales.y.title.text);
   const [ yAxisStepSize, setYAxisStepSize ] = useState(basePath.options.scales.y.ticks.stepSize);
@@ -134,13 +135,14 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
     const chartTitle = e.target.value;
     const datasetPosition = 0;
     const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ];
+    setChartTitle(chartTitle);
     dispatch(updateChartTitle({path, chartTitle}));
   };
 
 
 
   const handleToggleLegend = () => {
-    // setShowLegend(!showLegend);
+    setShowLegend(!showLegend);
     let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.plugins.legend.display; 
     let newState = !previousState;
     const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
@@ -453,24 +455,16 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
           <div>
 
             <div style={{ display: 'flex', flexDirection: 'column', marginTop: "10px", border: '1px solid #fff', paddingLeft: '10px', paddingTop: '5px', borderRadius: '5px', backgroundColor: 'white' }}>
-              
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                <label style={{marginBottom: "10px", fontSize: '0.8em', color: 'GrayText'}}> Legend </label>
+              <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px', marginTop: '10px'}}>
+                <div style={{ display: "flex", alignItems: "center"}}>
+                  <label style={{marginBottom: "10px", fontSize: '0.8em', width: '120px',color: 'GrayText'}}> Legend </label>
+                  <input type="text" onChange={handleTitleChange} placeholder="Enter dataset's name" value={chartTitle} />  
+                </div>
                 <div style={{ display: 'flex', alignItems: 'center'}}>
-                  <input type="checkbox" onChange={handleToggleLegend} style={{width: "20px", height: "20px"}}/>
+                  <input type="checkbox" onChange={handleToggleLegend} style={{width: "20px", height: "20px", marginLeft: '50px'}}/>
                   <label style={{ paddingLeft: "10px", paddingRight: "20px"}}> Hide </label>
                 </div>
               </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column'}}> 
-                <div style={{ display: "flex", alignItems: "center", marginBottom: "2px"}}>
-                  <label style={{ width: '120px'}}> Coffee </label>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", marginBottom: "2px"}}>
-                  <label style={{ width: '120px'}}> Tea </label>
-                </div>
-              </div>
-
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', marginTop: "10px", border: '1px solid #fff', paddingLeft: '10px', paddingTop: '5px', paddingBottom: '10px', borderRadius: '5px', backgroundColor: 'white' }}>
