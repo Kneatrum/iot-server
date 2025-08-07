@@ -61,9 +61,11 @@ function loadRatesFromFile() {
             return { exchangeRates, lastUpdated };
         } catch (error) {
             console.error('Failed to load exchange rates from file:', error.message);
+            return { exchangeRates: {}, lastUpdated: null }; // Return empty rates if loading fails
         }
     } else {
         console.warn('No exchange rates backup file found. Skipping load.');
+        return { exchangeRates: {}, lastUpdated: null }; // Return empty rates if file does not exist
     }
 }
 
