@@ -49,8 +49,8 @@ async function initializeDatabase() {
 
     sequelize = new Sequelize(
       results.data.databaseName,
-      results.data.userName,
-      results.data.password,
+      results.data.databaseUserName,
+      results.data.databasePassword,
       {
         host: results.data.databaseHost,
         dialect: DIALECT,
