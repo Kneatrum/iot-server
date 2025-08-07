@@ -4,6 +4,8 @@ FROM node:20.13.0-alpine
 
 # Set the working directory
 WORKDIR /back-end
+RUN pwd && ls -la
+
 
 # Copy only package.json and package-lock.json first for efficient caching
 COPY package*.json ./
