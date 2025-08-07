@@ -1,4 +1,4 @@
-const { databaseinitialized, sequelize } = require('./models/index');
+const { databaseinitialized } = require('./models/index');
 const session = require('express-session');
 const SequelizeStore = require('connect-session-sequelize')(session.Store);
 
@@ -6,7 +6,9 @@ let sessionStore = null;
 
 const sessionStoreReady = (async () => {
     try {
-        await databaseinitialized;
+        const db = await databaseinitialized;
+        const sequelize = db.sequelize;
+        
         await sequelize.authenticate();
         console.log('Connected to PostgreSQL database');
         
