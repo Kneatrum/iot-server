@@ -12,17 +12,23 @@ COPY package*.json ./
 RUN npm install --production
 
 # Copy the rest of the application code
+COPY ./auth ./auth
 COPY ./databases ./databases
+COPY ./exchange_rates ./exchange_rates
+COPY ./mpesa_countries ./mpesa_countries
+COPY ./mpesa_helpers ./mpesa_helpers
 COPY ./mqtt ./mqtt
+COPY ./openxchangerates ./openxchangerates
 COPY ./router ./router
-COPY ./constants.js ./constants.js
-COPY ./index.js ./index.js
-COPY ./.env ./.env
 COPY ./schedules ./schedules
-COPY ./expressServer.js ./expressServer.js
-COPY ./deviceRegistry.js ./deviceRegistry.js
-# COPY ./.env.development ./.env.development
 COPY ./secrets ./secrets
+COPY ./sessionInspector ./sessionInspector
+COPY ./.env ./.env
+COPY ./constants.js ./constants.js
+COPY ./deviceRegistry.js ./deviceRegistry.js
+COPY ./expressServer.js ./expressServer.js
+COPY ./index.js ./index.js
+# COPY ./.env.development ./.env.development
 
 
 
