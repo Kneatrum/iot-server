@@ -3,6 +3,8 @@
 const env = process.env.NODE_ENV || 'development';
 const envFile = env === 'production' ? './.env' : `./.env.${env}`;
 require('dotenv').config({path: envFile});
+const { getSecret } = require('../secrets/aws_secrets.js');
+const AWS_SECRETS = process.env.AWS_SECRETS;
 
 
 
@@ -36,16 +38,42 @@ async function getExchangeRates() {
 
     try {
         let  currencyCodes = getCurrencyCodes();
-        const response = await axios.get(openXUrl, {
-            params: {
-                app_id: app_id,
-                base: baseCurrency,
-                symbols: currencyCodes
+        const formatedRates = null;
+
+        if (env === 'production') {
+            const results = await getSecret(AWS_SECRETS);
+
+            if (!results || !results.success) {
+                throw new Error("Failed to retrieve exchange rates from AWS");
             }
-        });
-        let rates = response.data.rates;
-        const formatedRates = formatExchangeRates(rates)
-        return formatedRates;
+
+            const { openXchangeRateAppID, openXchangeRateApiUrl, openXchangeRateBaseCurrency } = results.data;
+
+            const response = await axios.get(openXchangeRateApiUrl, {
+                params: {
+                    app_id: openXchangeRateAppID,
+                    base: openXchangeRateBaseCurrency,
+                    symbols: currencyCodes
+                }
+            });
+
+            let rates = response.data.rates;
+            formatedRates = formatExchangeRates(rates)
+            return formatedRates;
+            
+
+        } else {
+            const response = await axios.get(openXUrl, {
+                params: {
+                    app_id: app_id,
+                    base: baseCurrency,
+                    symbols: currencyCodes
+                }
+            });
+            let rates = response.data.rates;
+            formatedRates = formatExchangeRates(rates)
+            return formatedRates;
+        }
     } catch (error) {
         console.error('Error fetching exchange rates:', error);
         throw new Error('Failed to fetch exchange rates');

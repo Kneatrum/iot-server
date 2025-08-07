@@ -12,6 +12,7 @@ const POSTGRESDB_SECRETS = process.env.POSTGRES_SECRETS;
 const POSTGRES_HOSTNAME = process.env.POSTGRES_HOST;
 const DIALECT = process.env.POSTGRES_DIALECT || 'postgres';
 const POSTGRES_LOGGING = process.env.POSTGRES_LOGGING === 'true';
+const AWS_SECRETS = process.env.AWS_SECRETS
 
 const db = {};
 let sequelize;
@@ -40,18 +41,18 @@ function loadModels(sequelizeInstance) {
 
 async function initializeDatabase() {
   if (env === 'production') {
-    const postgresDBConfig = await getSecret(POSTGRESDB_SECRETS);
+    const results = await getSecret(AWS_SECRETS);
 
-    if (!postgresDBConfig || !postgresDBConfig.success) {
+    if (!results || !results.success) {
       throw new Error("Failed to retrieve PostgreSQL secrets from AWS");
     }
 
     sequelize = new Sequelize(
-      postgresDBConfig.data.databaseName,
-      postgresDBConfig.data.userName,
-      postgresDBConfig.data.password,
+      results.data.databaseName,
+      results.data.userName,
+      results.data.password,
       {
-        host: POSTGRES_HOSTNAME,
+        host: results.data.databaseHost,
         dialect: DIALECT,
         logging: POSTGRES_LOGGING,
         pool: {

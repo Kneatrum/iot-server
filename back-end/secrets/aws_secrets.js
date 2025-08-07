@@ -27,6 +27,7 @@ const META_RETRIES = process.env.META_RETRIES;
 const MQTT_SECRETS = process.env.MQTT_SECRETS
 
 const INFLUXDB_SECRETS = process.env.INFLUX_SECRETS;
+const AWS_SECRETS = process.env.AWS_SECRETS;
 
 const USERNAME = "Martin";
 const PASSWORD = "password1234";
@@ -358,25 +359,25 @@ async function retrieveSessionSecret(){
 async function retrieveInfluxDBSecrets() {
   if (env === 'production') {
     try {
-      const influxdbSecrets = await getSecret(INFLUXDB_SECRETS);
+      const results = await getSecret(AWS_SECRETS);
 
-      if (influxdbSecrets) {
+      if (results) {
 
-        if (!influxdbSecrets?.success || !influxdbSecrets?.data) {
+        if (!results?.success || !results?.data) {
           throw new Error("Unable to retrieve InfluxDB secrets");
         }
   
-        const { apiKey, organisation, bucket } = influxdbSecrets.data;
+        const { influxDbApiKey, influxDbApiOrganisation, influxDbBucket } = results.data;
   
-        if (!apiKey || !organisation || !bucket) {
+        if (!influxDbApiKey || !influxDbApiOrganisation || !influxDbBucket) {
           throw new Error("Incomplete InfluxDB secrets received");
         }
 
-        return { apiKey, organisation, bucket };
+        return { influxDbApiKey, influxDbApiOrganisation, influxDbBucket };
       } else {
         let response = await setupInfluxDB(USERNAME, PASSWORD, ORG, BUCKET);
         await createInfluxDBProdSecret(USERNAME, PASSWORD, response.data, BUCKET, ORG);
-        return { apiKey: response.data, organisation: ORG, bucket: BUCKET };
+        return { influxDbApiKey: response.data, influxDbApiOrganisation: ORG, influxDbBucket: BUCKET };
       }
 
     } catch (error) {
