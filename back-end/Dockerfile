@@ -18,6 +18,9 @@ COPY ./router ./router
 COPY ./constants.js ./constants.js
 COPY ./index.js ./index.js
 COPY ./.env ./.env
+COPY ./schedules ./schedules
+COPY ./expressServer.js ./expressServer.js
+COPY ./deviceRegistry.js ./deviceRegistry.js
 # COPY ./.env.development ./.env.development
 COPY ./secrets ./secrets
 
