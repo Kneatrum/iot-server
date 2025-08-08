@@ -38,7 +38,7 @@ async function getExchangeRates() {
 
     try {
         let  currencyCodes = getCurrencyCodes();
-        const formatedRates = null;
+        let formatedRates = null;
 
         if (env === 'production') {
             const results = await getSecret(AWS_SECRETS);
