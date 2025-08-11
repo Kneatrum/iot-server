@@ -25,6 +25,8 @@ COPY ./router ./router
 COPY ./schedules ./schedules
 COPY ./secrets ./secrets
 COPY ./sessionInspector ./sessionInspector
+COPY ./sockets ./sockets
+COPY ./streaming ./streaming
 COPY ./.env ./.env
 COPY ./constants.js ./constants.js
 COPY ./deviceRegistry.js ./deviceRegistry.js
