@@ -32,11 +32,20 @@ const datasetPosition = 0; // Temporary value. Will change when a line chart has
 
 const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, onClose }) => {
 
+  // console.log("#######Active Chart ID:", activeChartId);
+  // console.log("#######Active Device:", activeDevice);
+
   const dispatch = useDispatch();
   const devices = useSelector((state) => state.devices.devices);
-  const basePath = devices[activeDevice.index].charts[activeDevice.chartIDPosition];
-  console.log("#######Active Device:", activeDevice);
+  const basePath = devices[activeDevice.index].layouts[activeDevice.chartIDPosition].chart[0].config;
+  // console.log("#######Active Device:", activeDevice);
 
+  // Find the layout item that contains the chart with the active chart ID
+  // const layoutItem = devices[activeDevice.index].layouts.find(layoutItem => 
+  //   layoutItem.chart && layoutItem.chart.some(chart => chart.config.id === activeChartId)
+  // );
+  // Get the specific chart from the layout item
+  // const basePath = layoutItem ? layoutItem.chart.find(chart => chart.config.id === activeChartId).config : null;
 
   // Initial chart data
   const [activeTab, setActiveTab] = useState(dataSourcesIndex);
@@ -98,7 +107,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   const handleLineColorChange = (e) => {
 
     const newValue = e.target.value;
-    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ]
+    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ]
     setLineColor(newValue);
     dispatch(updateLineBorderColor({path, newValue}));
 
@@ -108,7 +117,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
 
   const handleLineTensionChange = (e) => {
     const lineTension = e.target.value;
-    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ];
+    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ];
     setLineTension(lineTension);
     dispatch(updateLineTension({path, lineTension}));
   };
@@ -116,7 +125,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
 
   const handleLinePointRadiusChange = (e) => {
     const linePointRadius = e.target.value;
-    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ];
+    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ];
     setPointRadius(linePointRadius)
     dispatch(updateLinePointRadius({path, linePointRadius}));
   };
@@ -125,7 +134,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   const handleBorderWidthChange = (e) => {
     const borderWidth = e.target.value;
     const datasetPosition = 0;
-    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ];
+    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ];
     setBorderWidth(borderWidth);
     dispatch(updateLineBoderWidth({path, borderWidth}));
   };
@@ -134,7 +143,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   const handleTitleChange = (e) => {
     const chartTitle = e.target.value;
     const datasetPosition = 0;
-    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition, datasetPosition ];
+    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ];
     setChartTitle(chartTitle);
     dispatch(updateChartTitle({path, chartTitle}));
   };
@@ -143,9 +152,13 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
 
   const handleToggleLegend = () => {
     setShowLegend(!showLegend);
-    let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.plugins.legend.display; 
+    // let previousState = devices[activeDevice.index].layouts[activeDevice.chartIDPosition].chart[activeDevice.chartIDPosition].options.plugins.legend.display; 
+    let previousState = basePath.options.plugins.legend.display;
     let newState = !previousState;
-    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
+    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition ];
+    console.log("Active device index:",activeDevice.index)
+    console.log("Chart position:",activeDevice.chartIDPosition)
+    
     dispatch(toggleLegend({path, newState}));
   };
 
@@ -203,7 +216,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
  
     let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.scales.x.grid.display; 
     let newState = !previousState;
-    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
+    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition ];
     dispatch(toggleXAxisGrid({path, newState}));
  
     // setDevices((prevDevices) => {
@@ -247,24 +260,27 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
 
 
   const handleDisplayYTitleText = () => {
-    let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.scales.y.title.display; 
+    let previousState = devices[activeDevice.index].layouts[activeDevice.chartIDPosition]["chart"][0].config.options.scales.y.title.display; 
+    console.log("Previous Y axis text display state: ", previousState);
     let newState = !previousState;
-    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
+    // console.log("New Y axis text display state: ", newState);
+    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition ];
     dispatch(toggleYAxisTextDisplay({path, newState}));
   };
 
 
 
   const handleDisplayXTitleText = () => {
-    let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.scales.x.title.display; 
+    let previousState = devices[activeDevice.index].layouts[activeDevice.chartIDPosition]["chart"][0].config.options.scales.x.title.display; 
+    // let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.scales.x.title.display; 
     let newState = !previousState;
-    const path = [activeDevice.index, "charts",  activeDevice.chartIDPosition ];
+    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition ];
     dispatch(toggleXAxisTextDisplay({path, newState}));
   };
 
   const handleXTitleChange = (e) => {
     const newTitle = e.target.value;
-    const path = [ activeDevice.index, "charts", activeDevice.chartIDPosition ]
+    const path = [ activeDevice.index, "chart", activeDevice.chartIDPosition ]
     setXAxisTile(newTitle);
     dispatch(updateXAxisTitle({path, newTitle}));
   };
@@ -272,7 +288,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
 
   const handleYTitleChange = (e) => {
     const newTitle = e.target.value;
-    const path = [ activeDevice.index, "charts", activeDevice.chartIDPosition ]
+    const path = [ activeDevice.index, "chart", activeDevice.chartIDPosition ]
     setYAxisTile(newTitle);
     dispatch(updateYAxisTitle({path, newTitle}));
   };
@@ -280,7 +296,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
 
   const handleYStepSizeChange = (e) => {
     const newStepSize = e.target.value;
-    const path = [ activeDevice.index, "charts", activeDevice.chartIDPosition ];
+    const path = [ activeDevice.index, "chart", activeDevice.chartIDPosition ];
     setYAxisStepSize(newStepSize);
     dispatch(updateYAxisStepSize({path, newStepSize}));
 
@@ -329,7 +345,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   const handleXTimeFormatChange = (e) => {
     const newTimeUnit = e.target.value;
     setXAxisTimeUnit(newTimeUnit);
-    const path = [ activeDevice.index, "charts", activeDevice.chartIDPosition ];
+    const path = [ activeDevice.index, "chart", activeDevice.chartIDPosition ];
     dispatch(updateXAxisTimeUnit({path, newTimeUnit}))
 
 
