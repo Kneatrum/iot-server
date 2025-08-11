@@ -3,6 +3,8 @@ import { Line } from "react-chartjs-2";
 import styles from '../styles/chart-customizing-modal.module.css';
 import { ReactComponent as Check } from '../../assets/check.svg';
 import { useDispatch, useSelector } from "react-redux";
+import LineChartConfigTracker from "../../utils/LineChartConfigTracker";
+
 import { 
   updateLineBorderColor, 
   updateLineTension, 
@@ -32,11 +34,12 @@ const datasetPosition = 0; // Temporary value. Will change when a line chart has
 
 const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, onClose }) => {
 
-  // console.log("#######Active Chart ID:", activeChartId);
-  // console.log("#######Active Device:", activeDevice);
+
 
   const dispatch = useDispatch();
   const devices = useSelector((state) => state.devices.devices);
+  const state = useSelector(state => state);
+  const tracker = new LineChartConfigTracker(dispatch, () => state);
   const basePath = devices[activeDevice.index].layouts[activeDevice.chartIDPosition].chart[0].config;
   // console.log("#######Active Device:", activeDevice);
 
@@ -61,7 +64,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   const [ pointRadius, setPointRadius ] = useState(basePath.data.datasets[datasetPosition].pointRadius || 0);
   const [ borderWidth, setBorderWidth ] = useState(basePath.data.datasets[datasetPosition].borderWidth || 2)
   const [ dateTime, setDateTime ] = useState(null); // Get the datetime from the chart data or set the default to the last top of the hour inside the useEffect
-
+  const { devicesApi } = require('../../api/api');
 
   useEffect(() => {
     if(dateTime === null){
@@ -105,61 +108,46 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
 
   // Handler functions for form inputs
   const handleLineColorChange = (e) => {
-
     const newValue = e.target.value;
-    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ]
     setLineColor(newValue);
-    dispatch(updateLineBorderColor({path, newValue}));
-
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'datasets.0.borderColor', newValue);
   };
 
 
 
   const handleLineTensionChange = (e) => {
     const lineTension = e.target.value;
-    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ];
     setLineTension(lineTension);
-    dispatch(updateLineTension({path, lineTension}));
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'datasets.0.tension', lineTension);
   };
 
 
   const handleLinePointRadiusChange = (e) => {
     const linePointRadius = e.target.value;
-    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ];
     setPointRadius(linePointRadius)
-    dispatch(updateLinePointRadius({path, linePointRadius}));
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'datasets.0.pointRadius', linePointRadius);
   };
 
 
   const handleBorderWidthChange = (e) => {
     const borderWidth = e.target.value;
-    const datasetPosition = 0;
-    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ];
     setBorderWidth(borderWidth);
-    dispatch(updateLineBoderWidth({path, borderWidth}));
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'datasets.0.borderWidth', borderWidth);
   };
 
 
   const handleTitleChange = (e) => {
     const chartTitle = e.target.value;
-    const datasetPosition = 0;
-    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition, datasetPosition ];
     setChartTitle(chartTitle);
-    dispatch(updateChartTitle({path, chartTitle}));
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'datasets.0.label', chartTitle);
   };
 
 
 
-  const handleToggleLegend = () => {
-    setShowLegend(!showLegend);
-    // let previousState = devices[activeDevice.index].layouts[activeDevice.chartIDPosition].chart[activeDevice.chartIDPosition].options.plugins.legend.display; 
+  const handleToggleLegend = () => { 
     let previousState = basePath.options.plugins.legend.display;
     let newState = !previousState;
-    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition ];
-    console.log("Active device index:",activeDevice.index)
-    console.log("Chart position:",activeDevice.chartIDPosition)
-    
-    dispatch(toggleLegend({path, newState}));
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'options.plugins.legend.display', newState);
   };
 
 
@@ -261,36 +249,29 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
 
   const handleDisplayYTitleText = () => {
     let previousState = devices[activeDevice.index].layouts[activeDevice.chartIDPosition]["chart"][0].config.options.scales.y.title.display; 
-    console.log("Previous Y axis text display state: ", previousState);
     let newState = !previousState;
-    // console.log("New Y axis text display state: ", newState);
-    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition ];
-    dispatch(toggleYAxisTextDisplay({path, newState}));
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'options.scales.y.title.display', newState);
   };
 
 
 
   const handleDisplayXTitleText = () => {
-    let previousState = devices[activeDevice.index].layouts[activeDevice.chartIDPosition]["chart"][0].config.options.scales.x.title.display; 
-    // let previousState = devices[activeDevice.index].charts[activeDevice.chartIDPosition].options.scales.x.title.display; 
+    let previousState = devices[activeDevice.index].layouts[activeDevice.chartIDPosition]["chart"][0].config.options.scales.x.title.display;  
     let newState = !previousState;
-    const path = [activeDevice.index, "chart",  activeDevice.chartIDPosition ];
-    dispatch(toggleXAxisTextDisplay({path, newState}));
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'options.scales.x.title.display', newState);
   };
 
   const handleXTitleChange = (e) => {
     const newTitle = e.target.value;
-    const path = [ activeDevice.index, "chart", activeDevice.chartIDPosition ]
     setXAxisTile(newTitle);
-    dispatch(updateXAxisTitle({path, newTitle}));
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'options.scales.x.title.text', newTitle);
   };
 
 
   const handleYTitleChange = (e) => {
     const newTitle = e.target.value;
-    const path = [ activeDevice.index, "chart", activeDevice.chartIDPosition ]
     setYAxisTile(newTitle);
-    dispatch(updateYAxisTitle({path, newTitle}));
+    tracker.updateProperty(activeDevice.index, activeDevice.chartIDPosition, 'options.scales.y.title.text', newTitle);
   };
 
 
@@ -408,6 +389,37 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
   //     ],
   //   }));
   // };
+
+  const handleClose = async () => {
+    let updatedConfig = JSON.parse(JSON.stringify(devices[activeDevice.index].layouts[activeDevice.chartIDPosition].chart[0].config));
+    updatedConfig.data.labels = [];
+    updatedConfig.data.datasets[0].data = [];
+    console.log("Updated chart config on close:", updatedConfig);
+    await updateChart(updatedConfig);
+    onClose();
+  };
+
+  const updateChart = async (config) => {
+
+    const payload = {
+      deviceId: activeDevice.index,
+      layoutId: config.id,
+      chartId: activeDevice.chartIDPosition,
+      newConfig: config
+    }
+
+    devicesApi.post('/update-chart', payload)
+    .then((response) => {
+      console.log(response.data);
+    })
+    .catch((error) => {
+      console.error('Error occurred:', error.message);
+     
+    })
+    .finally(() => {
+      
+    });
+  }
 
   return (
     <>
@@ -529,7 +541,7 @@ const LineCustomizer = ({ dataSources, setDevices, activeChartId, activeDevice, 
       </div>
       
       <div className={styles.buttonContainer}>
-        <button onClick={onClose} className={styles.closeButton}>Close</button>
+        <button onClick={handleClose} className={styles.closeButton}>Close</button>
       </div>
     </div>
     </>
