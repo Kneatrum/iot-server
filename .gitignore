@@ -7,6 +7,7 @@ back-end/mqtt/automated_mqtt.py
 back-end/doc/
 back-end/.env.development
 back-end/exchange_rates/exchangeRatesBackup.json
+back-end/streaming/thinkpadData.json
 mqtt-auth.sh
 
 front-end/node_modules
