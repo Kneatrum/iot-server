@@ -384,6 +384,43 @@ device_routes.post('/batch-updates', async (req, res) => {
 });
 
 
+device_routes.post('/update-chart', async (req, res) => {
+    const transaction = await sequelize.transaction();
+    // const userId = req.session.user.id;
+    const {  newConfig } = req.body;
+
+    try {
+
+        const existingChart = await db.Chart.findOne({
+            where: sequelize.literal(`config->>'id' = '${newConfig.id}'`),
+            transaction
+        });
+
+        if (!existingChart) {
+            console.log(`Chart with id ${layoutId} does not exist, creating a new one`);
+            return res.status(404).json({ error: 'Chart not found' });
+        }
+        
+        await db.Chart.update(
+            { config: newConfig },
+            {
+                where: { id: existingChart.id },
+                returning: true,
+                transaction
+            }
+        );
+
+        await transaction.commit();
+
+        return res.status(200).json({ message: 'Chart config updated successfully' });
+
+  } catch (error) {
+    console.error('Error updating chart config with validation:', error);
+    throw error;
+  }
+});
+
+
 
 
 
