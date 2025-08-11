@@ -10,6 +10,11 @@ const { getAllUsersAndDevices } = require('./databases/postgres/services.js');
 const { updateDeviceCache, getDeviceMetadata } = require('./deviceRegistry.js');
 const { databaseinitialized, sequelize }   = require('./databases/postgres/models/index.js');
 
+const http = require("http");
+const { initSocketIO } = require("./sockets/socketServer");
+const { ThinkPadMonitor } = require("./streaming/thinkpadMonitor");
+const { getURL } = require('./sockets/hostnameUtil.js');
+
 const mqttClient = require('./mqtt/subscriber');
 
 const backEndPort = 3000;
@@ -69,8 +74,21 @@ async function startServer() {
             console.error("Error fetching users and devices:", error);
         }
 
-        app.listen(backEndPort, () => {
-            console.log(`Web server listening at ${backEndPort}`);
+        const server = http.createServer(app);
+        initSocketIO(server);
+
+        if (env !== 'production') {
+            const url =   getURL();  
+            if (url) {
+                const thinkPadMonitor = new ThinkPadMonitor(url);
+                thinkPadMonitor.start(2000); // Emit every 2 seconds
+            } else {
+                console.error("Could not start ThinkPadMonitor: Failed to get URL");
+            }
+        }
+
+        server.listen(backEndPort, () => {
+            console.log(`Web server & Socket.IO listening at ${backEndPort}`);
         });
 
     } catch (error) {
