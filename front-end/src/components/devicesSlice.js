@@ -19,10 +19,183 @@ const devicesSlice = createSlice({
     reducers: {
         addDevice: (state, action) => {
             if (Array.isArray(action.payload)) {
-                state.devices.push(...action.payload); // Spread array
+                // Add changes array to each device if it doesn't exist
+                const devicesWithChanges = action.payload.map(device => ({
+                    ...device,
+                    changes: device.changes || []
+                }));
+                state.devices.push(...devicesWithChanges);
+                console.log("Added multiple devices with changes array");
             } else {
-                state.devices.push(action.payload); // Add single object
+                // Add changes array if it doesn't exist
+                const deviceWithChanges = {
+                    ...action.payload,
+                    changes: action.payload.changes || []
+                };
+                state.devices.push(deviceWithChanges);
+                console.log("Added single device with changes array");
             }
+        },
+        updateChartData: (state, action) => {
+            const { deviceIndex, layoutIndex, chartIndex, newLabels, newDataPoints, datasetIndex = 0 } = action.payload;
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[layoutIndex] &&
+                state.devices[deviceIndex].layouts[layoutIndex].chart &&
+                state.devices[deviceIndex].layouts[layoutIndex].chart[chartIndex] &&
+                state.devices[deviceIndex].layouts[layoutIndex].chart[chartIndex].config.data
+            ) {
+                const chartData = state.devices[deviceIndex].layouts[layoutIndex].chart[chartIndex].config.data;
+
+                // Update labels (timestamps)
+                if (newLabels && Array.isArray(newLabels)) {
+                    chartData.labels = newLabels;
+                }
+
+                // Update dataset data points
+                if (newDataPoints && Array.isArray(newDataPoints) && chartData.datasets[datasetIndex]) {
+                    chartData.datasets[datasetIndex].data = newDataPoints;
+                }
+
+                console.log(`Updated chart data for device ${deviceIndex}, layout ${layoutIndex}, chart ${chartIndex}`);
+                console.log('New labels:', chartData.labels);
+                console.log('New data points:', chartData.datasets[datasetIndex]?.data);
+
+            } else {
+                console.error("Invalid path structure for updating chart data:", {
+                    deviceIndex,
+                    layoutIndex,
+                    chartIndex,
+                    datasetIndex
+                });
+            }
+        },
+        // Alternative reducer for appending new data points (useful for real-time data)
+        appendChartData: (state, action) => {
+            const { deviceIndex, layoutIndex, chartIndex, newLabel, newDataPoint, datasetIndex = 0, maxDataPoints = 100 } = action.payload;
+            const chartKey = "chart"; // Assuming chart is always the key for charts
+
+            // Validate path structure
+            if (
+                state.devices[deviceIndex] &&
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data
+            ) {
+                const chartData = state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data;
+
+                // Append new label (timestamp)
+                if (newLabel !== undefined) {
+                    chartData.labels.push(newLabel);
+                }
+
+                // Append new data point
+                if (newDataPoint !== undefined && chartData.datasets[datasetIndex]) {
+                    chartData.datasets[datasetIndex].data.push(newDataPoint);
+                }
+
+                // Limit the number of data points to prevent memory issues
+                if (chartData.labels.length > maxDataPoints) {
+                    chartData.labels = chartData.labels.slice(-maxDataPoints);
+                }
+                
+                if (chartData.datasets[datasetIndex] && chartData.datasets[datasetIndex].data.length > maxDataPoints) {
+                    chartData.datasets[datasetIndex].data = chartData.datasets[datasetIndex].data.slice(-maxDataPoints);
+                }
+
+                console.log(`Appended data point for device ${deviceIndex}, layout ${layoutIndex}, chart ${chartIndex}`);
+                console.log('Current data length:', chartData.datasets[datasetIndex]?.data.length);
+
+            } else {
+                console.error("Invalid path structure for appending chart data:", {
+                    deviceIndex,
+                    layoutIndex,
+                    chartIndex,
+                    datasetIndex
+                });
+            }
+        },
+        batchAppendChartData: (state, action) => {
+            action.payload.forEach(update => {
+                const { deviceIndex, layoutIndex, chartIndex, newLabel, newDataPoint, datasetIndex = 0, maxDataPoints = 100 } = update;
+                const chartKey = "chart"; // Assuming chart is always the key for charts
+
+                // Same validation as appendChartData
+                if (
+                    state.devices[deviceIndex] &&
+                    state.devices[deviceIndex].layouts &&
+                    state.devices[deviceIndex].layouts[chartIndex] &&
+                    state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                    state.devices[deviceIndex].layouts[chartIndex][chartKey][0] &&
+                    state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data
+
+                    // state.devices[deviceIndex] &&
+                    // state.devices[deviceIndex].layouts &&
+                    // state.devices[deviceIndex].layouts[chartIndex] &&
+                    // state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                    // state.devices[deviceIndex].layouts[chartIndex][chartKey][0]
+                ) {
+                    const chartData = state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data;
+
+                    if (newLabel !== undefined) {
+                        chartData.labels.push(newLabel);
+                    }
+
+                    if (newDataPoint !== undefined && chartData.datasets[datasetIndex]) {
+                        chartData.datasets[datasetIndex].data.push(newDataPoint);
+                    }
+
+                    if (chartData.labels.length > maxDataPoints) {
+                        chartData.labels = chartData.labels.slice(-maxDataPoints);
+                    }
+
+                    if (chartData.datasets[datasetIndex] && chartData.datasets[datasetIndex].data.length > maxDataPoints) {
+                        chartData.datasets[datasetIndex].data = chartData.datasets[datasetIndex].data.slice(-maxDataPoints);
+                    }
+                } else {
+                    console.error("Invalid path structure for batch appending chart data:", {
+                        deviceIndex,
+                        layoutIndex,
+                        chartIndex,
+                        datasetIndex
+                    });
+                }
+            });
+        },
+      
+        // Batch update for multiple data points (efficient for bulk updates)
+        batchUpdateChartData: (state, action) => {
+            const { updates } = action.payload;
+
+            updates.forEach(update => {
+                const { deviceIndex, layoutIndex, chartIndex, newLabels, newDataPoints, datasetIndex = 0 } = update;
+
+                if (
+                    state.devices[deviceIndex] &&
+                    state.devices[deviceIndex].layouts &&
+                    state.devices[deviceIndex].layouts[chartIndex] &&
+                    state.devices[deviceIndex].layouts[chartIndex]["chart"] &&
+                    state.devices[deviceIndex].layouts[chartIndex]["chart"][0] &&
+                    state.devices[deviceIndex].layouts[chartIndex]["chart"][0].config.data
+                ) {
+                    const chartData = state.devices[deviceIndex].layouts[chartIndex]["chart"][0].config.data;
+
+                    if (newLabels && Array.isArray(newLabels)) {
+                        chartData.labels = newLabels;
+                    }
+
+                    if (newDataPoints && Array.isArray(newDataPoints) && chartData.datasets[datasetIndex]) {
+                        chartData.datasets[datasetIndex].data = newDataPoints;
+                    }
+                }
+            });
+
+            console.log(`Batch updated ${updates.length} charts`);
         },
         setActiveDeviceIndex: (state, action) => {
             const { prevIndex, activeIndex } = action.payload;
@@ -32,40 +205,48 @@ const devicesSlice = createSlice({
             state.devices[activeIndex].activeStatus = true; // Set the active device to true
         },
         updateDevice: (state, action) => {
-            const { serial, changes } = action.payload;
-            const device = state.devices.find((device) => device.serial === serial);
-            device.changes = changes;
+            const { serialNumber, changes } = action.payload;
+            const device = state.devices.find((device) => device.serialNumber === serialNumber);
+            if (device) {
+                device.changes = changes;
+            }
         },
         removeDevice: (state, action) => {
-            state.devices = state.devices.filter((device) => device.serial !== action.payload);
+            state.devices = state.devices.filter((device) => device.serialNumber !== action.payload);
         },
         updateLayout: (state, action) => {
             const { dbAction, serialNumber, deviceIndex, layoutIndex, layoutChanges } = action.payload;
                         
             if (state.devices[deviceIndex] && Array.isArray(state.devices[deviceIndex].layouts)) {
-                let layouts = state.devices[deviceIndex].layouts
+                // Find the layout item that contains the layout with the given ID
+                const layoutItem = state.devices[deviceIndex].layouts.find(
+                    item => item.layout && item.layout.i === layoutIndex
+                );
 
-                const index = layouts.findIndex((layout) => layout.i === layoutIndex);            
-
-                if(layouts[index]){
+                if (layoutItem && layoutItem.layout) {
                     // Merge the existing layout with the updated layout
-                        layouts[index] = {
-                            ...layouts[index],
-                            ...layoutChanges,
-                        };
+                    layoutItem.layout = {
+                        ...layoutItem.layout,
+                        ...layoutChanges,
+                    };
+
+                    // Ensure changes array exists
+                    if (!state.devices[deviceIndex].changes) {
+                        state.devices[deviceIndex].changes = [];
+                    }
+
+                    state.devices[deviceIndex].changes.push({
+                        dbAction,
+                        serialNumber,
+                        layoutIndex,
+                        layoutChanges
+                    });
+
+                    console.log("Update layout changes: ", state.devices[deviceIndex].changes)
+
                 } else {
-                    console.error("Invalid layout index");
+                    console.error("Invalid layout index - layout not found");
                 }
-
-                state.devices[deviceIndex].changes.push({
-                    dbAction,
-                    serialNumber,
-                    layoutIndex,
-                    layoutChanges
-                });
-
-                console.log("Update layout changes: ", state.devices[deviceIndex].changes)
-
             } else {
                 console.error("Invalid device index or layouts is not an array");
             }
@@ -73,8 +254,22 @@ const devicesSlice = createSlice({
         appendLayout: (state, action) => {
             const { dbAction, deviceID, serialNumber, newLayout, newChart, formattedDateTime } = action.payload;
             if (state.devices[deviceID] && Array.isArray(state.devices[deviceID].layouts)) {
-                state.devices[deviceID].layouts.push(newLayout);
-                state.devices[deviceID].charts.push(newChart);
+                // Create new layout item with the original structure
+                const newLayoutItem = {
+                    layout: newLayout,
+                    chart: [{
+                        config: newChart,
+                        chartType: newChart.type,
+                        dateSpan: formattedDateTime
+                    }]
+                };
+
+                state.devices[deviceID].layouts.push(newLayoutItem);
+
+                // Ensure changes array exists
+                if (!state.devices[deviceID].changes) {
+                    state.devices[deviceID].changes = [];
+                }
 
                 state.devices[deviceID].changes.push({
                     dbAction,
@@ -110,24 +305,19 @@ const devicesSlice = createSlice({
         updateLineBorderColor: (state, action) => {
             const { path, newValue } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex, datasetIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex, datasetIndex]
+            const [deviceIndex, chartKey, chartIndex, datasetIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex] &&
-                state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex]
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex]
             ) {
-                const targetDataset = state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex];
-
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                const targetDataset = state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex];
 
                 // Ensure the "changes" array exists
                 if (!state.devices[deviceIndex].changes) {
@@ -162,24 +352,19 @@ const devicesSlice = createSlice({
         updateLineTension: (state, action) => {
             const { path, lineTension } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex, datasetIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex, datasetIndex]
+            const [deviceIndex, chartKey, chartIndex, datasetIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex] &&
-                state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex]
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex]
             ) {
-                const targetDataset = state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex];
-
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                const targetDataset = state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex];
 
                 // Update the line tension
                 console.log("Updating line tension with: ", lineTension)
@@ -189,26 +374,21 @@ const devicesSlice = createSlice({
         updateLinePointRadius: (state, action) => {
             const { path, linePointRadius } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex, datasetIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex, datasetIndex]
+            const [deviceIndex, chartKey, chartIndex, datasetIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex] &&
-                state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex]
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex]
             ) {
-                const targetDataset = state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex];
+                const targetDataset = state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex];
 
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
-
-                // Update the line tension
+                // Update the point radius
                 console.log("Updating line point radius with: ", linePointRadius)
                 targetDataset.pointRadius = linePointRadius;
             }
@@ -216,26 +396,21 @@ const devicesSlice = createSlice({
         updateLineBoderWidth: (state, action) => {
             const { path, borderWidth } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex, datasetIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex, datasetIndex]
+            const [deviceIndex, chartKey, chartIndex, datasetIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex] &&
-                state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex]
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex]
             ) {
-                const targetDataset = state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex];
+                const targetDataset = state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex];
 
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
-
-                // Update the line tension
+                // Update the border width
                 console.log("Updating line border width with: ", borderWidth)
                 targetDataset.borderWidth = borderWidth;
             }
@@ -243,250 +418,232 @@ const devicesSlice = createSlice({
         updateChartTitle: (state, action) => {
             const { path, chartTitle } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex, datasetIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex, datasetIndex]
+            const [deviceIndex, chartKey, chartIndex, datasetIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex] &&
-                state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex]
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex]
             ) {
-                const targetDataset = state.devices[deviceIndex][chartsKey][chartIndex].data.datasets[datasetIndex];
+                const targetDataset = state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.data.datasets[datasetIndex];
 
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
-
-                // Update the line tension
+                // Update the chart title
                 console.log("Updating line chart title: ", chartTitle)
                 targetDataset.label = chartTitle;
             }
         },
         toggleLegend: (state, action) => {
             const { path, newState } = action.payload;
+           
+            const [deviceIndex, chartKey, chartIndex] = path;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex] = path;
-
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex]
-                
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0]
             ) {
-                state.devices[deviceIndex][chartsKey][chartIndex].options.plugins.legend.display = newState;
-                console.log("New state: ", newState)
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
-
-                
-                
-                
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.options.plugins.legend.display = newState;
+            } else {
+                console.error("Invalid path structure for toggling legend:", {
+                    deviceIndex,
+                    chartKey,
+                    chartIndex
+                });
             }
         },
         toggleYAxisGrid: (state, action) => {
             const { path, newState } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex]
+            const [deviceIndex, layoutIndex, chartIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex]
-                
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex]["chart"] &&
+                state.devices[deviceIndex].layouts[chartIndex]["chart"][0] &&
+                state.devices[deviceIndex].layouts[chartIndex]["chart"][0].config.options.scales.y.grid.display
             ) {
-                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.grid.display = newState;
-                console.log("New state: ", newState)
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                state.devices[deviceIndex].layouts[chartIndex]["chart"][0].config.options.scales.y.grid.display = newState;
+                console.log("New Y axis grid state: ", newState)
             }
         },
         toggleXAxisGrid: (state, action) => {
             const { path, newState } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex]
+            const [deviceIndex, layoutIndex, chartIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex]
-                
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[layoutIndex] &&
+                state.devices[deviceIndex].layouts[layoutIndex]["chart"] &&
+                state.devices[deviceIndex].layouts[layoutIndex]["chart"][chartIndex]
             ) {
-                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.grid.display = newState;
-                console.log("New state: ", newState)
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                state.devices[deviceIndex].layouts[layoutIndex]["chart"][chartIndex].config.options.scales.x.grid.display = newState;
+                console.log("New X axis grid state: ", newState)
             }
         },
         toggleYAxisTextDisplay: (state, action) => {
             const { path, newState } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex] = path;
-
-            // Validate path structure
+            // Path: [deviceIndex, layoutIndex, chartIndex]
+            const [deviceIndex, chartKey, chartIndex] = path;
+            console.log("New state: ", newState)
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex]
-                
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0]
             ) {
-                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.title.display = newState;
-                console.log("New state: ", newState)
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.options.scales.y.title.display = newState;
+                console.log("New Y axis text display state: ", newState)
+            } else {
+                console.error("Invalid path structure for toggling Y axis text display:", {
+                    deviceIndex,
+                    chartKey,
+                    chartIndex
+                });
             }
         },
         toggleXAxisTextDisplay: (state, action) => {
             const { path, newState } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex]
+            const [deviceIndex, chartKey, chartIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex]
-                
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0]
             ) {
-                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.x.title.display = newState;
-                console.log("New state: ", newState)
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.options.scales.x.title.display = newState;
+                console.log("New X axis text display state: ", newState)
+            } else {
+                console.error("Invalid path structure for toggling X axis text display:", {
+                    deviceIndex,
+                    chartKey,
+                    chartIndex
+                });
             }
         },
         updateXAxisTitle: (state, action) => {
             const { path, newTitle } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex]
+            const [deviceIndex, chartKey, chartIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex]
-                
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0]
             ) {
-                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.x.title.text = newTitle;
-                console.log("New state: ", newTitle)
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][chartIndex].config.options.scales.x.title.text = newTitle;
+                console.log("New X axis title: ", newTitle)
+            } else {
+                console.error("Invalid path structure for updating X axis title:", {
+                    deviceIndex,
+                    chartKey,
+                    chartIndex
+                }); 
             }
         },
         updateYAxisTitle: (state, action) => {
             const { path, newTitle } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex]
+            const [deviceIndex, chartKey, chartIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex]
-                
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[chartIndex] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey] &&
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0]
             ) {
-                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.title.text = newTitle;
-                console.log("New state: ", newTitle)
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                state.devices[deviceIndex].layouts[chartIndex][chartKey][0].config.options.scales.y.title.text = newTitle;
+                console.log("New Y axis title: ", newTitle)
+            } else {
+                console.error("Invalid path structure for updating Y axis title:", {
+                    deviceIndex,
+                    chartKey,
+                    chartIndex
+                });
             }
         },
         updateYAxisStepSize: (state, action) => {
             const { path, newStepSize } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex]
+            const [deviceIndex, layoutIndex, chartIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex]
-                
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[layoutIndex] &&
+                state.devices[deviceIndex].layouts[layoutIndex].chart &&
+                state.devices[deviceIndex].layouts[layoutIndex].chart[chartIndex]
             ) {
-                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.y.ticks.stepSize = newStepSize;
-                console.log("New StepSize: ", newStepSize)
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                state.devices[deviceIndex].layouts[layoutIndex].chart[chartIndex].config.options.scales.y.ticks.stepSize = newStepSize;
+                console.log("New Y axis step size: ", newStepSize)
             }
         },
         updateXAxisTimeUnit: (state, action) => {
             const { path, newTimeUnit } = action.payload;
 
-            // Directly mutate the state as Immer is built into Redux Toolkit
-            const [deviceIndex, chartsKey, chartIndex] = path;
+            // Path: [deviceIndex, layoutIndex, chartIndex]
+            const [deviceIndex, layoutIndex, chartIndex] = path;
 
-            // Validate path structure
+            // Find the specific layout item and chart
             if (
                 state.devices[deviceIndex] &&
-                state.devices[deviceIndex][chartsKey] &&
-                state.devices[deviceIndex][chartsKey][chartIndex]
-                
+                state.devices[deviceIndex].layouts &&
+                state.devices[deviceIndex].layouts[layoutIndex] &&
+                state.devices[deviceIndex].layouts[layoutIndex].chart &&
+                state.devices[deviceIndex].layouts[layoutIndex].chart[chartIndex]
             ) {
-                state.devices[deviceIndex][chartsKey][chartIndex].options.scales.x.time.unit = newTimeUnit;
-                console.log("New StepSize: ", newTimeUnit)
-                // Track changes
-                // state.devices[deviceIndex].changes.push({
-                //     path,
-                //     oldValue: targetDataset.borderColor,
-                //     newValue,
-                // });
+                state.devices[deviceIndex].layouts[layoutIndex].chart[chartIndex].config.options.scales.x.time.unit = newTimeUnit;
+                console.log("New X axis time unit: ", newTimeUnit)
             }
         },
-        clearChanges: (state) => {
-            state.changes = [];
+         clearChanges: (state, action) => {
+            const { deviceIndex } = action.payload;
+            if (state.devices[deviceIndex]) {
+                state.devices[deviceIndex].changes = [];
+            }
         }
     },
 });
 
 export default devicesSlice.reducer;
 export const { 
-    addDevice, 
+    addDevice,
+    updateChartData,        
+    appendChartData, 
+    batchAppendChartData,       
+    batchUpdateChartData,    
     setActiveDeviceIndex, 
     updateDevice, 
     removeDevice, 
