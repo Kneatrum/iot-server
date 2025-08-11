@@ -17,7 +17,8 @@ import { ReactComponent as MoreSVGIcon } from '../../assets/more.svg';
 import { api, devicesApi } from '../../api/api';
 import ChartCustomizingModal from '../ChartCustomizingModal.js';
 import { useDispatch, useSelector } from "react-redux";
-import { addDevice, appendLayout, updateLayout } from "../devicesSlice";
+import { addDevice, appendLayout, updateLayout, appendChartData, batchAppendChartData } from "../devicesSlice";
+import { io } from "socket.io-client";
 
 
 import {
@@ -35,6 +36,8 @@ import {
   layouts
 } from 'chart.js'
 import { set } from 'date-fns';
+
+const socket = io('http://localhost:3000')
 
 const chartComponents = {
   Line: Line,
@@ -101,7 +104,7 @@ const Dashboard = () => {
 
   const dispatch = useDispatch();
   const devices = useSelector((state) => state.devices.devices);
-  // console.log("Layout: ", layout)
+  // console.log("!!!!!!!!!!Layout: ", devices)
 
   // useEffect(() => {
   //   console.log("(UseEffect) New device count: ", deviceCount);
@@ -111,6 +114,65 @@ const Dashboard = () => {
   //   console.log("(UseEffect) Active device: ", activeDevice);
   //   console.log("Devices: ", devices)
   // }, [activeDevice])
+
+  useEffect(() => {
+  const handlePayload = (payload) => {
+    // console.log("Payload received:", payload);
+
+    const updates = [];
+
+    for (const device of payload) {
+      const { deviceId, charts } = device;
+
+      for (const chart of charts) {
+        const { chartId, dataPoint, timestamp } = chart;
+
+        updates.push({
+          deviceIndex: deviceId,   
+          layoutIndex: 0,          // Not used in this context, set to 0
+          chartIndex: chartId,
+          newLabel: timestamp,
+          newDataPoint: dataPoint,
+          maxDataPoints: 100
+        });
+      }
+    }
+
+    // Dispatch all updates in one go
+    dispatch(batchAppendChartData(updates));
+  };
+
+  socket.on("thinkpadData", handlePayload);
+  console.log("Socket listener for cpuData set up");
+
+  return () => {
+    socket.off("thinkpadData", handlePayload);
+  };
+}, [dispatch]);
+
+//     useEffect(() => {
+//     socket.on("thinkpadData", (data) => {
+//         console.log("CPU Data received:", data);
+        
+//         // Based on your data structure, you need to:
+//         // 1. Find the correct layout index (not use chartIndex as layoutIndex)
+//         // 2. Use chartIndex = 0 since each layout has chart array with index 0
+        
+//         dispatch(appendChartData({
+//             deviceIndex: 0,        // Device at index 1
+//             layoutIndex: 0,        // Layout at index 1 (this should match the layout you want to update)
+//             chartIndex: 0,         // Chart at index 0 within the chart array
+//             newLabel: Date.now(),
+//             newDataPoint: 12,
+//             maxDataPoints: 20
+//         }));
+//     });
+
+//     return () => {
+//         socket.off("thinkpadData");
+//     };
+// }, [dispatch]); // Add dispatch as dependency
+
 
   
   useEffect(() => {
@@ -146,19 +208,7 @@ const Dashboard = () => {
         // Only add devices if there are new ones
         console.log("New Devices: ", newDevices);
         if (newDevices.length > 0) {
-          const formattedDevices = newDevices.map((device) => ({
-            deviceName: device.deviceName,
-            serialNumber: device.serialNumber,
-            activeStatus: device.activeStatus,
-            layouts: device.layouts.map(layoutItem => layoutItem.layout) || [],  // Get the layout from the backend
-            charts: device.layouts
-            .filter(layoutItem => layoutItem.chart && layoutItem.chart[0]?.config) // Ensure chart and config exist
-            .map(layoutItem => layoutItem.chart[0].config) || [], // Extract chart config// Get the charts from the backend
-            topics: device.topics,
-            changes: []   // For tracking changes.
-          }));
-          console.log("Formated Devices: ", formattedDevices)
-          dispatch(addDevice(formattedDevices));
+          dispatch(addDevice(newDevices));
         }
 
         setIsLoading(false);
@@ -211,7 +261,7 @@ const Dashboard = () => {
         }
   
         setActiveDevice(activeDevice);
-        console.log("AAAIIII", activeDevice)
+        
       }
     }
   }, [ isLoading ])
@@ -300,73 +350,69 @@ useEffect(() => {
   };
 
 
-    const handleOpenModal = (chartId, ddevices) => {
+const handleOpenModal = (chartId, ddevices) => {
     setActiveChartId(chartId); // Set the active chart ID
-    // console.log("Chart ID: ", chartId)
-    // console.log("Active chart ID", activeChartId)
     
-    let tempActiveChardIdIndex = ddevices[activeDevice.index].charts.findIndex((chart) => chart.id === chartId)
-    // let tempActiveChardIdIndex = ddevices[activeDevice.index].layouts.id;
-    // console.log("Index of chart id: ", tempActiveChardIdIndex)
-    // if(tempActiveChardIdIndex !== -1){
-    //   setIndexOfSelectedChartId(tempActiveChardIdIndex);
-    // }
+    // Find the chart in the active device's layouts
+    let tempActiveChardIdIndex = -1;
+    const activeDeviceData = ddevices[activeDevice.index];
+    
+    if (activeDeviceData && activeDeviceData.layouts) {
+      // Find the layout item that contains the chart with this ID
+      const layoutWithChart = activeDeviceData.layouts.find(layoutItem => 
+        layoutItem.chart && layoutItem.chart.some(chart => chart.config.id === chartId)
+      );
+      
+      if (layoutWithChart) {
+        tempActiveChardIdIndex = activeDeviceData.layouts.indexOf(layoutWithChart);
+      }
+    }
     
     setActiveDevice((prevDevice) => ({
       ...prevDevice,
       chartID: chartId,
       chartIDPosition: tempActiveChardIdIndex,
-      
     }));
-
-    // console.log("Active device: ", activeDevice)
-
-
-    // let tempActiveChardIdIndex = ddevices[activeDevice.index].charts.findIndex((chart) => chart.id === activeChartId)
-    // if(tempActiveChardIdIndex !== -1){
-    //   setIndexOfSelectedChartId(tempActiveChardIdIndex);
-    // }
 
     setOverlayActive(true);
     setCustomizeChartModal(true); // Open the modal
     const lay = findLayoutByChartId(chartId, ddevices);
-    // const selectedChart = findSelectedChartById(chartId, devices);
-    // setSelectedChartData(selectedChart);
     const position = calculateModalPosition(lay, windowWidth, maxNumCols, rowHeight);
     setNewModalPosition(position);
-    // console.log({
-    //   ChartID: chartId, 
-    //   ChartModal:  customizeChartModal, 
-    //   position: position,
-    //   layout:  lay
-    // })
   };
 
 
   function findLayoutByChartId(chartId, devices) {
     for (const device of devices) {
-      if (device.layouts && device.charts) {
-        // Loop through charts to find the one matching the chartId
-        const matchingChart = device.charts.find(chart => chart.id === chartId);
+      if (device.layouts) {
+        // Find the layout item that contains the chart with this ID
+        const layoutWithChart = device.layouts.find(layoutItem => 
+          layoutItem.chart && layoutItem.chart.some(chart => chart.config.id === chartId)
+        );
         
-        if (matchingChart) {
-          // Find the corresponding layout by matching the chart's ID
-          const matchingLayout = device.layouts.find(layout => layout.i === chartId);
-          if (matchingLayout) {
-            return matchingLayout;
-          }
+        if (layoutWithChart) {
+          return layoutWithChart.layout;
         }
       }
     }
-    // Return null if no matching layout is found
     return null;
   }
 
 
   function findSelectedChartById(chartId, devices){
-    const activeChart = devices.find(device => device.activeStatus)
-    ?.charts.find(chart => chart.id === chartId);
-    return activeChart;
+    for (const device of devices) {
+      if (device.activeStatus && device.layouts) {
+        // Find the layout item that contains the chart with this ID
+        const layoutWithChart = device.layouts.find(layoutItem => 
+          layoutItem.chart && layoutItem.chart.some(chart => chart.config.id === chartId)
+        );
+        
+        if (layoutWithChart) {
+          return layoutWithChart.chart.find(chart => chart.config.id === chartId);
+        }
+      }
+    }
+    return null;
   }
 
 
@@ -566,8 +612,11 @@ useEffect(() => {
 
   const handleLayoutChange = (newLayout) => {
 
-    let previousLayouts = devices[activeDevice.index].layouts;
+    // Extract current layouts from the active device's layouts structure
+    const currentDevice = devices[activeDevice.index];
+    if (!currentDevice || !currentDevice.layouts) return;
 
+    const previousLayouts = currentDevice.layouts.map(layoutItem => layoutItem.layout);
     const changedLayout = getChangedLayoutWithChanges(previousLayouts, newLayout);
     
     if(!changedLayout) return;
@@ -647,6 +696,36 @@ function getChangedLayoutWithChanges(prevLayouts, newLayouts) {
     setActiveChartId(null);
   };
 
+  // Helper function to get all charts from the active device
+  const getActiveDeviceCharts = () => {
+    const currentDevice = devices[activeDevice.index];
+    if (!currentDevice || !currentDevice.layouts) return [];
+    
+    const charts = [];
+    currentDevice.layouts.forEach(layoutItem => {
+      if (layoutItem.chart && layoutItem.chart.length > 0) {
+        layoutItem.chart.forEach(chart => {
+          charts.push({
+            ...chart,
+            layoutId: layoutItem.layout.i
+          });
+        });
+      }
+    });
+    
+    return charts;
+  };
+
+  // Helper function to get all layouts from the active device
+  const getActiveDeviceLayouts = () => {
+    const currentDevice = devices[activeDevice.index];
+    if (!currentDevice || !currentDevice.layouts) return [];
+    const deviceLayout = currentDevice.layouts.map(layoutItem => layoutItem.layout);
+    // console.log("^^^^^^^^^^^^^^^^^Device layout: ", deviceLayout)
+    
+    return deviceLayout
+  };
+
   return (
     
     <>
@@ -660,7 +739,7 @@ function getChangedLayoutWithChanges(prevLayouts, newLayouts) {
 
           <GridLayout
             className="complex-interface-layout"
-            layout={devices[activeDevice.index].layouts || []}
+            layout={getActiveDeviceLayouts()}
             isDraggable={false}
             isResizable={false}
             cols={maxNumCols}
@@ -672,15 +751,15 @@ function getChangedLayoutWithChanges(prevLayouts, newLayouts) {
             margin={margin}
           >
             
-            {devices[activeDevice.index].charts.map((serializedChart) => {
-              const ChartComponent = chartComponents[serializedChart.type];
-              const fullChartData = deserializeChartData(serializedChart);
+            {getActiveDeviceCharts().map((chartItem) =>  {
+              const ChartComponent = chartComponents[chartItem.config.type];
+              const fullChartData = deserializeChartData(chartItem.config);
               // console.log("Full chart data: ", fullChartData)
               return (
-                <div key={serializedChart.id} className={`${gridcss.gridItem} ${serializedChart.id === activeChartId ? gridcss.activeChart : ''}`}>
+                <div key={chartItem.config.id} className={`${gridcss.gridItem} ${chartItem.config.id === activeChartId ? gridcss.activeChart : ''}`}>
                   <div 
                     className={gridcss.kebabMenu} 
-                    onClick={() => handleOpenModal(serializedChart.id, devices)}>
+                    onClick={() => handleOpenModal(chartItem.config.id, devices)}>
                       <MoreSVGIcon/> 
                   </div>
                   <ChartComponent data={fullChartData.data} options={fullChartData.options} />
