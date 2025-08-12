@@ -169,7 +169,7 @@ async function getSingleDeviceMetadata(userID, uniqueHash){
   async function addDevice(userID, newDevice, topics){
 
     await ensureInitialized();
-    const transaction = await sequelize.transaction();
+    const transaction = await db.sequelize.transaction();
 
 
     try {
