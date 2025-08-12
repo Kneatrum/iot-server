@@ -3,12 +3,20 @@
 const { databaseinitialized, db, sequelize } = require('./models/index');
 
 
-(async () => {
-    await databaseinitialized; // Ensures everything is initialized before usage
-})();
+let isInitialized = false;
+
+async function ensureInitialized() {
+    if (!isInitialized) {
+        await databaseinitialized;
+        isInitialized = true;
+    }
+}
+
 
 
 async function getSingleDeviceMetadata(userID, uniqueHash){
+
+    await ensureInitialized();
 
     let device = [];
     if(!userID || !uniqueHash) return null;
@@ -59,6 +67,8 @@ async function getSingleDeviceMetadata(userID, uniqueHash){
 
   async function getAllUsersAndDevices(){
 
+    await ensureInitialized();
+
     try {
         const usersAndDevices = await db.User.findAll({
             attributes: ['id', 'email'], 
@@ -106,6 +116,8 @@ async function getSingleDeviceMetadata(userID, uniqueHash){
 
 
   async function getUserDevices(userID){
+
+    await ensureInitialized();
 
     try {
         const usersAndDevices = await db.User.findOne({
@@ -156,7 +168,7 @@ async function getSingleDeviceMetadata(userID, uniqueHash){
     // Add a new device to a user
   async function addDevice(userID, newDevice, topics){
 
-    // const sequelize = await getSequelize();
+    await ensureInitialized();
     const transaction = await sequelize.transaction();
 
 
