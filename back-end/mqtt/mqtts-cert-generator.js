@@ -10,6 +10,8 @@ const DOCKER_SECRET_PATH = process.env.DOCKER_SECRET_PATH;
 const AWS_SECRETS = process.env.AWS_SECRETS;
 const { getSecret } = require('../secrets/aws_secrets.js');
 
+// Cache for credentials to avoid multiple API calls
+let credentialsCache = null;
 
 function readDockerSecret(secretName) {
   try {
@@ -27,16 +29,13 @@ function readDockerSecret(secretName) {
   }
 }
 
-// function readDockerSecrets(secretNames) {
-//   const secrets = {};
-//   secretNames.forEach((name) => {
-//       secrets[name] = readDockerSecret(name);
-//   });
-//   return secrets;
-// }
-
 // Function to get credentials based on environment
 async function getCredentials() {
+  // Return cached credentials if already loaded
+  if (credentialsCache) {
+    return credentialsCache;
+  }
+
   if (env === 'production') {
     // Read from Docker secrets
     try {
@@ -44,6 +43,7 @@ async function getCredentials() {
 
       if (!results || !results.success) {
         console.error("Failed to retrieve AWS secrets:", results);
+        throw new Error("Failed to retrieve AWS secrets");
       }
 
       const caCert = results.data.mqtt_ca_crt; 
@@ -56,35 +56,35 @@ async function getCredentials() {
         throw new Error("Missing required secrets for MQTT certificate generation");
       }
 
-
-      // const caCert = readDockerSecret('mqtt_ca_crt');
-      // const caKey = readDockerSecret('mqtt_ca_key');
-      // const caPassword = readDockerSecret('mqtt_ca_password');
-      // const clientCsrSubject = readDockerSecret('mqtt_client_csr_subject');
-
-      return {
+      credentialsCache = {
         caCert,
         caKey,
         caPassword,
         clientCsrSubject
       };
+
+      return credentialsCache;
     } catch (error) {
       console.error('Error reading Docker secrets:', error);
       throw error;
     }
   } else {
     // Read from environment variables and files
-    return {
-      caCert: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.crt'), 'utf8'),
-      caKey: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.key'), 'utf8'),
-      caPassword: process.env.CA_PASSWORD,
-      clientCsrSubject: process.env.CLIENT_CSR_SUBJECT
-    };
+    try {
+      credentialsCache = {
+        caCert: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.crt'), 'utf8'),
+        caKey: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.key'), 'utf8'),
+        caPassword: process.env.CA_PASSWORD,
+        clientCsrSubject: process.env.CLIENT_CSR_SUBJECT
+      };
+
+      return credentialsCache;
+    } catch (error) {
+      console.error('Error reading local certificates:', error);
+      throw error;
+    }
   }
 }
-
-// Remove the direct file path references since we'll get them from credentials
-const credentials = await getCredentials();
 
 function parseCsrSubject(csrSubject) {
   const fields = csrSubject.split('/').filter(Boolean);
@@ -139,7 +139,7 @@ async function generateClientCSR(subjectDetails, clientPrivateKey) {
   });
 }
 
-async function signClientCSR(clientCertificateSigningRequest, deviceSerialNumber) {
+async function signClientCSR(clientCertificateSigningRequest, deviceSerialNumber, credentials) {
   return new Promise((resolve, reject) => {
     pem.createCertificate(
       {
@@ -167,6 +167,9 @@ async function generateCertificates({
   serialNumber = null,
 }) {
   try {
+    // Load credentials when needed
+    const credentials = await getCredentials();
+
     const tempSubjectObject = updateSubjectObject(parseCsrSubject(credentials.clientCsrSubject), {
       C: country,
       ST: state,
@@ -185,11 +188,12 @@ async function generateCertificates({
 
     const { clientPrivateKey } = await generateClientPrivateKey();
 
-    const { clientCSR } = await generateClientCSR(subjectObject, clientPrivateKey.key);
+    const { clientCSR } = await generateClientCSR(tempSubjectObject, clientPrivateKey.key);
 
     const { signedCert: clientCertificate } = await signClientCSR(
       clientCSR.csr,
-      subjectObject.CN
+      tempSubjectObject.CN,
+      credentials
     );
 
     return {
