@@ -1,10 +1,11 @@
 # Base image with a specific Node.js version
 FROM node:20.13.0-alpine
 
+# Install OpenSSL
+RUN apk add --no-cache openssl
 
 # Set the working directory
 WORKDIR /back-end
-RUN pwd && ls -la
 
 
 # Copy only package.json and package-lock.json first for efficient caching
@@ -39,7 +40,7 @@ COPY ./index.js ./index.js
 # Expose the application port
 EXPOSE 3000
 
-# Use a more direct way to run the app
+
 CMD ["sh", "-c", \
 "if [ \"$NODE_ENV\" = \"development\" ]; then npm run dev; \
 elif [ \"$NODE_ENV\" = \"production\" ]; then npm run start; \
