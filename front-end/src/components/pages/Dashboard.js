@@ -47,7 +47,14 @@ const chartComponents = {
 };
 
 // import  HeartChart  from '../charts/HeartChart.js';
+const environment = process.env.NODE_ENV;
+let dataResource = null;
 
+if (environment !== 'development'){
+  dataResource = 'ec2Data'
+} else {
+  dataResource = 'thinkpadData'
+}
 
 const ACTIVE_DEVICE = {
   index: 0,
@@ -142,11 +149,11 @@ const Dashboard = () => {
     dispatch(batchAppendChartData(updates));
   };
 
-  socket.on("thinkpadData", handlePayload);
+  socket.on(dataResource, handlePayload);
   console.log("Socket listener for cpuData set up");
 
   return () => {
-    socket.off("thinkpadData", handlePayload);
+    socket.off(dataResource, handlePayload);
   };
 }, [dispatch]);
 
