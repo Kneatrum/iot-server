@@ -85,12 +85,12 @@ async function createApp() {
             })
         );
 
-        app.use("/", general_routes);
-        app.use("/users", user_routes);
-        app.use("/ssl-services", sslServicesRoutes);
-        app.use("/devices", devicesRoutes);
-        app.use("/pricing", pricingRoutes);
-        app.use("/roles", rolesRoutes);
+        app.use("/api/", general_routes);
+        app.use("/api/users", user_routes);
+        app.use("/api/ssl-services", sslServicesRoutes);
+        app.use("/api/devices", devicesRoutes);
+        app.use("/api/pricing", pricingRoutes);
+        app.use("/api/roles", rolesRoutes);
         app.use("/api/mpesa", mpesaRoutes);
         app.use("/api/exchange-rates", exchangeRatesRoutes);
 

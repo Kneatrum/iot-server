@@ -3,12 +3,12 @@ import axios from 'axios';
 
 const backEndHost = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
 
-const certificatesRoute = '/ssl-services'
-const usersRoute = '/users';
-const pricingRoutes = '/pricing';
+const certificatesRoute = '/api/ssl-services'
+const usersRoute = '/api/users';
+const pricingRoutes = '/api/pricing';
 const exchangeRatesRoute = '/api/exchange-rates';
 const mpesaRoute = '/api/mpesa';
-const devicesRoute = '/devices';
+const devicesRoute = '/api/devices';
 
 const usersBaseUrl = `${backEndHost}${usersRoute}`
 // const usersBaseUrl = `${usersRoute}`
