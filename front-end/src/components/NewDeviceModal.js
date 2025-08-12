@@ -186,7 +186,14 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
             // setDevices([...devices, { name: deviceName, serial: serialNumber }]);
         })
         .catch((error) => {
-            console.error('Error occurred:', error.message);
+            console.error('Error adding device:', error);
+            if (error.response) {
+                console.error('Server responded with:', error.response.status, error.response.data);
+            } else if (error.request) {
+                console.error('No response received:', error.request);
+            } else {
+                console.error('Error setting up request:', error.message);
+            }
             setFailed(true);
         })
         .finally(() => {
