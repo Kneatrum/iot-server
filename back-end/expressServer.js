@@ -12,7 +12,7 @@ const general_routes = require('./router/general.js').general;
 const user_routes = require('./router/users.js').users;
 const sslServicesRoutes = require('./router/ssl-services.js');
 const devicesRoutes = require('./router/devices.js').devices;
-const planRoutes = require('./router/plans.js').plans;
+const pricingRoutes = require('./router/pricing.js').pricing;
 const rolesRoutes = require('./router/roles.js').roles;
 const mpesaRoutes = require('./router/mpesa.js').mobileMoney;
 const exchangeRatesRoutes = require('./router/exchange-rates.js');
@@ -89,7 +89,7 @@ async function createApp() {
         app.use("/users", user_routes);
         app.use("/ssl-services", sslServicesRoutes);
         app.use("/devices", devicesRoutes);
-        app.use("/plans", planRoutes);
+        app.use("/pricing", pricingRoutes);
         app.use("/roles", rolesRoutes);
         app.use("/api/mpesa", mpesaRoutes);
         app.use("/api/exchange-rates", exchangeRatesRoutes);

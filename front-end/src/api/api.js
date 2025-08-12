@@ -5,7 +5,7 @@ const backEndHost = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000'
 
 const certificatesRoute = '/ssl-services'
 const usersRoute = '/users';
-const plansRoute = '/plans';
+const pricingRoutes = '/pricing';
 const exchangeRatesRoute = '/api/exchange-rates';
 const mpesaRoute = '/api/mpesa';
 const devicesRoute = '/devices';
@@ -13,7 +13,7 @@ const devicesRoute = '/devices';
 const usersBaseUrl = `${backEndHost}${usersRoute}`
 // const usersBaseUrl = `${usersRoute}`
 const certsBaseUrl = `${backEndHost}${certificatesRoute}`
-const subscriptionsBaseUrl = `${backEndHost}${plansRoute}`
+const pricingBaseUrl = `${backEndHost}${pricingRoutes}`
 const exchangeRatesBaseUrl = `${backEndHost}${exchangeRatesRoute}`
 const mpesaBaseUrl = `${backEndHost}${mpesaRoute}`
 const devicesBaseUrl = `${backEndHost}${devicesRoute}`
@@ -34,7 +34,7 @@ const certsApi = axios.create({
 });
 
 const plansApi = axios.create({
-    baseURL: subscriptionsBaseUrl,
+    baseURL: pricingBaseUrl,
     withCredentials: true, 
 })
 
