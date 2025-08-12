@@ -81,7 +81,7 @@ function NewDeviceModal({ isOpen, onClose, setAddStatus, mqttTopics,  setActiveD
             
         })
         .catch(error => {
-            console.log("Failed to delete")
+            console.log("Failed to ferch certificates:", error);
             console.error('Error fetching data:', error.message);
             setLoading(false);
             setFailed(true);

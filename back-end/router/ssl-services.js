@@ -31,9 +31,13 @@ router.post('/generate-certs' /*, isAuthenticated */ , async (req, res) => {
                 // clientKey: result.data.privateKey,
                 // rootCA: result.data.caCert
             });  
+        } else {
+            console.error("Failed to generate certificates:", result);
+            return res.status(500).json({ error: "Failed to generate certificates" });
         }
        
     } catch (err) {
+        console.log("Error generating certificates:", err);
         res.status(500).json({ error: "Error generating certificate" });
     }
 });
