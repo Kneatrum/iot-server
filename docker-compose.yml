@@ -65,6 +65,8 @@ services:
       - ./back-end/.env
     environment:
       NODE_ENV: "production" 
+    volumes:
+      - /proc:/host_proc:ro
     # command: >
     #   sh -c 'if [ "$NODE_ENV" = "development" ]; then npm run dev;
     #   elif [ "$NODE_ENV" = "production" ]; then npm run start;
