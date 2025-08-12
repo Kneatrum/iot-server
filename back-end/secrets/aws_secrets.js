@@ -21,7 +21,6 @@ const { fromInstanceMetadata } = require("@aws-sdk/credential-providers");
 
 
 const AWS_REGION = process.env.AWS_REGION;
-const SESSIONSECRETS = process.env.SESSION_SECRETS;
 const META_TIMEOUT = parseInt(process.env.META_TIMEOUT, 10) || 1000;
 const META_RETRIES = process.env.META_RETRIES;
 const MQTT_SECRETS = process.env.MQTT_SECRETS
@@ -95,7 +94,7 @@ async function createSessionSecret() {
   let sessionSecret = crypto.randomBytes(48).toString('base64');
 
   const input = {
-      Name: SESSIONSECRETS,
+      Name: AWS_SECRETS,
       SecretString: `{
       "sessionSecret":"${sessionSecret}"
       }`
@@ -116,7 +115,7 @@ async function createSessionSecret() {
 
 async function getSessionSecret(){
   const secret = { 
-    SecretId: SESSIONSECRETS
+    SecretId: AWS_SECRETS
   };
 
   const command = new GetSecretValueCommand(secret);
