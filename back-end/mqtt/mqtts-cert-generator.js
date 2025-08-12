@@ -7,6 +7,8 @@ const fs = require("fs");
 const path = require("path");
 
 const DOCKER_SECRET_PATH = process.env.DOCKER_SECRET_PATH;
+const AWS_SECRETS = process.env.AWS_SECRETS;
+const { getSecret } = require('../secrets/aws_secrets.js');
 
 
 function readDockerSecret(secretName) {
@@ -34,14 +36,31 @@ function readDockerSecret(secretName) {
 // }
 
 // Function to get credentials based on environment
-function getCredentials() {
+async function getCredentials() {
   if (env === 'production') {
     // Read from Docker secrets
     try {
-      const caCert = readDockerSecret('mqtt_ca_crt');
-      const caKey = readDockerSecret('mqtt_ca_key');
-      const caPassword = readDockerSecret('mqtt_ca_password');
-      const clientCsrSubject = readDockerSecret('mqtt_client_csr_subject');
+      const results = await getSecret(AWS_SECRETS);
+
+      if (!results || !results.success) {
+        console.error("Failed to retrieve AWS secrets:", results);
+      }
+
+      const caCert = results.data.mqtt_ca_crt; 
+      const caKey = results.data.mqtt_ca_key; 
+      const caPassword = results.data.mqtt_ca_password;
+      const clientCsrSubject = results.data.mqtt_client_csr_subject;
+
+      if (!caCert || !caKey || !caPassword || !clientCsrSubject) {
+        console.log("Missing required secrets for MQTT certificate generation");
+        throw new Error("Missing required secrets for MQTT certificate generation");
+      }
+
+
+      // const caCert = readDockerSecret('mqtt_ca_crt');
+      // const caKey = readDockerSecret('mqtt_ca_key');
+      // const caPassword = readDockerSecret('mqtt_ca_password');
+      // const clientCsrSubject = readDockerSecret('mqtt_client_csr_subject');
 
       return {
         caCert,
@@ -65,7 +84,7 @@ function getCredentials() {
 }
 
 // Remove the direct file path references since we'll get them from credentials
-const credentials = getCredentials();
+const credentials = await getCredentials();
 
 function parseCsrSubject(csrSubject) {
   const fields = csrSubject.split('/').filter(Boolean);
