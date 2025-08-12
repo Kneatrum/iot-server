@@ -52,7 +52,8 @@ device_routes.post('/add-device', isAuthenticated, async (req, res) => {
         }
         return res.status(201).json({ message: 'Device added successfully' });
     } catch {
-        return res.status(500).json({ error: "Something went wrong" }); 
+        // return res.status(500).json({ error: "Something went wrong" }); 
+        return res.status(500).json({ error: err.message || 'Internal Server Error' });
     }
     // const transaction = await sequelize.transaction(); 
 });
