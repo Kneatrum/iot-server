@@ -39,8 +39,13 @@ const LandingPage = () => {
   useEffect(() => {
     scrollToSection('home'); // Scroll to the home section on initial load
     // Fetch plans from the API
+    console.log('Fetching plans from API...', plansApi);
     plansApi.get('/')
       .then(response => {
+        console.log('Plans API response:', response.data);
+        if (!Array.isArray(response.data)) {
+          throw new Error('Expected array but got: ' + JSON.stringify(response.data));
+        }
         const fetchedPlans = response.data.map(plan => ({
           id: plan.id,
           name: plan.name,
