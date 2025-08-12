@@ -14,6 +14,7 @@ const http = require("http");
 const { initSocketIO } = require("./sockets/socketServer");
 const { ThinkPadMonitor } = require("./streaming/thinkpadMonitor");
 const { getURL } = require('./sockets/hostnameUtil.js');
+const { EC2Monitor } = require('./streaming/ec2Monitor.js');
 
 const mqttClient = require('./mqtt/subscriber');
 
@@ -85,6 +86,9 @@ async function startServer() {
             } else {
                 console.error("Could not start ThinkPadMonitor: Failed to get URL");
             }
+        } else {
+            const monitor = new EC2Monitor("/host_proc");
+            monitor.start(5000); // Emit every 5 seconds
         }
 
         server.listen(backEndPort, () => {
