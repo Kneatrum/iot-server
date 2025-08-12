@@ -1,6 +1,6 @@
 const express = require('express');
 
-const plans = express.Router();
+const pricing = express.Router();
 
 const dbInitPromise  = require('../databases/postgres/models/index');
 const { isAuthenticated } = require('../auth/auth');
@@ -14,7 +14,7 @@ let sequelize = null;
     sequelize = init.sequelize;
 })();
 
-plans.get('/', /*isAuthenticated,*/ async (req, res) => {
+pricing.get('/', /*isAuthenticated,*/ async (req, res) => {
     try {
         if (!db) {
             return res.status(500).json({ message: 'Database not initialized' });
@@ -43,4 +43,4 @@ plans.get('/', /*isAuthenticated,*/ async (req, res) => {
 });
 
 
-module.exports.plans = plans;
+module.exports.pricing = pricing;
