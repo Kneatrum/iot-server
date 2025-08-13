@@ -37,35 +37,64 @@ class EC2Monitor {
 
     getDiskUsage() {
         try {
-            // Try multiple approaches for better compatibility
-            let output;
-            try {
-                // First try: standard df command
-                output = execSync("df --output=pcent / 2>/dev/null | tail -1", { encoding: "utf8" });
-            } catch (error) {
-                // Fallback: use basic df command format
-                output = execSync("df / | tail -1 | awk '{print $5}'", { encoding: "utf8" });
+            // Method 1: Try the simplest df command first
+            let output = execSync("df /", { encoding: "utf8" });
+            const lines = output.trim().split('\n');
+            
+            // Get the last line (should be the filesystem info)
+            const lastLine = lines[lines.length - 1];
+            const columns = lastLine.trim().split(/\s+/);
+            
+            // Find the usage percentage column (usually has % symbol)
+            let usageColumn = columns.find(col => col.includes('%'));
+            
+            if (usageColumn) {
+                const usage = parseInt(usageColumn.replace('%', ''));
+                
+                // Validate the result
+                if (!isNaN(usage) && usage >= 0 && usage <= 100) {
+                    return usage;
+                }
             }
             
-            const usage = output.replace("%", "").trim();
-            const parsedUsage = parseInt(usage);
+            // Method 2: If above fails, try with explicit column selection
+            output = execSync("df / | awk 'NR==2 {print $5}'", { encoding: "utf8" });
+            const usage = parseInt(output.replace('%', '').trim());
             
-            // Validate the result
-            if (isNaN(parsedUsage) || parsedUsage < 0 || parsedUsage > 100) {
-                console.warn("Invalid disk usage value:", usage);
-                return null;
+            if (!isNaN(usage) && usage >= 0 && usage <= 100) {
+                return usage;
             }
             
-            return parsedUsage;
+            console.warn("Could not parse disk usage from df output");
+            return null;
+            
         } catch (error) {
             console.error("Error getting disk usage:", error.message);
-            // Alternative fallback using /proc/mounts and statvfs approach
+            
+            // Method 3: Final fallback - try different df approaches
             try {
-                const output = execSync("df -h / | tail -1 | awk '{gsub(/%/, \"\", $5); print $5}'", { encoding: "utf8" });
-                const usage = parseInt(output.trim());
-                return isNaN(usage) ? null : usage;
+                const commands = [
+                    "df --output=pcent / | tail -1",
+                    "df -P / | awk 'NR==2 {print $5}'",
+                    "df -h / | tail -1 | awk '{print $5}'"
+                ];
+                
+                for (const cmd of commands) {
+                    try {
+                        const output = execSync(cmd, { encoding: "utf8" });
+                        const usage = parseInt(output.replace('%', '').trim());
+                        
+                        if (!isNaN(usage) && usage >= 0 && usage <= 100) {
+                            return usage;
+                        }
+                    } catch (cmdError) {
+                        continue; // Try next command
+                    }
+                }
+                
+                return null;
             } catch (fallbackError) {
-                console.error("Fallback disk usage method also failed:", fallbackError.message);
+                console.error("All disk usage methods failed:", fallbackError.message);
                 return null;
             }
         }
