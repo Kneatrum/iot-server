@@ -135,12 +135,12 @@ class EC2Monitor {
 
                     io.emit("ec2Data", payload);
 
-                    console.log("EC2 Monitor:", {
-                        cpuLoad: cpuLoad + " (1-min avg)",
-                        memoryUsage: memoryUsage + " %",
-                        diskUsage: diskUsage + " %",
-                        uptime: uptime + " hours"
-                    });
+                    // console.log("EC2 Monitor:", {
+                    //     cpuLoad: cpuLoad + " (1-min avg)",
+                    //     memoryUsage: memoryUsage + " %",
+                    //     diskUsage: diskUsage + " %",
+                    //     uptime: uptime + " hours"
+                    // });
                 } else {
                     console.warn("Some EC2 metrics could not be collected:", {
                         cpuLoad, memoryUsage, diskUsage, uptime
