@@ -6,7 +6,7 @@ const device_routes = express.Router();
 const { updateDeviceCache, removeDeviceMetadata } = require('../../back-end/deviceRegistry');
 const { getUserDevices } = require('../databases/postgres/services');
 
-const  dbInitPromise  = require('../databases/postgres/models/index');
+const  { databaseinitialized, db }  = require('../databases/postgres/models/index');
 const { isAuthenticated } = require('../auth/auth');
 
 const { 
@@ -18,16 +18,20 @@ const {
 let db = null;
 let sequelize = null;
 
-(async () => {
-    const init = await dbInitPromise; 
-    db = init.db;
-    sequelize = init.sequelize;
-})();
+let isDatabaseInitialised = false;
+
+async function ensureDBInit() {
+    if (!isDatabaseInitialised) {
+        await databaseinitialized;
+        isDatabaseInitialised = true;
+    }
+}
 
 
 
 // Get all device data
 device_routes.get('/get-devices',  isAuthenticated,  async (req, res) => {
+    await ensureDBInit();
     try {
         const devices = await db.Device.findAll();
         return res.send(devices);
@@ -43,6 +47,7 @@ device_routes.get('/get-devices',  isAuthenticated,  async (req, res) => {
 
 // Add new device
 device_routes.post('/add-device', isAuthenticated, async (req, res) => {
+    await ensureDBInit();
     const { newDevice, topics } = req.body;
     const userID = req.session.user.id;
     try {
@@ -62,6 +67,7 @@ device_routes.post('/add-device', isAuthenticated, async (req, res) => {
 
 // Delete device by serial number
 device_routes.delete('/delete-device/:serialNumber', /*isAuthenticated,*/ async (req, res) => {
+    await ensureDBInit();
     const { serialNumber } = req.params; // Get serial number from URL parameters
     // const userID = req.session.user.uuid; // Retrieve user ID from session
 
@@ -115,6 +121,7 @@ device_routes.get('/all-users-devices', async (req, res) => {
 
 // Get devices by their names and serial numbers
 device_routes.get('/device-details', async (req, res) => { 
+    await ensureDBInit();
     try {
         
         const user = req.session.user
@@ -153,6 +160,7 @@ device_routes.get('/device-details', async (req, res) => {
         return res.json(devices); 
     } catch (err) { 
         console.error("Error: ", err); 
+        console.log("Error fetching device details:", err);
         return res.status(500).json({ error: "Something went wrong" }); 
     } 
 });
@@ -160,8 +168,9 @@ device_routes.get('/device-details', async (req, res) => {
 
 
 device_routes.post('/disable-previous-device', isAuthenticated, async (req, res) => {
+    await ensureDBInit();
     // const sequelize = await getSequelize();
-    const transaction = await sequelize.transaction();
+    const transaction = await db.sequelize.transaction();
 
     try {
         await db.Device.update(
@@ -187,6 +196,7 @@ device_routes.post('/disable-previous-device', isAuthenticated, async (req, res)
 
 
 device_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
+    await ensureDBInit();
     const { serialNumber } = req.query; 
     const userID = req.session.user.id; 
     console.log("#############3", serialNumber);
@@ -225,6 +235,7 @@ device_routes.get('/check-serial-number', isAuthenticated, async (req, res) => {
 
 
 device_routes.get('/user-devices', isAuthenticated, async (req, res) => {
+    await ensureDBInit();
     const id = req.session.user.id;
     const email = req.session.user.email;
 
@@ -266,8 +277,8 @@ device_routes.get('/user-devices', isAuthenticated, async (req, res) => {
 
 
 device_routes.post('/batch-updates', async (req, res) => {
-    // const sequelize = await getSequelize();
-    const transaction = await sequelize.transaction();
+    await ensureDBInit();
+    const transaction = await db.sequelize.transaction();
     const userID = req.session.user.id;
 
 
@@ -388,7 +399,8 @@ device_routes.post('/batch-updates', async (req, res) => {
 
 
 device_routes.post('/update-chart', async (req, res) => {
-    const transaction = await sequelize.transaction();
+    await ensureDBInit();
+    const transaction = await db.sequelize.transaction();
     // const userId = req.session.user.id;
     const {  newConfig } = req.body;
 
@@ -453,7 +465,7 @@ device_routes.post('/topic', isAuthenticated, async (req, res) => {
 // Get all topics
 device_routes.get('/topic', /*isAuthenticated,*/ async (req, res) => { /**/
     // const userID = req.session.user.uuid;
-
+    await ensureDBInit();
     try {
         // const topic = await db.Topic.findAll({
         //     where: { 
@@ -473,7 +485,7 @@ device_routes.get('/topic', /*isAuthenticated,*/ async (req, res) => { /**/
 // Get all layouts
 device_routes.get('/layouts', /*isAuthenticated,*/ async (req, res) => { /**/
     // const userID = req.session.user.uuid;
-
+    await ensureDBInit();
     try {
         const layouts = await db.Layout.findAll();
         return res.send(layouts);
@@ -485,6 +497,7 @@ device_routes.get('/layouts', /*isAuthenticated,*/ async (req, res) => { /**/
 
 
 device_routes.delete('/topic/', async (req, res) => {
+    await ensureDBInit();
     const { topic } = req.body;
 
     try {
@@ -510,6 +523,7 @@ device_routes.delete('/topic/', async (req, res) => {
 
 // Add dashboard
 device_routes.post('/dashboard', isAuthenticated, async (req, res) => {
+    await ensureDBInit();
     const { topic } = req.params;
     const userID = req.session.user.id;
 
@@ -533,6 +547,7 @@ device_routes.post('/dashboard', isAuthenticated, async (req, res) => {
 
 // Update a topic
 device_routes.put('/:topic', isAuthenticated, async (req, res) => {
+    await ensureDBInit();
     const { topic } = req.params;
     const userID = req.session.user.id;
     try {
@@ -554,6 +569,7 @@ device_routes.put('/:topic', isAuthenticated, async (req, res) => {
 
 // Update a dashboard
 device_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
+    await initializeDatabase();
     const { dashboard } = req.params;
     const userID = req.session.user.id;
 
@@ -577,6 +593,7 @@ device_routes.put('/:dashboard', isAuthenticated, async (req, res) => {
 
 // Update a chart
 device_routes.put('/:chart', isAuthenticated, async (req, res) => {
+    await initializeDatabase();
     const { chart } = req.params;
     const userID = req.session.user.id;
 
