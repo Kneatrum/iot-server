@@ -45,7 +45,7 @@ async function getCredentials() {
         console.error("Failed to retrieve AWS secrets:", results);
         throw new Error("Failed to retrieve AWS secrets");
       }
-      console.log("Successfully retrieved AWS secrets for MQTT certificates");
+      console.log("Successfully retrieved AWS secrets for MQTT certificates", results.data.mqtt_certs);
       const { 
         mqtt_ca_crt, 
         mqtt_ca_key, 
