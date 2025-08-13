@@ -87,8 +87,8 @@ async function startServer() {
                 console.error("Could not start ThinkPadMonitor: Failed to get URL");
             }
         } else {
-            // const monitor = new EC2Monitor("/host_proc");
-            // monitor.start(5000); // Emit every 5 seconds
+            const monitor = new EC2Monitor("/host_proc");
+            monitor.start(5000); // Emit every 5 seconds
         }
 
         server.listen(backEndPort, () => {
