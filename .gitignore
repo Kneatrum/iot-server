@@ -9,6 +9,7 @@ back-end/.env.development
 back-end/exchange_rates/exchangeRatesBackup.json
 back-end/streaming/thinkpadData.json
 mqtt-auth.sh
+certificate-formater.js
 
 front-end/node_modules
 front-end/src/components/charts/FAKE_DATA.js
