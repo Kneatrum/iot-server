@@ -317,7 +317,7 @@ device_routes.post('/batch-updates', async (req, res) => {
 
                 // Check for existing layout
                 const existingLayout = await db.Layout.findOne({
-                    where: sequelize.literal(`layout->>'i' = '${layout.i}'`),
+                    where: db.sequelize.literal(`layout->>'i' = '${layout.i}'`),
                     transaction
                 });
 
@@ -352,7 +352,7 @@ device_routes.post('/batch-updates', async (req, res) => {
             
                 // Find the existing layout first
                 const existingLayout = await db.Layout.findOne({
-                    where: sequelize.literal(`layout->>'i' = '${layoutId}'`),
+                    where: db.sequelize.literal(`layout->>'i' = '${layoutId}'`),
                     transaction
                 });
             
@@ -371,7 +371,7 @@ device_routes.post('/batch-updates', async (req, res) => {
                 await db.Layout.update(
                     { layout: updatedLayout },
                     {
-                        where: sequelize.literal(`layout->>'i' = '${layoutId}'`),
+                        where: db.sequelize.literal(`layout->>'i' = '${layoutId}'`),
                         transaction
                     }
                 );
@@ -406,7 +406,7 @@ device_routes.post('/update-chart', async (req, res) => {
     try {
 
         const existingChart = await db.Chart.findOne({
-            where: sequelize.literal(`config->>'id' = '${newConfig.id}'`),
+            where: db.sequelize.literal(`config->>'id' = '${newConfig.id}'`),
             transaction
         });
 
