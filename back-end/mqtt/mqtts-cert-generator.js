@@ -9,6 +9,7 @@ const path = require("path");
 const DOCKER_SECRET_PATH = process.env.DOCKER_SECRET_PATH;
 const AWS_SECRETS = process.env.AWS_SECRETS;
 const { getSecret } = require('../secrets/aws_secrets.js');
+const { Json } = require('sequelize/lib/utils');
 
 // Cache for credentials to avoid multiple API calls
 let credentialsCache = null;
@@ -46,10 +47,11 @@ async function getCredentials() {
         throw new Error("Failed to retrieve AWS secrets");
       }
       console.log("Successfully retrieved AWS secrets for MQTT certificates", results.data.mqtt_certs);
-      const mqtt_ca_crt = results.data.mqtt_certs.mqtt_ca_crt;
-      const mqtt_ca_key = results.data.mqtt_certs.mqtt_ca_key;
-      const mqtt_ca_password =  results.data.mqtt_certs.mqtt_ca_password
-      const mqtt_client_csr_subject = results.data.mqtt_certs.mqtt_client_csr_subject;
+      const { mqtt_ca_crt, mqtt_ca_key, mqtt_ca_password, mqtt_client_csr_subject } =  Json.parse(results.data.mqtt_certs);
+      // const mqtt_ca_crt = results.data.mqtt_certs.mqtt_ca_crt;
+      // const mqtt_ca_key = results.data.mqtt_certs.mqtt_ca_key;
+      // const mqtt_ca_password =  results.data.mqtt_certs.mqtt_ca_password
+      // const mqtt_client_csr_subject = results.data.mqtt_certs.mqtt_client_csr_subject;
 
       console.log("mqtt_ca_password:", mqtt_ca_password);
 
