@@ -123,7 +123,7 @@ class EC2Monitor {
                 if (hasValidData) {
                     const payload = [
                         {
-                            deviceId: 1, // unique id for EC2
+                            deviceId: 0, // unique id for EC2
                             charts: [
                                 { chartId: 0, dataPoint: cpuLoad, timestamp: Date.now() },
                                 { chartId: 1, dataPoint: memoryUsage, timestamp: Date.now() },
