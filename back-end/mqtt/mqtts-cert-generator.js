@@ -47,10 +47,10 @@ async function getCredentials() {
       }
       console.log("Successfully retrieved AWS secrets for MQTT certificates");
       const { 
-        mqtt_ca_crt: caCert, 
-        mqtt_ca_key: caKey, 
-        mqtt_ca_password: caPassword, 
-        mqtt_client_csr_subject: clientCsrSubject 
+        caCert: mqtt_ca_crt, 
+        caKey: mqtt_ca_key, 
+        caPassword : mqtt_ca_password, 
+        clientCsrSubject: mqtt_client_csr_subject, 
       } = results.data.mqtt_certs;
 
 
