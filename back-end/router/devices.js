@@ -15,8 +15,7 @@ const {
     getSingleDeviceMetadata 
 } = require('../databases/postgres/services');
 
-let db = null;
-let sequelize = null;
+
 
 let isDatabaseInitialised = false;
 
