@@ -247,7 +247,7 @@ const Dashboard = () => {
         // }
       })
       .catch((error) => {
-        console.error('Error fetching data:', error.message);
+        console.error('Error fetching layout data:', error);
       });
   }, []); 
 
