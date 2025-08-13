@@ -37,7 +37,6 @@ import {
 } from 'chart.js'
 import { set } from 'date-fns';
 
-const socket = io('http://localhost:3000')
 
 const chartComponents = {
   Line: Line,
@@ -66,6 +65,8 @@ const ACTIVE_DEVICE = {
 
 const backEndHost = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
 const url = `${backEndHost}/user/layout`
+
+const socket = io(backEndHost)
 
 const maxNumCols = 12;
 const windowWidth = 1800;
