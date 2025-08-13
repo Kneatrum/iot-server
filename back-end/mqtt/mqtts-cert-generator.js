@@ -46,7 +46,25 @@ async function getCredentials() {
         throw new Error("Failed to retrieve AWS secrets");
       }
       console.log("Successfully retrieved AWS secrets for MQTT certificates");
-      const { mqtt_ca_crt: caCert , mqtt_ca_key: caKey, mqtt_ca_password: caPassword, mqtt_client_csr_subject: clientCsrSubject } = results.data.mqtt_certs;
+      const { 
+        mqtt_ca_crt: caCert, 
+        mqtt_ca_key: caKey, 
+        mqtt_ca_password: caPassword, 
+        mqtt_client_csr_subject: clientCsrSubject 
+      } = results.data.mqtt_certs;
+
+
+      console.log("caCert:", caCert);
+      console.log("caKey:", caKey);
+      console.log("caPassword:", caPassword);
+      console.log("clientCsrSubject:", clientCsrSubject);
+
+      console.log("mqtt_client_csr_subject:", mqtt_client_csr_subject);
+      console.log("mqtt_ca_crt:", mqtt_ca_crt);
+      console.log("mqtt_ca_key:", mqtt_ca_key);
+      console.log("mqtt_ca_password:", mqtt_ca_password);
+
+
 
       if (!caCert || !caKey || !caPassword || !clientCsrSubject) {
         console.log("Missing required secrets for MQTT certificate generation");
