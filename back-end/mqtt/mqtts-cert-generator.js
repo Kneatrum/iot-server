@@ -47,17 +47,14 @@ async function getCredentials() {
       }
       console.log("Successfully retrieved AWS secrets for MQTT certificates");
       const { 
-        caCert: mqtt_ca_crt, 
-        caKey: mqtt_ca_key, 
-        caPassword : mqtt_ca_password, 
-        clientCsrSubject: mqtt_client_csr_subject, 
+        mqtt_ca_crt, 
+        mqtt_ca_key, 
+        mqtt_ca_password, 
+        mqtt_client_csr_subject, 
       } = results.data.mqtt_certs;
 
 
-      console.log("caCert:", caCert);
-      console.log("caKey:", caKey);
-      console.log("caPassword:", caPassword);
-      console.log("clientCsrSubject:", clientCsrSubject);
+
 
       console.log("mqtt_client_csr_subject:", mqtt_client_csr_subject);
       console.log("mqtt_ca_crt:", mqtt_ca_crt);
@@ -66,16 +63,16 @@ async function getCredentials() {
 
 
 
-      if (!caCert || !caKey || !caPassword || !clientCsrSubject) {
+      if (!mqtt_ca_crt || !mqtt_ca_key || !mqtt_ca_password || !mqtt_client_csr_subject) {
         console.log("Missing required secrets for MQTT certificate generation");
         throw new Error("Missing required secrets for MQTT certificate generation");
       }
 
       credentialsCache = {
-        caCert,
-        caKey,
-        caPassword,
-        clientCsrSubject
+        mqtt_ca_crt,
+        mqtt_ca_key,
+        mqtt_ca_password,
+        mqtt_client_csr_subject
       };
 
       return credentialsCache;
@@ -87,10 +84,10 @@ async function getCredentials() {
     // Read from environment variables and files
     try {
       credentialsCache = {
-        caCert: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.crt'), 'utf8'),
-        caKey: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.key'), 'utf8'),
-        caPassword: process.env.CA_PASSWORD,
-        clientCsrSubject: process.env.CLIENT_CSR_SUBJECT
+        mqtt_ca_crt: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.crt'), 'utf8'),
+        mqtt_ca_key: fs.readFileSync(path.join(__dirname, '../../mosquitto/certs/ca.key'), 'utf8'),
+        mqtt_ca_password: process.env.CA_PASSWORD,
+        mqtt_client_csr_subject: process.env.CLIENT_CSR_SUBJECT
       };
 
       return credentialsCache;
@@ -158,10 +155,10 @@ async function signClientCSR(clientCertificateSigningRequest, deviceSerialNumber
   return new Promise((resolve, reject) => {
     pem.createCertificate(
       {
-        serviceCertificate: credentials.caCert,
-        serviceKey: credentials.caKey,
+        serviceCertificate: credentials.mqtt_ca_crt,
+        serviceKey: credentials.mqtt_ca_key,
         csr: clientCertificateSigningRequest,
-        serviceKeyPassword: credentials.caPassword,
+        serviceKeyPassword: credentials.mqtt_ca_password,
         serial: deviceSerialNumber,
         days: 360,
       },
@@ -185,7 +182,7 @@ async function generateCertificates({
     // Load credentials when needed
     const credentials = await getCredentials();
 
-    const tempSubjectObject = updateSubjectObject(parseCsrSubject(credentials.clientCsrSubject), {
+    const tempSubjectObject = updateSubjectObject(parseCsrSubject(credentials.mqtt_client_csr_subject), {
       C: country,
       ST: state,
       L: locality,
@@ -215,7 +212,7 @@ async function generateCertificates({
       status: 'success',
       data: {
         privateKey: clientPrivateKey.key,
-        caCert: credentials.caCert,
+        caCert: credentials.mqtt_ca_crt,
         clientCertificate,
       },
     };
