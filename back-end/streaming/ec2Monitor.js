@@ -37,11 +37,37 @@ class EC2Monitor {
 
     getDiskUsage() {
         try {
-            const output = execSync("df --output=pcent / | tail -1", { encoding: "utf8" });
-            return parseInt(output.replace("%", "").trim());
+            // Try multiple approaches for better compatibility
+            let output;
+            try {
+                // First try: standard df command
+                output = execSync("df --output=pcent / 2>/dev/null | tail -1", { encoding: "utf8" });
+            } catch (error) {
+                // Fallback: use basic df command format
+                output = execSync("df / | tail -1 | awk '{print $5}'", { encoding: "utf8" });
+            }
+            
+            const usage = output.replace("%", "").trim();
+            const parsedUsage = parseInt(usage);
+            
+            // Validate the result
+            if (isNaN(parsedUsage) || parsedUsage < 0 || parsedUsage > 100) {
+                console.warn("Invalid disk usage value:", usage);
+                return null;
+            }
+            
+            return parsedUsage;
         } catch (error) {
             console.error("Error getting disk usage:", error.message);
-            return null;
+            // Alternative fallback using /proc/mounts and statvfs approach
+            try {
+                const output = execSync("df -h / | tail -1 | awk '{gsub(/%/, \"\", $5); print $5}'", { encoding: "utf8" });
+                const usage = parseInt(output.trim());
+                return isNaN(usage) ? null : usage;
+            } catch (fallbackError) {
+                console.error("Fallback disk usage method also failed:", fallbackError.message);
+                return null;
+            }
         }
     }
 
@@ -49,7 +75,8 @@ class EC2Monitor {
         const data = this.readFile("uptime");
         if (!data) return null;
         const seconds = parseFloat(data.split(" ")[0]);
-        return Math.floor(seconds); // uptime in seconds
+        const hours = seconds / 3600; // convert seconds to hours
+        return parseFloat(hours.toFixed(2)); // uptime in hours with 2 decimal places
     }
 
     start(interval = 5000) {
@@ -83,7 +110,7 @@ class EC2Monitor {
                         cpuLoad: cpuLoad + " (1-min avg)",
                         memoryUsage: memoryUsage + " %",
                         diskUsage: diskUsage + " %",
-                        uptime: uptime + " sec"
+                        uptime: uptime + " hours"
                     });
                 } else {
                     console.warn("Some EC2 metrics could not be collected:", {
