@@ -327,7 +327,7 @@ useEffect(() => {
         // devices[activeDevice.index].changes = [];
       })
       .catch((error) => {
-        console.error('Error fetching data:', error.message);
+        console.error('Error updating layout:', error);
       });
   }
 }, [syncronizeChanges]); 

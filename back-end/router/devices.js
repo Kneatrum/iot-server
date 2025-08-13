@@ -377,6 +377,7 @@ device_routes.post('/batch-updates', async (req, res) => {
         if (!transaction.finished) {
             await transaction.rollback();
         }
+        console.log("Error during batch operation:", error);
         console.error("Batch operation failed:", error);
         return res.status(500).json({
             error: "Batch operation failed",
