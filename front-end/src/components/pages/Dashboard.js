@@ -772,8 +772,8 @@ function getChangedLayoutWithChanges(prevLayouts, newLayouts) {
           <GridLayout
             className="complex-interface-layout"
             layout={getActiveDeviceLayouts()}
-            isDraggable={false}
-            isResizable={false}
+            isDraggable={true}
+            isResizable={true}
             cols={maxNumCols}
             rowHeight={rowHeight}
             width={windowWidth}
