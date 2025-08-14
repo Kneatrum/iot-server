@@ -123,21 +123,33 @@ const Dashboard = () => {
   //   console.log("Devices: ", devices)
   // }, [activeDevice])
 
-  useEffect(() => {
+useEffect(() => {
+  // Add connection debugging
+  const handleConnect = () => {
+    console.log('Socket connected successfully:', socket.id);
+  };
+
+  const handleConnectError = (error) => {
+    console.error('Socket connection error:', error);
+  };
+
+  const handleDisconnect = (reason) => {
+    console.warn('Socket disconnected:', reason);
+  };
+
   const handlePayload = (payload) => {
-    // console.log("Payload received:", payload);
-
+    console.log(`${dataResource} payload received:`, payload); // Enable this temporarily
+    
     const updates = [];
-
     for (const device of payload) {
       const { deviceId, charts } = device;
-
+      
       for (const chart of charts) {
         const { chartId, dataPoint, timestamp } = chart;
-
+        
         updates.push({
-          deviceIndex: deviceId,   
-          layoutIndex: 0,          // Not used in this context, set to 0
+          deviceIndex: deviceId,
+          layoutIndex: 0,
           chartIndex: chartId,
           newLabel: timestamp,
           newDataPoint: dataPoint,
@@ -145,18 +157,28 @@ const Dashboard = () => {
         });
       }
     }
-
-    // Dispatch all updates in one go
+    
+    console.log(`Dispatching ${updates.length} chart updates`);
     dispatch(batchAppendChartData(updates));
   };
 
+  socket.on('connect', handleConnect);
+  socket.on('connect_error', handleConnectError);
+  socket.on('disconnect', handleDisconnect);
   socket.on(dataResource, handlePayload);
-  console.log("Socket listener for cpuData set up");
+  
+  console.log(`Socket listener for "${dataResource}" set up`);
+  console.log('Current socket connection state:', socket.connected);
 
+  // Cleanup function
   return () => {
+    socket.off('connect', handleConnect);
+    socket.off('connect_error', handleConnectError);
+    socket.off('disconnect', handleDisconnect);
     socket.off(dataResource, handlePayload);
+    console.log(`Cleaned up listeners for "${dataResource}"`);
   };
-}, [dispatch]);
+}, [dispatch, dataResource]); // Make sure to include dataResource in dependencies if it can change;
 
 //     useEffect(() => {
 //     socket.on("thinkpadData", (data) => {
