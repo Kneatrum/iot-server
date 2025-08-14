@@ -1,4 +1,10 @@
 // streaming/socketServer.js
+const env = process.env.NODE_ENV || 'development';
+const envFile = env === 'production' ? '../.env' : `../.env.${env}`;
+require('dotenv').config({path: envFile});
+
+const FRONTEND_HOST = process.env.FRONTEND_HOST || 'http://localhost:3001';
+
 const { Server } = require("socket.io");
 
 let ioInstance = null;
@@ -6,9 +12,12 @@ let ioInstance = null;
 function initSocketIO(server) {
     ioInstance = new Server(server, {
         cors: {
-            origin: "*",
-            methods: ["GET", "POST"]
-        }
+            origin: FRONTEND_HOST,
+            methods: ["GET", "POST"],
+            credentials: true,
+        },
+        transports: ["websocket", "polling"], 
+        path: "/socket.io",
     });
 
     ioInstance.on("connection", (socket) => {
