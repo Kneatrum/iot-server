@@ -66,7 +66,9 @@ const ACTIVE_DEVICE = {
 const backEndHost = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
 const url = `${backEndHost}/user/layout`
 
-const socket = io(backEndHost)
+const socket = io(backEndHost,{
+  transports: ['websocket', 'polling'],
+}); 
 
 const maxNumCols = 12;
 const windowWidth = 1800;
